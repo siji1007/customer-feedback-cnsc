@@ -1,0 +1,9 @@
+* {
+     border: 0.2px solid red;
+    
+  }
+  body{
+    overflow:hidden;
+    background-color: white;
+  }
+
