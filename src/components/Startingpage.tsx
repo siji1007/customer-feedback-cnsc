@@ -24,7 +24,7 @@ const StartingPage: React.FC = () => {
             Start
           </button>
         ) : (
-          <div>
+          <div className="flex flex-col items-center">
             <button className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
               Admin
             </button>
