@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test Data</title>
+    </head>
+    <body>
+        <h1>Data List</h1>
+        <ul>
+            {% for item in data %}
+                <li>{{ item["Full Name"] }} {{ item["Username"] }}</li> {% endfor %}
+        </ul>
+    </body>
+</html>

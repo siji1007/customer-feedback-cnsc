@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>HTML</title>
+  
+  <!-- HTML -->
+  
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <form action="/insert" method="post">
+    <input name="fullname" placeholder="Full Name"/>
+    <input name="username" placeholder="Username" />
+    <input name="password" placeholder="Password" />
+    <button type="submit">Insert</button>
+  </form>
+  <form action="/show" method="post">
+    <button type="submit">Show Data</button>
+  </form>
+  <form action="/delete_all" method="post">
+    <button type="submit">Delete All</button>
+  </form>
+  <form action="/go_login" method="get">
+    <button type="submit">Login</button>
+  </form>
+  <script src="main.js"></script>
+</body>
+</html>
