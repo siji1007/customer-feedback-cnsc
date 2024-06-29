@@ -13,9 +13,19 @@ def insert():
     fullname = request.form.get('fullname')
     username = request.form.get('username')
     password = request.form.get('password')
-    data = {'Full Name': fullname, 'Username':username, 'Password': password}
+    data = {'Full Name': fullname, 'Username':username, 'Password': password, 'Type': 'admin'}
     server.user_collection.insert_one(data)
     return render_template('index.html')
+
+@app.route('/insert-dept', methods=['POST'])
+def insert_dept():
+   fullname = request.form.get('fullname')
+   username = request.form.get('username')
+   password = request.form.get('password')
+   department = request.form.get('department')
+   data = {'Full Name': fullname, 'Username':username, 'Password': password, 'Department': department, 'Type': 'office head'}
+   server.user_collection.insert_one(data)
+   return render_template('index.html')
     
 @app.route('/show', methods=['POST'])
 def show():
@@ -31,11 +41,15 @@ def delete_all():
 def go_login():
     return render_template('login.html')
 
+@app.route('/oh_login', methods=['GET'])
+def oh_login():
+    return render_template('oh_login.html')
+
 @app.route('/login', methods=['POST'])
 def login():
     userName = request.form.get('username')
     passWord = request.form.get('password')
-    user = server.user_collection.find_one({'Username': userName, 'Password': passWord})
+    user = server.user_collection.find_one({'Username': userName, 'Password': passWord, 'Type': 'admin'})
     if user:
       return render_template('show.html')
     else:

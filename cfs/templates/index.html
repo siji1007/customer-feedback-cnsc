@@ -15,21 +15,43 @@
 </head>
 
 <body>
-  <form action="/insert" method="post">
-    <input name="fullname" placeholder="Full Name"/>
-    <input name="username" placeholder="Username" />
-    <input name="password" placeholder="Password" />
-    <button type="submit">Insert</button>
-  </form>
-  <form action="/show" method="post">
-    <button type="submit">Show Data</button>
-  </form>
-  <form action="/delete_all" method="post">
-    <button type="submit">Delete All</button>
-  </form>
-  <form action="/go_login" method="get">
-    <button type="submit">Login</button>
-  </form>
-  <script src="main.js"></script>
+    <h2>Test Site</h2>
+    <form action="/insert" method="post">
+        <h5>Admin Insert</h5>
+        <input name="fullname" placeholder="Full Name"/>
+        <input name="username" placeholder="Username" />
+        <input name="password" placeholder="Password" />
+        <button type="submit">Insert</button>
+    </form>
+    <form action="/insert-dept" method="post">
+        <h5>Office Head Insert</h5>
+        <input name="fullname" placeholder="Full Name"/>
+        <select name="department">
+            <option value="ossd">OSSD</option>
+            <option value="library">Library</option>
+            <option value="registrar">Registrar</option>
+        </select>
+        <input name="username" placeholder="Username" />
+        <input name="password" placeholder="Password" />
+        <button type="submit">Insert</button>
+    </form>
+    <form action="/show" method="post">
+        <h5>Data Preview</h5>
+        <button type="submit">Show Data</button>
+    </form>
+    <form action="/delete_all" method="post">
+        <h5>Clear Data</h5>
+        <button type="submit">Delete All</button>
+    </form>
+    <form action="/go_login" method="get">
+        <h5>Admin Login</h5>
+        <button type="submit">Login</button>
+    </form>
+    <form action="/oh_login" method="get">
+        <h5>Office Head Login</h5>
+        <button type="submit">Login</button>
+    </form>
+    
+    <script src="main.js"></script>
 </body>
 </html>
