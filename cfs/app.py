@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash
 import server
 import os
 
@@ -35,7 +35,15 @@ def go_login():
 def login():
     userName = request.form.get('username')
     passWord = request.form.get('password')
-    
-    
+    user = server.user_collection.find_one({'Username': userName, 'Password': passWord})
+    if user:
+      return render_template('show.html')
+    else:
+      return render_template('login.html')
+
+@app.route('/register', methods=['POST'])
+def register():
+    pass
+
 if __name__ == '__main__':
     app.run(port=input("Port: "))
