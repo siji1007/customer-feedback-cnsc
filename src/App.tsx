@@ -1,7 +1,7 @@
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import StartingPage from './components/Startingpage';
-import CustomerBtn from './components/CustomerButtons';
+import CustomerBtn from './components/LandingPage';
 import AdminPage from './components/AdminPage';
 import './App.css';
 
