@@ -5,14 +5,14 @@
         <title>Title</title>
     </head>
     <body>
-        <form method="post">
+        <form action="/verify_oh" method="post">
             <select name="department">
                 <!--Logic to show all departments-->
                 {% for option in options %}
                     <option value="{{ option }}">{{ option }}</option>
                 {% endfor %}
             </select>
-            <input type="password" placeholder="Password"/>
+            <input type="password" name="ohpass" placeholder="Password"/>
             <button type="submit">Login</button>
         </form>
     </body>

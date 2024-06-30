@@ -27,13 +27,15 @@
         <h5>Office Head Insert</h5>
         <input name="fullname" placeholder="Full Name"/>
         <select name="department">
-            <option value="ossd">OSSD</option>
-            <option value="library">Library</option>
-            <option value="registrar">Registrar</option>
+            {% for option in options %}
+                <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
         </select>
         <input name="username" placeholder="Username" />
         <input name="password" placeholder="Password" />
         <button type="submit">Insert</button>
+    </form>
+    <form>
     </form>
     <form action="/show" method="post">
         <h5>Data Preview</h5>
@@ -43,18 +45,49 @@
         <h5>Clear Data</h5>
         <button type="submit">Delete All</button>
     </form>
-    <form action="/go_login" method="get">
+    <form action="/login" method="POST">
         <h5>Admin Login</h5>
+        <input placeholder="Username" name="username"/>
+        <input type="password" placeholder="Password" name="password"/>
         <button type="submit">Login</button>
     </form>
-    <form action="/oh_login" method="get">
-        <h5>Office Head Login</h5>
+    <form action="/verify_oh" method="post">
+        <h5>Office Head</h5>
+        <select name="department">
+            <!--Logic to show all departments-->
+            {% for option in options %}
+                <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
+        </select>
+        <input type="password" name="ohpass" placeholder="Password"/>
         <button type="submit">Login</button>
     </form>
     <form action="/add-dept" method="post">
         <h5>Department Registry</h5>
         <input name="dept-name" placeholder="Department"/>
+        <select name="dept-type">
+            <option value="service">Service Office</option>
+            <option value="academic">Academic Office</option>
+        </select>
         <button type="submit">Submit</button>
+    </form>
+    <form action="/add-student" method="post">
+        <h5>Student Registry</h5>
+        <input name="student_id" placeholder="Student ID"/>
+        <select name="student_dept">
+            {% for options in optionUnit %}
+                <option value="{{ options }}">{{ options }}</option>
+            {% endfor %}
+        </select>
+        <input name="student_pass" placeholder="Password"/>
+        <input name="student_cpass" placeholder="Confirm Password"/>
+        <button type="submit">Sign Up</button>
+    </form>
+    <form action="/student-login" method="post">
+        <h5>Student Login</h5>
+        <input name="student-signin" placeholder="Student ID"/>
+        <input name="student-pass" placeholder="Password"/>
+        <button type="submit">Login</button>
     </form>
     <script src="main.js"></script>
 </body>
