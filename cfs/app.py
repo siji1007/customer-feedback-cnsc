@@ -11,7 +11,8 @@ def flask_mongodb_atlas():
         data_list = [d for d in data]
         options = [d["department"] for d in data_list if d["type"] == "service"]
         optionUnit = [d["department"] for d in data_list if d["type"] == "academic"]
-        return render_template('index.html', options=options, optionUnit=optionUnit)
+        optionAll = [d["department"] for d in data_list]
+        return render_template('index.html', options=options, optionUnit=optionUnit, optionAll=optionAll)
     except:
         return render_template('index.html')
     
@@ -44,26 +45,15 @@ def delete_all():
     server.user_collection.delete_many({})
     return redirect('/')
 
-@app.route('/go_login', methods=['GET'])
-def go_login():
-    return render_template('login.html')
-
-@app.route('/oh_login', methods=['GET'])
-def oh_login():
-    data = server.dept_collection.find()
-    data_list = [d for d in data]
-    options = [d["department"] for d in data_list]
-    return render_template('oh_login.html', options=options)
-
 @app.route('/login', methods=['POST'])
 def login():
     userName = request.form.get('username')
     passWord = request.form.get('password')
     user = server.user_collection.find_one({'Username': userName, 'Password': passWord, 'Type': 'admin'})
     if user:
-        return render_template('show.html')
+        return show()
     else:
-        return render_template('login.html')
+        return redirect('/')
 
 @app.route('/add-dept', methods=['POST'])
 def add_dept():
@@ -101,6 +91,29 @@ def student_login():
     sid = request.form.get('student-signin')
     spass = request.form.get('student-pass')
     user = server.user_collection.find_one({'student_id': sid, 'password': spass, 'type': 'student'})
+    if user:
+        return "Access Granted"
+    else:
+        return redirect('/')
+    
+@app.route('/add-employee', methods=['POST'])
+def add_employee():
+    eid = request.form.get('employee_id')
+    dept = request.form.get('employee_dept')
+    epass = request.form.get('employee_pass')
+    cepass = request.form.get('employee_cpass')
+    if epass == cepass:
+        employee = {'employee_id':eid, 'department':dept, 'password':epass, 'type':'employee'}
+        server.user_collection.insert_one(employee)
+        return redirect('/')
+    else:
+        return redirect('/')
+    
+@app.route('/employee-login', methods=['POST'])
+def employee_login():
+    eid = request.form.get('employee-signin')
+    epass = request.form.get('employee-pass')
+    user = server.user_collection.find_one({'employee_id':eid, 'password':epass, 'type':'employee'})
     if user:
         return "Access Granted"
     else:

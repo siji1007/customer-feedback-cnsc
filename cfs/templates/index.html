@@ -90,5 +90,23 @@
         <button type="submit">Login</button>
     </form>
     <script src="main.js"></script>
+    <form action="/add-employee" method="post">
+        <h5>Employee Registry</h5>
+        <input name="employee_id" placeholder="Employee ID"/>
+        <select name="employee_dept">
+            {% for options in optionAll %}
+                <option value="{{ options }}">{{ options }}</option>
+            {% endfor %}
+        </select>
+        <input name="employee_pass" placeholder="Password"/>
+        <input name="employee_cpass" placeholder="Confirm Password"/>
+        <button type="submit">Sign Up</button>
+    </form>
+    <form action="/employee-login" method="post">
+        <h5>Employee Login</h5>
+        <input name="employee-signin" placeholder="Employee ID"/>
+        <input name="employee-pass" placeholder="Password"/>
+        <button type="submit">Login</button>
+    </form>
 </body>
 </html>
