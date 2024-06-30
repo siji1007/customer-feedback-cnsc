@@ -8,6 +8,9 @@
         <form method="post">
             <select name="department">
                 <!--Logic to show all departments-->
+                {% for option in options %}
+                    <option value="{{ option }}">{{ option }}</option>
+                {% endfor %}
             </select>
             <input type="password" placeholder="Password"/>
             <button type="submit">Login</button>

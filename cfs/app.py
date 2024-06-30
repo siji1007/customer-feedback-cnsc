@@ -43,7 +43,10 @@ def go_login():
 
 @app.route('/oh_login', methods=['GET'])
 def oh_login():
-    return render_template('oh_login.html')
+    data = server.dept_collection.find()
+    data_list = [d for d in data]
+    options = [d["department"] for d in data_list]
+    return render_template('oh_login.html', options=options)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -54,6 +57,13 @@ def login():
       return render_template('show.html')
     else:
       return render_template('login.html')
+
+@app.route('/add-dept', methods=['POST'])
+def add_dept():
+    deptName = request.form.get('dept-name')
+    data = {'department': deptName}
+    server.dept_collection.insert_one(data)
+    return render_template('index.html')
 
 @app.route('/register', methods=['POST'])
 def register():
