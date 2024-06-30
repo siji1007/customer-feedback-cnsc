@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const StartingPage: React.FC = () => {
   const [showTwoButtons, setShowTwoButtons] = useState(false);
+  const [showSecondSetOfButtons, setShowSecondSetOfButtons] = useState(false);
 
   const handleStartClick = () => {
     setShowTwoButtons(true);
+  };
+
+  const handleAdminCustomerClick = () => {
+    setShowSecondSetOfButtons(true);
+  };
+
+  const handleBackClick = () => {
+    setShowSecondSetOfButtons(false);
   };
 
   return (
@@ -23,14 +33,39 @@ const StartingPage: React.FC = () => {
           >
             Start
           </button>
+        ) : showSecondSetOfButtons ? (
+          <div className="flex flex-col items-center">
+            <Link to="/admin">
+              <button className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
+                VPRE
+              </button>
+            </Link>
+            <button className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
+              Office Head
+            </button>
+            <button
+              className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2 mt-4"
+              onClick={handleBackClick}
+            >
+              Back
+            </button>
+          </div>
         ) : (
           <div className="flex flex-col items-center">
-            <button className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
+            <button
+              className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2"
+              onClick={handleAdminCustomerClick}
+            >
               Admin
             </button>
-            <button className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
-              Customer
-            </button>
+            <Link to="/customer">
+              <button
+                className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2"
+            
+              >
+                Customer
+              </button>
+            </Link>
           </div>
         )}
         <p className="mt-2 text-center">We want to hear from you.</p>
