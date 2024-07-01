@@ -108,5 +108,16 @@
         <input name="employee-pass" placeholder="Password"/>
         <button type="submit">Login</button>
     </form>
+    <form>
+        <h5>Client Login</h5>
+        <input name="client_name" placeholder="Name"/>
+        <input name="client_addr" placeholder="Address"/>
+        <select name="client_type">
+            {% for clientType in clientTypes %}
+                <option value="{{ clientType }}">{{ clientType }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Login</button>
+    </form>
 </body>
 </html>
