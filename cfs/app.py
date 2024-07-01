@@ -8,11 +8,14 @@ app = Flask(__name__)
 def flask_mongodb_atlas():
     try:
         data = server.dept_collection.find()
+        type_data = server.client_type_collection.find()
         data_list = [d for d in data]
+        type_list = [t for t in type_data]
         options = [d["department"] for d in data_list if d["type"] == "service"]
         optionUnit = [d["department"] for d in data_list if d["type"] == "academic"]
         optionAll = [d["department"] for d in data_list]
-        return render_template('index.html', options=options, optionUnit=optionUnit, optionAll=optionAll)
+        clientTypes = [t["types"] for t in type_list]
+        return render_template('index.html', options=options, optionUnit=optionUnit, optionAll=optionAll, clientTypes = clientTypes)
     except:
         return render_template('index.html')
     
@@ -118,6 +121,21 @@ def employee_login():
         return "Access Granted"
     else:
         return redirect('/')
+
+@app.route('/add-type', methods=['POST'])
+def add_type():
+    type_name = request.form.get('type_input')
+    server.client_type_collection.insert_one({'types':type_name})
+    return redirect('/')
+
+@app.route('/client_login', methods=['POST'])
+def login_client():
+    client_name = request.form.get('client_name')
+    client_addr = request.form.get('client_addr')
+    client_type = request.form.get('client_type')
+    client = server.user_collection.insert_one({'name': client_name, 'address': client_addr, 'type': client_type})
+    return "Access Granted"
+
     
 @app.route('/register', methods=['POST'])
 def register():

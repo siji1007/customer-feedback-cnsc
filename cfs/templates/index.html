@@ -108,7 +108,12 @@
         <input name="employee-pass" placeholder="Password"/>
         <button type="submit">Login</button>
     </form>
-    <form>
+    <form action="/add-type" method="post">
+        <h5>Client Type Registry</h5>
+        <input name="type_input" placeholder="Client Type"/>
+        <button type="submit">Add</button>
+    </form>
+    <form action="/client-login" method="post">
         <h5>Client Login</h5>
         <input name="client_name" placeholder="Name"/>
         <input name="client_addr" placeholder="Address"/>

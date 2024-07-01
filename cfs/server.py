@@ -9,3 +9,4 @@ connection=MongoClient("mongodb+srv://CodeDemonz:legendaryCodeGodz24@cluster0.b9
 db=connection.get_database('CFS')
 user_collection=pymongo.collection.Collection(db,'Accounts')
 dept_collection=pymongo.collection.Collection(db,'Department')
+client_type_collection=pymongo.collection.Collection(db, 'Types')
