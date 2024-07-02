@@ -34,7 +34,7 @@ const LandingPage: React.FC = () => {
               Employee
             </button>
             <button className="bg-red-900 text-white py-2 px-4 rounded-full " onClick={() => handleLoginSelection('other')}>
-              Other
+              Others
             </button>
 
             <button className="text-black text-sm sm:text-base md:text-lg lg:text-xl " onClick={() => window.history.back()}>

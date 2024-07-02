@@ -1,7 +1,7 @@
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import StartingPage from './components/Startingpage';
-import CustomerBtn from './components/LandingPage';
+import LandingPage from './components/LandingPage';
 import AdminPage from './components/AdminPage';
 import './App.css';
 
@@ -13,7 +13,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<StartingPage />} />
-        <Route path="/customer" element={<CustomerBtn />} />
+        <Route path="/customer" element={<LandingPage />} />
         <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </Router>
