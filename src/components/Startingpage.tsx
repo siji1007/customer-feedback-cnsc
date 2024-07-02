@@ -28,19 +28,19 @@ const StartingPage: React.FC = () => {
         <div className="h-20 w-20 bg-black mb-20"></div> {/* add the logo here */}
         {!showTwoButtons ? (
           <button
-            className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full"
-            onClick={handleStartClick}
+            className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full"
+            onClick={handleStartClick} 
           >
             Start
           </button>
         ) : showSecondSetOfButtons ? (
           <div className="flex flex-col items-center">
-            <Link to="/admin">
-              <button className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
+            <Link to="/admin">   
+              <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
                 VPRE
               </button>
             </Link>
-            <button className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
+            <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
               Office Head
             </button>
             <button
@@ -53,14 +53,14 @@ const StartingPage: React.FC = () => {
         ) : (
           <div className="flex flex-col items-center">
             <button
-              className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2"
+              className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2"
               onClick={handleAdminCustomerClick}
             >
               Admin
             </button>
             <Link to="/customer">
               <button
-                className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2"
+                className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2"
             
               >
                 Customer
