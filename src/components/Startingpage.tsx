@@ -35,14 +35,15 @@ const StartingPage: React.FC = () => {
           </button>
         ) : showSecondSetOfButtons ? (
           <div className="flex flex-col items-center">
-            <Link to="/admin">   
+           
               <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
-                VPRE
+                VPRE   {/* if i click this i want to navigate the AdminLogin and show in the landing */}
               </button>
-            </Link>
+        
             <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
               Office Head
             </button>
+
             <button
               className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2 mt-4"
               onClick={handleBackClick}

@@ -3,12 +3,18 @@ import { FaFacebook, FaTwitter } from 'react-icons/fa';
 import StudentLogin from './Logins/StudentLogin';
 import EmployeeLogin from './Logins/EmployeeLogin';
 import OtherLogin from './Logins/OthersLogin';
+import SurveyForm from './Logins/SurveyForm';
 
 const LandingPage: React.FC = () => {
   const [selectedLogin, setSelectedLogin] = useState<string>('');
+  const [showSurveyForm, setShowSurveyForm] = useState<boolean>(false);
 
   const handleLoginSelection = (loginType: string) => {
     setSelectedLogin(loginType);
+  };
+
+  const handleShowSurveyForm = () => {
+    setShowSurveyForm(true);
   };
 
   return (
@@ -24,51 +30,51 @@ const LandingPage: React.FC = () => {
       </header>
 
       <main className="flex-grow flex flex-col justify-center items-center overflow-auto">
-        {selectedLogin === '' && (
+        {!showSurveyForm && selectedLogin === '' && (
           <nav className="flex flex-col p-10 space-y-4 ">
-            <h1 className="m-10 text-2xl md:text-3xl lg:text-4xl font-bold ">CUSTOMERS</h1>
-            <button className=" bg-red-900 text-white py-2 px-4 rounded-full " onClick={() => handleLoginSelection('student')}>
+            <h1 className="m-10 text-2xl md:text-3xl lg:text-4xl font-bold">CUSTOMERS</h1>
+            <button className="bg-red-900 text-white py-2 px-4 rounded-full" onClick={() => handleLoginSelection('student')}>
               Student
             </button>
-            <button className="bg-red-900 text-white py-2 px-4 rounded-full " onClick={() => handleLoginSelection('employee')}>
+            <button className="bg-red-900 text-white py-2 px-4 rounded-full" onClick={() => handleLoginSelection('employee')}>
               Employee
             </button>
-            <button className="bg-red-900 text-white py-2 px-4 rounded-full " onClick={() => handleLoginSelection('other')}>
+            <button className="bg-red-900 text-white py-2 px-4 rounded-full" onClick={() => handleLoginSelection('other')}>
               Others
             </button>
 
-            <button className="text-black text-sm sm:text-base md:text-lg lg:text-xl " onClick={() => window.history.back()}>
-            Back
+            <button className="text-black text-sm sm:text-base md:text-lg lg:text-xl" onClick={() => window.history.back()}>
+              Back
             </button>
           </nav>
         )}
-        {selectedLogin === 'student' && <StudentLogin />}
-        {selectedLogin === 'employee' && <EmployeeLogin />}
-        {selectedLogin === 'other' && <OtherLogin />}
+        {!showSurveyForm && selectedLogin === 'student' && <StudentLogin onLoginSuccess={handleShowSurveyForm} />}
+        {!showSurveyForm && selectedLogin === 'employee' && <EmployeeLogin />}
+        {!showSurveyForm && selectedLogin === 'other' && <OtherLogin />}
+        {showSurveyForm && <SurveyForm />}
       </main>
 
-      <footer className="w-full h-33 bg-red-900 flex justify-between  p-2">
-  <div className='flex-1'>
-    <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Contact Information</h1>
-    <p className="text-white text-xs sm:text-xxs md:text-xs lg:text-xm">
-      Camarines Norte State College Information Technology Services Office<br />
-      F. Pimentel Avenue, Daet, 4600 Camarines Norte, Philippines <br />
-      Telephone No.(054)721-2672 or 440-1199 <br />
-      PICRO Mobile No. 09688983078 | 09171439973 <br />
-      Mobile No. 09990042147 <br />
-      Email: <span className="underline">president@cnsc.edu.ph</span>
-    </p>
-  </div>
+      <footer className="w-full h-33 bg-red-900 flex justify-between p-2">
+        <div className="flex-1">
+          <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Contact Information</h1>
+          <p className="text-white text-xs sm:text-xxs md:text-xs lg:text-xm">
+            Camarines Norte State College Information Technology Services Office<br />
+            F. Pimentel Avenue, Daet, 4600 Camarines Norte, Philippines <br />
+            Telephone No.(054)721-2672 or 440-1199 <br />
+            PICRO Mobile No. 09688983078 | 09171439973 <br />
+            Mobile No. 09990042147 <br />
+            Email: <span className="underline">president@cnsc.edu.ph</span>
+          </p>
+        </div>
 
-    <div className='ml-2' >
-        <p className="text-white font-bold m">Help</p>
-        <div className='flex'>
+        <div className="ml-2">
+          <p className="text-white font-bold">Help</p>
+          <div className="flex">
             <FaFacebook className="text-white text-xl cursor-pointer hover:text-blue-500 mr-4" />
             <FaTwitter className="text-white text-xl cursor-pointer hover:text-blue-500" />
-    </div>
-    </div>
-</footer>
-
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
