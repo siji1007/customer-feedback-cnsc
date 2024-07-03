@@ -4,6 +4,18 @@ import os
 
 app = Flask(__name__)
 
+def showDepts():
+    depts = server.dept_collection.find()
+    dept_list = [dept for dept in depts]
+    departments = [dept["department"] for dept in dept_list]
+    return departments
+
+def showQuestions(sd = "OSSD"):
+    question_data = server.question_collection.find()
+    question_list = [q for q in question_data]
+    questions = [q["question"] for q in question_list if q["department"] == sd]
+    return questions
+
 @app.route('/')
 def flask_mongodb_atlas():
     try:
@@ -48,13 +60,17 @@ def delete_all():
     server.user_collection.delete_many({})
     return redirect('/')
 
-@app.route('/login', methods=['POST'])
+@app.route('/admin')
+def showAdmin():
+    return render_template('admin.html', selected_dept="OSSD", questions=showQuestions(), departments=showDepts())
+
+@app.route('/verified-admin', methods=['POST'])
 def login():
     userName = request.form.get('username')
     passWord = request.form.get('password')
     user = server.user_collection.find_one({'Username': userName, 'Password': passWord, 'Type': 'admin'})
     if user:
-        return show()
+        return render_template('admin.html', departments=showDepts())
     else:
         return redirect('/')
 
@@ -128,7 +144,7 @@ def add_type():
     server.client_type_collection.insert_one({'types':type_name})
     return redirect('/')
 
-@app.route('/client_login', methods=['POST'])
+@app.route('/client-login', methods=['POST'])
 def login_client():
     client_name = request.form.get('client_name')
     client_addr = request.form.get('client_addr')
@@ -136,10 +152,24 @@ def login_client():
     client = server.user_collection.insert_one({'name': client_name, 'address': client_addr, 'type': client_type})
     return "Access Granted"
 
-    
+@app.route("/select-dept", methods=['POST'])
+def select_department():
+    try:
+        selected_dept = request.form.get('dept_select')
+        return render_template('admin.html', selected_dept=selected_dept, questions=showQuestions(selected_dept), departments=showDepts())
+    except:
+        return render_template('admin.html')
+
+@app.route("/add-question", methods=['POST'])
+def add_question():
+    question_input=request.form.get('question_area')
+    department_type=request.form.get('dept')
+    question = server.question_collection.insert_one({'question': question_input, 'department': department_type})
+    return redirect('/admin')
+
 @app.route('/register', methods=['POST'])
 def register():
     pass
 
 if __name__ == '__main__':
-    app.run(port=input("Port: "))
+    app.run(port="8080")

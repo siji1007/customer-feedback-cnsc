@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CFS - Admin</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    </head>
+    <body>
+        <h2>Admin Dashboard</h2>
+        <form action="/add-dept" method="post">
+            <h5>Department Registry</h5>
+            <input name="dept-name" placeholder="Department"/>
+            <select name="dept-type">
+                <option value="service">Service Office</option>
+                <option value="academic">Academic Office</option>
+            </select>
+            <button type="submit">Submit</button>
+        </form>
+        <form action="/select-dept" method="post">
+            <h5>Department List</h5>
+            {% for department in departments %}
+                <input name="dept_select" type="submit" value="{{ department }}"/><br>
+            {% endfor %}
+        </form>
+        <section>
+            <h5>{{ selected_dept }}</h5>
+            <ol>
+                {% for question in questions %}
+                    <li>
+                        <form>
+                            {{ question }}
+                        </form>
+                    </li>
+                {% endfor %}
+            </ol>
+            <form action="/add-question" method="post">
+                <input type="hidden" name="dept" value="{{ selected_dept }}"/>
+                <textarea name="question_area"></textarea>
+                <button type="submit">Add</button>
+            </form>
+        </section>
+    </body>
+</html>
