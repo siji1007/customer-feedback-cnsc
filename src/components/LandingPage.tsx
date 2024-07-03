@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaFacebook, FaTwitter } from 'react-icons/fa';
+import {Link} from 'react-router-dom';
 import StudentLogin from './Logins/StudentLogin';
 import EmployeeLogin from './Logins/EmployeeLogin';
 import OtherLogin from './Logins/OthersLogin';
@@ -43,9 +44,12 @@ const LandingPage: React.FC = () => {
               Others
             </button>
 
-            <button className="text-black text-sm sm:text-base md:text-lg lg:text-xl" onClick={() => window.history.back()}>
+
+            <Link to="/?showTwoButtons=false" className='text-center'>
+            <button className="text-black text-sm sm:text-base md:text-lg lg:text-xl " >
               Back
             </button>
+            </Link>
           </nav>
         )}
         {!showSurveyForm && selectedLogin === 'student' && <StudentLogin onLoginSuccess={handleShowSurveyForm} />}

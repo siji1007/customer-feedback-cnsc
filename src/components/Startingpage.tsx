@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 const StartingPage: React.FC = () => {
+  const location = useLocation();
   const [showTwoButtons, setShowTwoButtons] = useState(false);
   const [showSecondSetOfButtons, setShowSecondSetOfButtons] = useState(false);
 
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const showSecondSet = queryParams.get('showSecondSetOfButtons') === 'true';
+    setShowSecondSetOfButtons(showSecondSet);
+    setShowTwoButtons(showSecondSet);
+  }, [location.search]);
+
   const handleStartClick = () => {
     setShowTwoButtons(true);
-  };
-
-  const handleAdminCustomerClick = () => {
-    setShowSecondSetOfButtons(true);
   };
 
   const handleBackClick = () => {
@@ -29,21 +33,22 @@ const StartingPage: React.FC = () => {
         {!showTwoButtons ? (
           <button
             className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full"
-            onClick={handleStartClick} 
+            onClick={handleStartClick}
           >
             Start
           </button>
         ) : showSecondSetOfButtons ? (
           <div className="flex flex-col items-center">
-           
+            <Link to="/admin?form=administrator">
               <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
-                VPRE   {/* if i click this i want to navigate the AdminLogin and show in the landing */}
+                VPRE
               </button>
-        
-            <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
-              Office Head
-            </button>
-
+            </Link>
+            <Link to="/admin?form=officehead">
+              <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
+                Office Head
+              </button>
+            </Link>
             <button
               className="w-40 text-black bg-white-500 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2 mt-4"
               onClick={handleBackClick}
@@ -55,21 +60,19 @@ const StartingPage: React.FC = () => {
           <div className="flex flex-col items-center">
             <button
               className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2"
-              onClick={handleAdminCustomerClick}
+              onClick={() => setShowSecondSetOfButtons(true)}
             >
               Admin
             </button>
             <Link to="/customer">
               <button
                 className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2"
-            
               >
                 Customer
               </button>
             </Link>
           </div>
         )}
-        <p className="mt-2 text-center">We want to hear from you.</p>
       </div>
     </div>
   );
