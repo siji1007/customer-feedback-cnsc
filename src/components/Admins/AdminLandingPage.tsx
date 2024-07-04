@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaFacebook, FaTwitter } from 'react-icons/fa';
-import VPREPage from './VPRE'; // Import VPREPage component
+import VPREPage from './AdminMainContent'; // Import VPREPage component
 
 const AdminLogins: React.FC = () => {
   const location = useLocation();
@@ -76,7 +76,9 @@ const AdminLogins: React.FC = () => {
 
         {/* Conditional rendering of VPREPage */}
         {!showLoginForm && (
+          <div className="flex-grow w-full flex">
           <VPREPage />
+        </div>
         )}
       </main>
 
