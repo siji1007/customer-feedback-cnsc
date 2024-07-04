@@ -13,7 +13,7 @@ def showDepts():
 def showQuestions(sd = "OSSD"):
     question_data = server.question_collection.find()
     question_list = [q for q in question_data]
-    questions = [q["question"] for q in question_list if q["department"] == sd]
+    questions = [(q["_id"],q["question"]) for q in question_list if q["department"] == sd]
     return questions
 
 @app.route('/')
