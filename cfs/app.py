@@ -10,11 +10,11 @@ def showDepts():
     departments = [dept["department"] for dept in dept_list]
     return departments
 
-def showQuestions(sd = "OSSD"):
-    question_data = server.question_collection.find()
-    question_list = [q for q in question_data]
-    questions = [(q["_id"],q["question"]) for q in question_list if q["department"] == sd]
-    return questions
+def showQuestionnaires(sd = "OSSD"):
+    questionnaire_data = server.questionnaire_collection.find()
+    questionnaire_list = [q for q in questionnaire_data]
+    questionnaires = [(q["_id"],q["title"]) for q in questionnaire_list if q["department"] == sd]
+    return questionnaires
 
 @app.route('/')
 def flask_mongodb_atlas():
@@ -62,7 +62,7 @@ def delete_all():
 
 @app.route('/admin')
 def showAdmin():
-    return render_template('admin.html', selected_dept="OSSD", questions=showQuestions(), departments=showDepts())
+    return render_template('admin.html', selected_dept="OSSD", questionnnaires=showQuestionnaires(), departments=showDepts())
 
 @app.route('/verified-admin', methods=['POST'])
 def login():
@@ -156,15 +156,15 @@ def login_client():
 def select_department():
     try:
         selected_dept = request.form.get('dept_select')
-        return render_template('admin.html', selected_dept=selected_dept, questions=showQuestions(selected_dept), departments=showDepts())
+        return render_template('admin.html', selected_dept=selected_dept, questionnaires=showQuestionnaires(selected_dept), departments=showDepts())
     except:
         return render_template('admin.html')
 
-@app.route("/add-question", methods=['POST'])
-def add_question():
-    question_input=request.form.get('question_area')
+@app.route("/add-questionnaire", methods=['POST'])
+def add_questionnaire():
+    questionnaire_title=request.form.get('questionnaire_title')
     department_type=request.form.get('dept')
-    question = server.question_collection.insert_one({'question': question_input, 'department': department_type})
+    questionnaire = server.questionnaire_collection.insert_one({'title': questionnaire_title, 'department': department_type})
     return redirect('/admin')
 
 @app.route('/register', methods=['POST'])

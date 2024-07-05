@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CFS Questionnaire Control</title>
+    </head>
+    <body>
+        <h2>Questionnaire Editor</h2>
+        <h4>Department: {{ department }}</h4>
+        <form>
+            <textarea name="new_question"></textarea>
+            <button type="submit">Add Question</button>
+        </form>
+        <form>
+            <ol>
+                {% for questions in questionnaire %}
+                    <li>
+                        <textarea name="{{ item_num }}">{{ questions }}<textarea>
+                    <li>
+                {% endfor %}
+            </ol>
+            <button type="submit">Confirm</button>
+        </form>
+    </body>
+</html>

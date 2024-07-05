@@ -27,20 +27,20 @@
         <section>
             <h5>{{ selected_dept }}</h5>
             <ol>
-                {% for question in questions %}
+                {% for questionnaire in questionnaires %}
                     <li>
                         <form>
-                            <input type="text" value="{{ question[0] }}"/>
-                            {{ question[1] }}
+                            <input type="text" value="{{ questionnaire[0] }}"/>
+                            {{ questionnaire[1] }}
                             <button type="submit">Edit</button>
                         </form>
                     </li>
                 {% endfor %}
             </ol>
-            <form action="/add-question" method="post">
+            <form action="/add-questionnaire" method="post">
                 <h5>Questionnaire Registry</h5>
                 <input type="hidden" name="dept" value="{{ selected_dept }}"/>
-                <input name="question_area" placeholder="Title"/>
+                <input name="questionnaire_title" placeholder="Title"/>
                 <button type="submit">Add</button>
             </form>
         </section>
