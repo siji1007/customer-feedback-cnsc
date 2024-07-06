@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, flash, redirect
-import server
-import os
+from flask import Flask, render_template, request, flash, redirect, jsonify
+from bson.objectid import ObjectId
+import server, json
+import os, time, random
+
 
 app = Flask(__name__)
 
@@ -15,6 +17,17 @@ def showQuestionnaires(sd = "OSSD"):
     questionnaire_list = [q for q in questionnaire_data]
     questionnaires = [(q["_id"],q["title"]) for q in questionnaire_list if q["department"] == sd]
     return questionnaires
+
+def generate_question_id():
+    timestamp = int(time.time())
+    random_part = random.randint(1000, 9999)  # Generate random 4-digit number
+    return f"Q-{timestamp}-{random_part}"
+
+def showQuestions(qid):
+    question_data = server.questionnaire_collection.find({})
+    question_list = [q for qd in question_data if qd.get('_id')==qid for q in qd.get('questions')]
+    questions = [(q["q_id"], q["question"]) for q in question_list]
+    return questions
 
 @app.route('/')
 def flask_mongodb_atlas():
@@ -167,9 +180,27 @@ def add_questionnaire():
     questionnaire = server.questionnaire_collection.insert_one({'title': questionnaire_title, 'department': department_type})
     return redirect('/admin')
 
+@app.route("/edit-questionnaire", methods=['POST'])
+def edit_questionnaire():
+    qid=request.form.get('qid')
+    qtitle=request.form.get('qtitle')
+    qdept=request.form.get('qdept')
+    return render_template('edit.html', questionnaire_id=qid, department=qdept, title=qtitle, questions=showQuestions(ObjectId(qid)))
+
+@app.route("/add-question", methods=['POST'])
+def add_question():
+    questionnaire_id=request.form.get('questionnaire_id')
+    new_question=request.form.get('new_question')
+    new_question_data = {
+        "q_id": generate_question_id(),
+        "question": new_question
+    }
+    server.questionnaire_collection.update_one({'_id': ObjectId(questionnaire_id)}, {'$push': {'questions': new_question_data}})
+    return jsonify({'message': 'Data updated successfully'}), 200
+
 @app.route('/register', methods=['POST'])
 def register():
     pass
 
 if __name__ == '__main__':
-    app.run(port="8080")
+    app.run(port="8082")

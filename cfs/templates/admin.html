@@ -29,9 +29,10 @@
             <ol>
                 {% for questionnaire in questionnaires %}
                     <li>
-                        <form>
-                            <input type="text" value="{{ questionnaire[0] }}"/>
-                            {{ questionnaire[1] }}
+                        <form action="edit-questionnaire" method="post">
+                            <input name="qdept" type="hidden" value="{{ selected_dept }}"/>
+                            <input name="qid" type="text" value="{{ questionnaire[0] }}"/>
+                            <input name="qtitle" type="text" value="{{ questionnaire[1] }}" readonly/>
                             <button type="submit">Edit</button>
                         </form>
                     </li>

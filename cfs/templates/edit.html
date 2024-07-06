@@ -6,16 +6,21 @@
     <body>
         <h2>Questionnaire Editor</h2>
         <h4>Department: {{ department }}</h4>
-        <form>
+        <h4>Title: {{ title }}</h4>
+        <form action="/add-question" method="post">
+            <h5>Question Registry</h5>
+            <input name="questionnaire_id" value="{{ questionnaire_id }}"/>
             <textarea name="new_question"></textarea>
             <button type="submit">Add Question</button>
         </form>
-        <form>
+        <form action="/edit-question" method="post">
+            <h5>Question Editor</h5>
+            <input value="{{ questionnaire_id }}"/>
             <ol>
-                {% for questions in questionnaire %}
+                {% for question in questions %}
                     <li>
-                        <textarea name="{{ item_num }}">{{ questions }}<textarea>
-                    <li>
+                        {{ question[1] }}
+                    </li>
                 {% endfor %}
             </ol>
             <button type="submit">Confirm</button>
