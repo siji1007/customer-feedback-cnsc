@@ -19,7 +19,8 @@
             <ol>
                 {% for question in questions %}
                     <li>
-                        {{ question[1] }}
+                        <input type="hidden" value="{{ question[0] }}"/>
+                        <textarea>{{ question[1] }}</textarea>
                     </li>
                 {% endfor %}
             </ol>

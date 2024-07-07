@@ -45,13 +45,6 @@ def flask_mongodb_atlas():
         return render_template('index.html', options=options, optionUnit=optionUnit, optionAll=optionAll, clientTypes = clientTypes)
     except:
         return render_template('index.html')
-
-@app.route('/academic_department')
-def get_acad_dept():
-    data = server.dept_collection.find()
-    data_list = [dept for dept in data]
-    departments = [dept["department"] for dept in data_list if dept["type"] == "academic"]
-    return jsonify({'departments': departments})
     
 @app.route('/insert', methods=['POST'])
 def insert():
@@ -129,15 +122,13 @@ def add_student():
     
 @app.route('/student-login', methods=['POST'])
 def student_login():
-    data = request.get_json()
-    sid = data['student_id']
-    spass = data['password']
+    sid = request.form.get('student-signin')
+    spass = request.form.get('student-pass')
     user = server.user_collection.find_one({'student_id': sid, 'password': spass, 'type': 'student'})
     if user:
         return "Access Granted"
     else:
-        return "Invalid credentials.", 401
-        #return redirect('/')
+        return redirect('/')
     
 @app.route('/add-employee', methods=['POST'])
 def add_employee():
