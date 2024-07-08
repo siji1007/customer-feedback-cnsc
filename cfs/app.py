@@ -1,3 +1,12 @@
+'''
+    TODO:
+    1. Error Handlers
+    2. Filtration
+    3. Survey Submission
+    4. Computation
+'''
+
+
 from flask import Flask, render_template, request, flash, redirect, jsonify
 from bson.objectid import ObjectId
 from flask_cors import CORS
@@ -51,6 +60,13 @@ def get_acad_dept():
     data = server.dept_collection.find()
     data_list = [dept for dept in data]
     departments = [dept["department"] for dept in data_list if dept["type"] == "academic"]
+    return jsonify({'departments': departments})
+
+@app.route('/service_department')
+def get_service_dept():
+    data = server.dept_collection.find()
+    data_list = [dept for dept in data]
+    departments = [dept["department"] for dept in data_list if dept["type"] == "service"]
     return jsonify({'departments': departments})
     
 @app.route('/insert', methods=['POST'])
@@ -142,10 +158,11 @@ def student_login():
     
 @app.route('/add-employee', methods=['POST'])
 def add_employee():
-    eid = request.form.get('employee_id')
-    dept = request.form.get('employee_dept')
-    epass = request.form.get('employee_pass')
-    cepass = request.form.get('employee_cpass')
+    employee_creds = request.get_json()
+    eid = employee_creds['employee_id']
+    dept = employee_creds['employee_dept']
+    epass = employee_creds['employee_pass']
+    cepass = employee_creds['employee_cpass']
     if epass == cepass:
         employee = {'employee_id':eid, 'department':dept, 'password':epass, 'type':'employee'}
         server.user_collection.insert_one(employee)
@@ -172,9 +189,10 @@ def add_type():
 
 @app.route('/client-login', methods=['POST'])
 def login_client():
-    client_name = request.form.get('client_name')
-    client_addr = request.form.get('client_addr')
-    client_type = request.form.get('client_type')
+    client_data = request.get_json()
+    client_name = client_data['client_name']
+    client_addr = client_data['client_addr']
+    client_type = client_data['client_type']
     client = server.user_collection.insert_one({'name': client_name, 'address': client_addr, 'type': client_type})
     return "Access Granted"
 
