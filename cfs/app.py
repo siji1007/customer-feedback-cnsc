@@ -116,16 +116,17 @@ def verify_oh():
 
 @app.route('/add-student', methods=['POST'])
 def add_student():
-    sid = request.form.get('student_id')
-    dept = request.form.get('student_dept')
-    spass = request.form.get('student_pass')
-    cspass = request.form.get('student_cpass')
+    signUpData = request.get_json()
+    sid = signUpData['student_id']
+    dept = signUpData['student_dept']
+    spass = signUpData['student_pass']
+    cspass = signUpData['student_cpass']
     if spass == cspass:
         student = {'student_id': sid, 'department': dept, 'password': spass, 'type': 'student'}
         server.user_collection.insert_one(student)
-        return redirect('/')
+        return "Credentials Accepted"
     else:
-        return redirect('/')
+        return "Invalid Sign Up Credentials", 401
     
 @app.route('/student-login', methods=['POST'])
 def student_login():
@@ -148,19 +149,20 @@ def add_employee():
     if epass == cepass:
         employee = {'employee_id':eid, 'department':dept, 'password':epass, 'type':'employee'}
         server.user_collection.insert_one(employee)
-        return redirect('/')
+        return "Credentials Accepted"
     else:
-        return redirect('/')
+        return "Invalid Sign Up Request", 401
     
 @app.route('/employee-login', methods=['POST'])
 def employee_login():
-    eid = request.form.get('employee-signin')
-    epass = request.form.get('employee-pass')
+    employee_data = request.get_json()
+    eid = employee_data['employee_id']
+    epass = employee_data['employee_pass']
     user = server.user_collection.find_one({'employee_id':eid, 'password':epass, 'type':'employee'})
     if user:
         return "Access Granted"
     else:
-        return redirect('/')
+        return "Access Denied"
 
 @app.route('/add-type', methods=['POST'])
 def add_type():
