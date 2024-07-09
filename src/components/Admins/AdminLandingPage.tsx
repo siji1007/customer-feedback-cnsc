@@ -21,9 +21,14 @@ const AdminLogins: React.FC = () => {
     navigate('/?showSecondSetOfButtons=true');
   };
 
+  const handleLogout = () => {
+    // Handle logout logic here, e.g., clear session, navigate to login page
+    setShowLoginForm(true); // Show login form again after logout
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="w-full h-20 bg-red-900 flex justify-between items-center px-4">
+        <header className="w-full h-20 bg-red-900 flex justify-between items-center px-4">
         <div className="flex items-center">
           <img src="src/assets/Reg_CNSC_Logo.png" alt="Logo" className="h-16 w-16 object-contain" />
           <div className="ml-4 flex flex-col justify-center">
@@ -31,6 +36,12 @@ const AdminLogins: React.FC = () => {
             <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Customer Feedback System</h1>
           </div>
         </div>
+        {/* Conditionally render logout button */}
+        {!showLoginForm && (
+          <button onClick={handleLogout} className="text-white hover:text-gray-300  font-bold ml-auto">
+            Logout
+          </button>
+        )}
       </header>
 
       <main className="flex-grow flex flex-col justify-center items-center overflow-auto">
