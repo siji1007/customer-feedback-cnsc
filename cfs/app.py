@@ -102,15 +102,16 @@ def delete_all():
 def showAdmin():
     return render_template('admin.html', selected_dept="OSSD", questionnnaires=showQuestionnaires(), departments=showDepts())
 
-@app.route('/verified-admin', methods=['POST'])
+@app.route('/verify-admin', methods=['POST'])
 def login():
-    userName = request.form.get('username')
-    passWord = request.form.get('password')
+    admin_data=request.get_json();
+    userName = admin_data['admin_username']
+    passWord = admin_data['admin_password']
     user = server.user_collection.find_one({'Username': userName, 'Password': passWord, 'Type': 'admin'})
     if user:
-        return render_template('admin.html', departments=showDepts())
+        return "Access Granted"
     else:
-        return redirect('/')
+        return "Invalid Credentials", 401
 
 @app.route('/add-dept', methods=['POST'])
 def add_dept():
@@ -122,13 +123,14 @@ def add_dept():
 
 @app.route('/verify_oh', methods=['POST'])
 def verify_oh():
-    dept = request.form.get('department')
-    pWord = request.form.get('ohpass')
-    user = server.user_collection.find_one({'Department': dept, 'Password': pWord})
+    officeHead_data = request.get_json()
+    dept = officeHead_data['officeHead_department']
+    pWord = officeHead_data['officeHead_password']
+    user = server.user_collection.find_one({'Department': dept, 'Password': pWord, 'Type': "office head"})
     if user:
         return "Access Granted"
     else:
-        return redirect('/')
+        return "Invalid Credentials", 401
 
 @app.route('/add-student', methods=['POST'])
 def add_student():
