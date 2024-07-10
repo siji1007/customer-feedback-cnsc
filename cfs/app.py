@@ -68,6 +68,13 @@ def get_service_dept():
     data_list = [dept for dept in data]
     departments = [dept["department"] for dept in data_list if dept["type"] == "service"]
     return jsonify({'departments': departments})
+
+@app.route('/all_department')
+def get_all_dept():
+    data = server.dept_collection.find()
+    data_list = [dept for dept in data]
+    departments = [dept["department"] for dept in data_list]
+    return jsonify({'departments': departments})
     
 @app.route('/insert', methods=['POST'])
 def insert():

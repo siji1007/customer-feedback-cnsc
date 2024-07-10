@@ -81,7 +81,7 @@ const AdminLogins: React.FC = () => {
   useEffect(()=>{
     const fetchDepartments = async () => {
       try{
-        const response = await axios.get('http://localhost:8082/service_department');
+        const response = await axios.get('http://localhost:8082/all_department');
         setDepartments(response.data.departments);
       }catch (error) {
         console.error('Error fetching departments: ', error);
