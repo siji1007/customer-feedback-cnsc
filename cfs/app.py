@@ -109,6 +109,14 @@ def delete_all():
 def showAdmin():
     return render_template('admin.html', selected_dept="OSSD", questionnnaires=showQuestionnaires(), departments=showDepts())
 
+@app.route('/get_acad_years', methods=['POST', 'GET'])
+def get_acad_years():
+    years = []
+    for year in range(2024, 2031):
+        years.append(str(year) + " - " + str(year + 1))
+
+    return years
+
 @app.route('/verify-admin', methods=['POST'])
 def login():
     admin_data=request.get_json();
