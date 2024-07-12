@@ -47,6 +47,7 @@ const AdminLogins: React.FC = () => {
   const handleAdminSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try{
+      setShowLoginForm(false);  //lagyan ko muna to d ko maaccess pag nag dedesign ako HAHAHAHHAHA 
       const response = await axios.post('http://localhost:8082/verify-admin', adminCredentials);
       if(response.data == "Access Granted"){
         setShowLoginForm(false);

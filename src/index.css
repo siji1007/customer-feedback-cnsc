@@ -12,6 +12,10 @@
   box-shadow: 0 4px 6px -1px rgba(128, 0, 0, 0.9), 0 2px 4px -1px rgba(128, 0, 0, 0.8);
 }
 
+plasmo-csui {
+  display: none; /* or other display rules */
+}
+
 
   
 
