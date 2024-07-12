@@ -23,6 +23,7 @@ const AdminLogins: React.FC = () => {
   // State to manage whether to show the login form or VPREPage
   const [showLoginForm, setShowLoginForm] = useState(true);
   const [adminCredentials, setAdminCredentials] = useState<AdminCredentials>({admin_username: '', admin_password: ''});
+  const [hasError, setHasError] = useState(false);
   const [departments, setDepartments] = useState<string[]>([]);
   const [officeHeadCredentials, setOfficeHeadCredentials] = useState<OfficeHeadCredentials>({officeHead_department: '', officeHead_password: ''});
 
@@ -49,14 +50,10 @@ const AdminLogins: React.FC = () => {
     try{
       setShowLoginForm(false);  //lagyan ko muna to d ko maaccess pag nag dedesign ako HAHAHAHHAHA 
       const response = await axios.post('http://localhost:8082/verify-admin', adminCredentials);
-      if(response.data == "Access Granted"){
-        setShowLoginForm(false);
-      }else {
-        alert(response.data);
-      }
+      setHasError(false);
+      setShowLoginForm(false);
     }catch(error){
-      console.error(error);
-      //Lagyan mo dito ng pupula yung entry or something pag mali yung password
+      setHasError(true);
     }
   };
 
@@ -68,14 +65,10 @@ const AdminLogins: React.FC = () => {
     event.preventDefault();
     try{
       const response = await axios.post('http://localhost:8082/verify_oh', officeHeadCredentials);
-      if(response.data == "Access Granted"){
-        alert(response.data);
-      }else {
-        alert(response.data);
-      }
+      setHasError(false);
+      alert(response.data);
     }catch(error){
-      console.error(error);
-      //Lagyan mo dito ng pupula yung entry or something pag mali yung password
+      setHasError(true);
     }
   };
 
@@ -117,12 +110,13 @@ const AdminLogins: React.FC = () => {
             <div className="bg-gray-200 border-stone-400 border rounded-lg shadow-md p-4 w-full max-w-md">
               <section className="flex justify-between items-center mb-4">
                 <label htmlFor="adminId" className="w-1/3 text-sm sm:text-base md:text-lg">Username</label>
-                <input type="text" id="adminId" className="w-2/3 rounded-lg border" name="admin_username" value={adminCredentials.admin_username} onChange={handleSignInChange} required />
+                <input type="text" id="adminId" className={`${"w-2/3 rounded-lg border"} ${hasError ? 'border-red-500':''}`} name="admin_username" value={adminCredentials.admin_username} onChange={handleSignInChange} required />
               </section>
               <section className="flex justify-between items-center mb-4">
                 <label htmlFor="password" className="w-1/3 text-sm sm:text-base md:text-lg">Password</label>
-                <input type="password" name="admin_password" id="password" className="w-2/3 rounded-lg border" value={adminCredentials.admin_password} onChange={handleSignInChange} required />
+                <input type="password" name="admin_password" id="password" className={`${"w-2/3 rounded-lg border"} ${hasError ? 'border-red-500':''}`} value={adminCredentials.admin_password} onChange={handleSignInChange} required />
               </section>
+              <h4 className={`${"text-sm text-center text-red-500"} ${hasError ? '':'hidden'}`}>Admin credentials not found</h4>
             </div>
             <button type="submit" className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full">PROCEED</button>
             <button type="button" className="mt-4 px-4 py-2 text-black w-full" onClick={handleBackClick}>Back</button>
@@ -146,8 +140,9 @@ const AdminLogins: React.FC = () => {
               </section>
               <section className="flex justify-between items-center mb-4">
                 <label htmlFor="password" className="w-1/3 text-sm sm:text-base md:text-lg m-2">Password</label>
-                <input type="password" id="password" className="w-2/3 rounded-lg border" name="officeHead_password" value={officeHeadCredentials.officeHead_password} onChange={handleOHSignInChange} required />
+                <input type="password" id="password" className={`${"w-2/3 rounded-lg border"} ${hasError ? 'border-red-500':''}`} name="officeHead_password" value={officeHeadCredentials.officeHead_password} onChange={handleOHSignInChange} required />
               </section>
+              <h4 className={`${"text-sm text-center text-red-500"} ${hasError ? '':'hidden'}`}>Incorrect Password. Please try again.</h4>
             </div>
             <button type="submit" className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full">PROCEED</button>
             <button type="button" className="mt-4 px-4 py-2 text-black w-full" onClick={handleBackClick}>Back</button>

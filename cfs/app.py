@@ -196,7 +196,7 @@ def employee_login():
     if user:
         return "Access Granted"
     else:
-        return "Access Denied"
+        return "Access Denied", 401
 
 @app.route('/add-type', methods=['POST'])
 def add_type():
