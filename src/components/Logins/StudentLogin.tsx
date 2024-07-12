@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 interface FormData {
@@ -23,6 +23,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   const [formData, setFormData] = useState<FormData>({student_id: '', password: ''});
   const [departments, setDepartments] = useState<string[]>([]);
   const [signUpData, setSignUpData] = useState<SignUpData>({student_id: '', student_dept: '', student_pass: '', student_cpass: ''});
+  const [hasError, setHasError] = useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -46,10 +47,10 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
     event.preventDefault();
     try{
       const response = await axios.post('http://localhost:8082/student-login', formData);
+      setHasError(false);
       onLoginSuccess();
     }catch(error){
-      console.error(error);
-      //Lagyan mo dito ng pupula yung entry or something pag mali yung password
+      setHasError(true);
     }
   };
 
@@ -57,10 +58,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
     event.preventDefault();
     try{
       const response = await axios.post('http://localhost:8082/add-student', signUpData);
-      //Lagay mo nalang dito yung landing page pagkatapos mag sign up
       setShowLoginForm(true);
-
-      
     } catch(error){
       console.error(error);
     }
@@ -124,14 +122,15 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
           <div className="bg-gray-200 border-stone-400 border rounded-lg shadow-md p-4 w-full max-w-md">
             <section className="flex justify-between items-center mb-4">
               <label htmlFor="studentId" className="w-1/3 text-sm sm:text-base md:text-lg">Student ID</label>
-              <input type="text" id="studentId" className="w-2/3 rounded-lg border" name="student_id" value={formData.student_id} onChange={handleChange} required />
+              <input type="text" id="studentId" className={`${"w-2/3 rounded-lg border"} ${hasError ? 'border-red-500' : ''}`} name="student_id" value={formData.student_id} onChange={handleChange} required />
             </section>
             <section className="flex justify-between items-center mb-4">
               <label htmlFor="password" className="w-1/3 text-sm sm:text-base md:text-lg">Password</label>
-              <input type="password" id="password" className="w-2/3 rounded-lg border" name="password" value={formData.password} onChange={handleChange} required />
+              <input type="password" id="password" className={`${"w-2/3 rounded-lg border"} ${hasError ? 'border-red-500' : ''}`} name="password" value={formData.password} onChange={handleChange} required />
             </section>
+            <h4 className={`${"text-sm text-center text-red-500"} ${hasError ? '' : 'hidden'}`}>User credentials not found</h4>
           </div>
-          <button type="submit" className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full" onClick={handleSignInClick}>Login</button>
+          <button type="submit" className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full">Login</button>
           <button type="button" className="mt-4 px-4 py-2 text-black w-full" onClick={handleBackClick}>Back</button>
         </form>
       )}
