@@ -28,7 +28,7 @@ def generate_question_id():
 def showQuestions(qid):
     question_data = server.questionnaire_collection.find({})
     question_list = [q for qd in question_data if qd.get('_id')==qid for q in qd.get('questions')]
-    questions = [(q["q_id"], q["question"]) for q in question_list]
+    questions = [(q["q_id"], q["question"], q["choices"]) for q in question_list]
     return questions
 
 @app.route('/')
@@ -196,9 +196,12 @@ def edit_questionnaire():
 def add_question():
     questionnaire_id=request.form.get('questionnaire_id')
     new_question=request.form.get('new_question')
+    questionChoices = request.form.getlist("choice[]")
+    print(questionChoices)
     new_question_data = {
         "q_id": generate_question_id(),
-        "question": new_question
+        "question": new_question,
+        "choices": questionChoices
     }
     server.questionnaire_collection.update_one({'_id': ObjectId(questionnaire_id)}, {'$push': {'questions': new_question_data}})
     return jsonify({'message': 'Data updated successfully'}), 200

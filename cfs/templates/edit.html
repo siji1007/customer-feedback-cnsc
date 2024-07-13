@@ -41,14 +41,40 @@
                 />
                 <label for="oe">Open-Ended</label><br />
             </div>
-            <div id="multiple_choice" style="display: none">
-                <input name="choice1" /><button type="button">-</button><br />
-                <input name="choice2" /><button type="button">-</button><br />
-                <input name="choice3" /><button type="button">-</button><br />
-                <input name="choice4" /><button type="button">-</button><br />
+            <div id="choices">
+                <div id="multiple_choice">
+                    <input type="text" name="choice[]" /><button
+                        id="_choice1"
+                        type="button"
+                        onclick="removeInput(this.id)"
+                    >
+                        -</button
+                    ><br />
+                    <input type="text" name="choice[]" /><button
+                        id="_choice2"
+                        type="button"
+                        onclick="removeInput(this.id)"
+                    >
+                        -</button
+                    ><br />
+                    <input type="text" name="choice[]" /><button
+                        id="_choice3"
+                        type="button"
+                        onclick="removeInput(this.id)"
+                    >
+                        -</button
+                    ><br />
+                    <input type="text" name="choice[]" /><button
+                        id="_choice4"
+                        type="button"
+                        onclick="removeInput(this.id)"
+                    >
+                        -</button
+                    ><br />
+                </div>
+                <button type="button" onclick="addChoice()">Add Choices</button>
             </div>
-            <button type="button" onclick="addChoice()">Add Choices</button
-            ><br />
+            <br />
             <button type="submit">Add Question</button>
         </form>
         <form action="/edit-question" method="post">
@@ -59,6 +85,11 @@
                 <li>
                     <input type="hidden" value="{{ question[0] }}" />
                     <textarea>{{ question[1] }}</textarea>
+                    {% for qSet in question[2] %}
+                    <ul>
+                        <li>{{ qSet }}</li>
+                    </ul>
+                    {% endfor %}
                 </li>
                 {% endfor %}
             </ol>
@@ -70,35 +101,42 @@
                 const container = document.getElementById("multiple_choice");
                 const newInput = document.createElement("input");
                 newInput.setAttribute("type", "text");
-                const numInputs = container.childElementCount;
-                newInput.setAttribute("id", `name${numInputs + 1}`);
-                newInput.setAttribute("name", "name[]");
+                const numInputs =
+                    container.getElementsByTagName("input").length;
+                newInput.setAttribute("id", `choice${numInputs + 1}`);
+                newInput.setAttribute("name", "choice[]");
                 const newButton = document.createElement("button");
                 newButton.setAttribute("type", "button");
+                newButton.setAttribute("id", `_choice${numInputs + 1}`);
+                newButton.setAttribute("onclick", "removeInput(this.id)");
                 newButton.textContent = "-";
                 container.appendChild(newInput);
                 container.appendChild(newButton);
                 container.appendChild(document.createElement("br"));
             }
 
-            function updateSelection() {
-                const mcButton = document.getElementById("mc");
-                const container = document.getElementById("multiple_choice");
-                if (mcButton.checked) {
-                    container.style.display = "block";
-                } else {
-                    container.style.display = "none";
-                }
+            function removeInput(elemId) {
+                const buttonClicked = document.getElementById(elemId);
+                const inputToRemove = buttonClicked.previousElementSibling;
+                const brToRemove = buttonClicked.nextElementSibling;
+                inputToRemove.remove();
+                brToRemove.remove();
+                buttonClicked.remove();
             }
 
-            updateSelection();
-
-            const radioButtons = document.querySelectorAll(
+            const questionTypeRadio = document.querySelectorAll(
                 'input[name="question_type"]',
             );
+            const choicesDiv = document.getElementById("choices");
 
-            radioButtons.forEach((radioButton) => {
-                radioButton.onchange = updateSelection;
+            questionTypeRadio.forEach((radio) => {
+                radio.addEventListener("change", function () {
+                    if (this.value === "Multiple Choice") {
+                        choicesDiv.style.display = "block"; // Show choices for multiple choice
+                    } else {
+                        choicesDiv.style.display = "none"; // Hide choices for other types
+                    }
+                });
             });
         </script>
     </body>
