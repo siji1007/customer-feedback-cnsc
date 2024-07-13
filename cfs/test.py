@@ -45,7 +45,7 @@ def flask_mongodb_atlas():
         return render_template('index.html', options=options, optionUnit=optionUnit, optionAll=optionAll, clientTypes = clientTypes)
     except:
         return render_template('index.html')
-    
+
 @app.route('/insert', methods=['POST'])
 def insert():
     fullname = request.form.get('fullname')
@@ -64,12 +64,12 @@ def insert_dept():
     data = {'Full Name': fullname, 'Username':username, 'Password': password, 'Department': department, 'Type': 'office head'}
     server.user_collection.insert_one(data)
     return redirect('/')
-    
+
 @app.route('/show', methods=['POST'])
 def show():
     data = list(server.user_collection.find())
     return render_template('show.html', data=data)
-    
+
 @app.route('/delete_all', methods=['POST'])
 def delete_all():
     server.user_collection.delete_many({})
@@ -119,7 +119,7 @@ def add_student():
         return redirect('/')
     else:
         return redirect('/')
-    
+
 @app.route('/student-login', methods=['POST'])
 def student_login():
     sid = request.form.get('student-signin')
@@ -129,7 +129,7 @@ def student_login():
         return "Access Granted"
     else:
         return redirect('/')
-    
+
 @app.route('/add-employee', methods=['POST'])
 def add_employee():
     eid = request.form.get('employee_id')
@@ -142,7 +142,7 @@ def add_employee():
         return redirect('/')
     else:
         return redirect('/')
-    
+
 @app.route('/employee-login', methods=['POST'])
 def employee_login():
     eid = request.form.get('employee-signin')
@@ -184,10 +184,13 @@ def add_questionnaire():
 
 @app.route("/edit-questionnaire", methods=['POST'])
 def edit_questionnaire():
-    qid=request.form.get('qid')
-    qtitle=request.form.get('qtitle')
-    qdept=request.form.get('qdept')
-    return render_template('edit.html', questionnaire_id=qid, department=qdept, title=qtitle, questions=showQuestions(ObjectId(qid)))
+    try:
+        qid=request.form.get('qid')
+        qtitle=request.form.get('qtitle')
+        qdept=request.form.get('qdept')
+        return render_template('edit.html', questionnaire_id=qid, department=qdept, title=qtitle, questions=showQuestions(ObjectId(qid)))
+    except:
+        return render_template('edit.html', questionnaire_id=qid, department=qdept, title=qtitle)
 
 @app.route("/add-question", methods=['POST'])
 def add_question():

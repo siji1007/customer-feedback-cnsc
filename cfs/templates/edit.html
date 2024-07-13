@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
     <head>
         <title>CFS Questionnaire Control</title>
@@ -7,24 +7,99 @@
         <h2>Questionnaire Editor</h2>
         <h4>Department: {{ department }}</h4>
         <h4>Title: {{ title }}</h4>
-        <form action="/add-question" method="post">
+        <form action="/add-question" method="post" id="question_form">
             <h5>Question Registry</h5>
-            <input name="questionnaire_id" value="{{ questionnaire_id }}"/>
-            <textarea name="new_question"></textarea>
+            <input name="questionnaire_id" value="{{ questionnaire_id }}" />
+            <textarea name="new_question"></textarea><br />
+            <div>
+                <input
+                    type="radio"
+                    id="mc"
+                    name="question_type"
+                    value="Multiple Choice"
+                />
+                <label for="mc">Multiple Choice</label><br />
+                <input
+                    type="radio"
+                    id="ls"
+                    name="question_type"
+                    value="Likert Scale"
+                />
+                <label for="ls">Likert Scale</label><br />
+                <input
+                    type="radio"
+                    id="rate"
+                    name="question_type"
+                    value="Ratings"
+                />
+                <label for="rate">Ratings</label><br />
+                <input
+                    type="radio"
+                    id="oe"
+                    name="question_type"
+                    value="Open-Ended"
+                />
+                <label for="oe">Open-Ended</label><br />
+            </div>
+            <div id="multiple_choice" style="display: none">
+                <input name="choice1" /><button type="button">-</button><br />
+                <input name="choice2" /><button type="button">-</button><br />
+                <input name="choice3" /><button type="button">-</button><br />
+                <input name="choice4" /><button type="button">-</button><br />
+            </div>
+            <button type="button" onclick="addChoice()">Add Choices</button
+            ><br />
             <button type="submit">Add Question</button>
         </form>
         <form action="/edit-question" method="post">
             <h5>Question Editor</h5>
-            <input value="{{ questionnaire_id }}"/>
+            <input value="{{ questionnaire_id }}" />
             <ol>
                 {% for question in questions %}
-                    <li>
-                        <input type="hidden" value="{{ question[0] }}"/>
-                        <textarea>{{ question[1] }}</textarea>
-                    </li>
+                <li>
+                    <input type="hidden" value="{{ question[0] }}" />
+                    <textarea>{{ question[1] }}</textarea>
+                </li>
                 {% endfor %}
             </ol>
             <button type="submit">Confirm</button>
         </form>
+
+        <script>
+            function addChoice() {
+                const container = document.getElementById("multiple_choice");
+                const newInput = document.createElement("input");
+                newInput.setAttribute("type", "text");
+                const numInputs = container.childElementCount;
+                newInput.setAttribute("id", `name${numInputs + 1}`);
+                newInput.setAttribute("name", "name[]");
+                const newButton = document.createElement("button");
+                newButton.setAttribute("type", "button");
+                newButton.textContent = "-";
+                container.appendChild(newInput);
+                container.appendChild(newButton);
+                container.appendChild(document.createElement("br"));
+            }
+
+            function updateSelection() {
+                const mcButton = document.getElementById("mc");
+                const container = document.getElementById("multiple_choice");
+                if (mcButton.checked) {
+                    container.style.display = "block";
+                } else {
+                    container.style.display = "none";
+                }
+            }
+
+            updateSelection();
+
+            const radioButtons = document.querySelectorAll(
+                'input[name="question_type"]',
+            );
+
+            radioButtons.forEach((radioButton) => {
+                radioButton.onchange = updateSelection;
+            });
+        </script>
     </body>
 </html>
