@@ -24,7 +24,7 @@ const StartingPage: React.FC = () => {
   return (
     <div className="flex h-screen flex-col md:flex-row">
       <div className="left-side flex-1 h-1/2 md:h-full bg-red-800 flex justify-center items-center p-4 md:p-0 md:order-2">
-        <img src="src/assets/Reg_CNSC_Logo.png" alt="CNSC LOGO" className="max-w-full max-h-full" />
+        <img src="src/assets/cnsc_logo.png" alt="CNSC LOGO" className="max-w-full max-h-full" />
       </div>
       <div className="right-side flex-1 h-1/2 md:h-full bg-zinc-50 flex justify-center items-center flex-col p-4 md:p-0 md:order-1">
         <p className="text-center">Camarines Norte State College</p>

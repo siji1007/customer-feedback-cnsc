@@ -22,7 +22,7 @@ const LandingPage: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <header className="w-full h-20 bg-red-900 flex justify-between items-center px-4">
         <div className="flex items-center">
-          <img src="src/assets/Reg_CNSC_Logo.png" alt="Logo" className="h-16 w-16 object-contain" />
+          <img src="src/assets/cnsc_logo.png" alt="Logo" className="h-16 w-16 object-contain" />
           <div className="ml-4 flex flex-col justify-center">
             <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Camarines Norte State College</h1>
             <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Customer Feedback System</h1>
