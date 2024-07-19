@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { CheckIcon } from '@heroicons/react/24/solid'; 
-
+import { CheckIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/solid'; // Import QuestionMarkCircleIcon
 
 const PageDots: React.FC<{ currentPage: number; totalPages: number }> = ({ currentPage, totalPages }) => {
     return (
@@ -16,14 +15,14 @@ const PageDots: React.FC<{ currentPage: number; totalPages: number }> = ({ curre
             </div>
 
             {/* Dots */}
-            <div className="flex space-x-2 ">
+            <div className="flex space-x-2">
                 {[...Array(totalPages)].map((_, index) => (
                     <div
                         key={index}
                         className={`relative w-4 h-4 rounded-full ${index < currentPage ? 'bg-black' : 'bg-gray-300'}`}
                     >
                         {index < currentPage && (
-                            <CheckIcon className="absolute inset-0 w-4 h-4 text-white mx-auto my-auto " />
+                            <CheckIcon className="absolute inset-0 w-4 h-4 text-white mx-auto my-auto" />
                         )}
                     </div>
                 ))}
@@ -35,6 +34,7 @@ const PageDots: React.FC<{ currentPage: number; totalPages: number }> = ({ curre
 const SurveyContents: React.FC = () => {
     const [positions, setPositions] = useState<{ [key: number]: number }>({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
     const [currentPage, setCurrentPage] = useState(1);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const questions = [
         "Ang mga parakaran at iba't ibang kursong mapag-aaralan sa Kolehiyo ay malawak na naipapabatid sa pamamagitan ng 'bronchures', 'pamphlets' at mga lathala at anunsiyong nakapaskil sa 'bulletin boad'",
@@ -100,6 +100,10 @@ const SurveyContents: React.FC = () => {
         console.log('Form Submitted with values:', positions);
     };
 
+    const handleModalToggle = () => {
+        setIsModalOpen(!isModalOpen); // Toggle modal visibility
+    };
+
     const renderQuestions = () => {
         const startIndex = (currentPage - 1) * 2;
         const endIndex = Math.min(startIndex + 2, questions.length);
@@ -108,7 +112,8 @@ const SurveyContents: React.FC = () => {
             const questionIndex = startIndex + index + 1;
             return (
                 <form key={questionIndex} className="bg-gray-100 p-4 rounded-md shadow-md">
-                    <p className="text-xxs md:text-xl lg:text-2xl mb-4 shadow-lg">{question}</p>
+                 <p className="text-xs md:text-xs lg:text-2xl mb-4 shadow-lg">{question}</p>
+
                     <div
                         className="relative w-full h-16 md:h-20"
                         onMouseMove={(e) => handleDrag(e, questionIndex)}
@@ -130,7 +135,7 @@ const SurveyContents: React.FC = () => {
     };
 
     return (
-        <div className="p-4 md:p-6 lg:p-8 mx-auto max-w-screen-md">
+        <div className="p-4 md:p-6 lg:p-8 mx-auto max-w-screen-md relative">
             <div className="flex flex-col space-y-4">
                 {renderQuestions()}
                 {currentPage === totalPages && (
@@ -173,6 +178,71 @@ const SurveyContents: React.FC = () => {
                         </button>
                     )}
                 </div>
+            </div>
+            {isModalOpen && (
+                <>
+                   <div
+                    className="fixed inset-0 bg-black opacity-50 z-30"
+                            onClick={handleModalToggle}
+                        ></div>
+                    <div className="fixed bottom-10 right-10 w-64 bg-white p-4 rounded-lg shadow-lg z-50" >
+                    <button
+                        onClick={handleModalToggle}
+                        className="absolute top-2 right-2 p-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+
+                    <p className='bg-gray-100 rounded-lg border p-4 text-sm md:text-base lg:text-lg'>
+            We value your feedback! Please share your experience with School Student Services by rating us on a scale of 5 (Very Satisfied) to 1 (Very Dissatisfied). Your honest feedback will help us improve our services to better meet your needs.
+          </p>
+
+          <div className='flex items-center mt-4'>
+            <label className="text-sm md:text-base lg:text-lg">5</label>
+            <div className='w-4 h-4 bg-green-800 ml-2'></div>
+            <span className='ml-2 text-sm md:text-base lg:text-lg'>Very Satisfied</span>
+          </div>
+
+          <div className='flex items-center mt-4'>
+            <label className="text-sm md:text-base lg:text-lg">4</label>
+            <div className='w-4 h-4 bg-green-500 ml-2'></div>
+            <span className='ml-2 text-sm md:text-base lg:text-lg'>Satisfied</span>
+          </div>
+
+          <div className='flex items-center mt-4'>
+            <label className="text-sm md:text-base lg:text-lg">3</label>
+            <div className='w-4 h-4 bg-yellow-300 ml-2'></div>
+            <span className='ml-2 text-sm md:text-base lg:text-lg'>Neutral</span>
+          </div>
+
+          <div className='flex items-center mt-4'>
+            <label className="text-sm md:text-base lg:text-lg">2</label>
+            <div className='w-4 h-4 bg-red-400 ml-2'></div>
+            <span className='ml-2 text-sm md:text-base lg:text-lg'>Dissatisfied</span>
+          </div>
+
+          <div className='flex items-center mt-4'>
+            <label className="text-sm md:text-base lg:text-lg">1</label>
+            <div className='w-4 h-4 bg-red-700 ml-2'></div>
+            <span className='ml-2 text-sm md:text-base lg:text-lg'>Very Dissatisfied</span>
+          </div>
+
+                </div>
+          </>
+            )}
+            
+            {/* Floating button positioned at the bottom of the viewport */}
+            <div className={`fixed p-2 bottom-0 right-2 z-${isModalOpen ? '50' : '10'}`}>
+                <button
+                  onClick={handleModalToggle}
+                    style={{ backgroundColor: '#800000', color: 'white' }}
+                    className="text-white p-1 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                </button>
             </div>
         </div>
     );

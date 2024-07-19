@@ -20,7 +20,7 @@ const Settings: React.FC = () => {
         <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Settings</h1>
             <div className="flex items-center mb-4 rounded-lg p-2 bg-red-800">
-                <button className={`px-4 py-2 rounded-lg text-white ${activeTab === 'Department' ? 'bg-white text-red-900 font-bold' : ' hover:bg-white hover:text-red-800'}`} onClick={() => setActiveTab('Department')}>
+                <button className={`px-4 py-2 rounded-lg text-white ${activeTab === 'Department' ? 'bg-white text-black font-bold' : ' hover:bg-white hover:text-red-800'}`} onClick={() => setActiveTab('Department')}>
                     Department
                 </button>
                 <button className={`px-4 py-2 rounded-lg text-white ml-2 ${activeTab === 'Questions' ? 'bg-white text-red-900 font-bold' : 'hover:bg-white hover:text-red-800'}`} onClick={() => setActiveTab('Questions')}>
