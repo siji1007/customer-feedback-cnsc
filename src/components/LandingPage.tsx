@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaFacebook, FaTwitter } from 'react-icons/fa';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import StudentLogin from './Logins/StudentLogin';
 import EmployeeLogin from './Logins/EmployeeLogin';
 import OtherLogin from './Logins/OthersLogin';
@@ -30,25 +30,24 @@ const LandingPage: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-grow flex flex-col justify-center items-center overflow-auto">
+      <main className="flex-grow flex flex-col justify-center items-center py-10 ">
         {!showSurveyForm && selectedLogin === '' && (
-          <nav className="flex flex-col p-10 space-y-4 ">
-            <h1 className="m-10 text-2xl md:text-3xl lg:text-4xl font-bold">CUSTOMERS</h1>
-            <button className="bg-red-900 text-white py-2 px-4 rounded-full" onClick={() => handleLoginSelection('student')}>
+          <nav className="flex flex-col space-y-4  p-10 mt-10 shadow-lg" >
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">CUSTOMERS</h1>
+            <button className="bg-red-900 text-white py-2 px-4 rounded-lg" onClick={() => handleLoginSelection('student')}>
               Student
             </button>
-            <button className="bg-red-900 text-white py-2 px-4 rounded-full" onClick={() => handleLoginSelection('employee')}>
+            <button className="bg-red-900 text-white py-2 px-4 rounded-lg" onClick={() => handleLoginSelection('employee')}>
               Employee
             </button>
-            <button className="bg-red-900 text-white py-2 px-4 rounded-full" onClick={() => handleLoginSelection('other')}>
+            <button className="bg-red-900 text-white py-2 px-4 rounded-lg" onClick={() => handleLoginSelection('other')}>
               Others
             </button>
 
-
-            <Link to="/?showTwoButtons=false" className='text-center'>
-            <button className="text-black text-sm sm:text-base md:text-lg lg:text-xl " >
-              Back
-            </button>
+            <Link to="/?showTwoButtons=false" className="text-center">
+              <button className="text-black text-sm sm:text-base md:text-lg lg:text-xl">
+                Back
+              </button>
             </Link>
           </nav>
         )}
@@ -58,7 +57,7 @@ const LandingPage: React.FC = () => {
         {showSurveyForm && <SurveyForm />}
       </main>
 
-      <footer className="w-full h-33 bg-red-900 flex justify-between p-2">
+      <footer className="w-full h-33 bg-red-900 bottom-0 left-0 flex justify-between p-2">
         <div className="flex-1">
           <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Contact Information</h1>
           <p className="text-white text-xs sm:text-xxs md:text-xs lg:text-xm">

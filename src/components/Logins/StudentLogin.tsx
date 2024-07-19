@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 interface FormData {
@@ -46,6 +46,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   const handleStudentSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try{
+      onLoginSuccess();
       const response = await axios.post('http://localhost:8082/student-login', formData);
       setHasError(false);
       onLoginSuccess();
