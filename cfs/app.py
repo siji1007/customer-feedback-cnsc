@@ -12,11 +12,12 @@ from bson.objectid import ObjectId
 from flask_cors import CORS
 import server, json
 import os, time, random
-
+from hashlib import sha256
 
 app = Flask(__name__)
 CORS(app)
 
+# Non Routing Functions
 def showDepts():
     depts = server.dept_collection.find()
     dept_list = [dept for dept in depts]
@@ -40,6 +41,18 @@ def showQuestions(qid):
     questions = [(q["q_id"], q["question"]) for q in question_list]
     return questions
 
+def encryptPass(password):
+    if len(password) < 8:
+        return "Invalid Password", 401
+
+    hash = verifyPass(password)
+    return hash
+
+def verifyPass(pword):
+    hash = sha256(pword.encode('utf-8')).hexdigest()
+    return hash
+
+#Routing Functions
 @app.route('/')
 def flask_mongodb_atlas():
     try:
@@ -55,27 +68,6 @@ def flask_mongodb_atlas():
     except:
         return render_template('index.html')
 
-@app.route('/academic_department')
-def get_acad_dept():
-    data = server.dept_collection.find()
-    data_list = [dept for dept in data]
-    departments = [dept["department"] for dept in data_list if dept["type"] == "academic"]
-    return jsonify({'departments': departments})
-
-@app.route('/service_department')
-def get_service_dept():
-    data = server.dept_collection.find()
-    data_list = [dept for dept in data]
-    departments = [dept["department"] for dept in data_list if dept["type"] == "service"]
-    return jsonify({'departments': departments})
-
-@app.route('/all_department')
-def get_all_dept():
-    data = server.dept_collection.find()
-    data_list = [dept for dept in data]
-    departments = [dept["department"] for dept in data_list]
-    return jsonify({'departments': departments})
-    
 @app.route('/insert', methods=['POST'])
 def insert():
     fullname = request.form.get('fullname')
@@ -94,12 +86,12 @@ def insert_dept():
     data = {'Full Name': fullname, 'Username':username, 'Password': password, 'Department': department, 'Type': 'office head'}
     server.user_collection.insert_one(data)
     return redirect('/')
-    
+
 @app.route('/show', methods=['POST'])
 def show():
     data = list(server.user_collection.find())
     return render_template('show.html', data=data)
-    
+
 @app.route('/delete_all', methods=['POST'])
 def delete_all():
     server.user_collection.delete_many({})
@@ -109,25 +101,6 @@ def delete_all():
 def showAdmin():
     return render_template('admin.html', selected_dept="OSSD", questionnnaires=showQuestionnaires(), departments=showDepts())
 
-@app.route('/get_acad_years', methods=['POST', 'GET'])
-def get_acad_years():
-    years = []
-    for year in range(2024, 2031):
-        years.append(str(year) + " - " + str(year + 1))
-
-    return years
-
-@app.route('/verify-admin', methods=['POST'])
-def login():
-    admin_data=request.get_json();
-    userName = admin_data['admin_username']
-    passWord = admin_data['admin_password']
-    user = server.user_collection.find_one({'Username': userName, 'Password': passWord, 'Type': 'admin'})
-    if user:
-        return "Access Granted"
-    else:
-        return "Invalid Credentials", 401
-
 @app.route('/add-dept', methods=['POST'])
 def add_dept():
     deptName = request.form.get('dept-name')
@@ -136,82 +109,11 @@ def add_dept():
     server.dept_collection.insert_one(data)
     return redirect('/')
 
-@app.route('/verify_oh', methods=['POST'])
-def verify_oh():
-    officeHead_data = request.get_json()
-    dept = officeHead_data['officeHead_department']
-    pWord = officeHead_data['officeHead_password']
-    user = server.user_collection.find_one({'Department': dept, 'Password': pWord, 'Type': "office head"})
-    if user:
-        return "Access Granted"
-    else:
-        return "Invalid Credentials", 401
-
-@app.route('/add-student', methods=['POST'])
-def add_student():
-    signUpData = request.get_json()
-    sid = signUpData['student_id']
-    dept = signUpData['student_dept']
-    spass = signUpData['student_pass']
-    cspass = signUpData['student_cpass']
-    if spass == cspass:
-        student = {'student_id': sid, 'department': dept, 'password': spass, 'type': 'student'}
-        server.user_collection.insert_one(student)
-        return "Credentials Accepted"
-    else:
-        return "Invalid Sign Up Credentials", 401
-    
-@app.route('/student-login', methods=['POST'])
-def student_login():
-    data = request.get_json()
-    sid = data['student_id']
-    spass = data['password']
-    user = server.user_collection.find_one({'student_id': sid, 'password': spass, 'type': 'student'})
-    if user:
-        return "Access Granted"
-    else:
-        return "Invalid credentials.", 401
-        #return redirect('/')
-    
-@app.route('/add-employee', methods=['POST'])
-def add_employee():
-    employee_creds = request.get_json()
-    eid = employee_creds['employee_id']
-    dept = employee_creds['employee_dept']
-    epass = employee_creds['employee_pass']
-    cepass = employee_creds['employee_cpass']
-    if epass == cepass:
-        employee = {'employee_id':eid, 'department':dept, 'password':epass, 'type':'employee'}
-        server.user_collection.insert_one(employee)
-        return "Credentials Accepted"
-    else:
-        return "Invalid Sign Up Request", 401
-    
-@app.route('/employee-login', methods=['POST'])
-def employee_login():
-    employee_data = request.get_json()
-    eid = employee_data['employee_id']
-    epass = employee_data['employee_pass']
-    user = server.user_collection.find_one({'employee_id':eid, 'password':epass, 'type':'employee'})
-    if user:
-        return "Access Granted"
-    else:
-        return "Access Denied", 401
-
 @app.route('/add-type', methods=['POST'])
 def add_type():
     type_name = request.form.get('type_input')
     server.client_type_collection.insert_one({'types':type_name})
     return redirect('/')
-
-@app.route('/client-login', methods=['POST'])
-def login_client():
-    client_data = request.get_json()
-    client_name = client_data['client_name']
-    client_addr = client_data['client_addr']
-    client_type = client_data['client_type']
-    client = server.user_collection.insert_one({'name': client_name, 'address': client_addr, 'type': client_type})
-    return "Access Granted"
 
 @app.route("/select-dept", methods=['POST'])
 def select_department():
@@ -246,9 +148,118 @@ def add_question():
     server.questionnaire_collection.update_one({'_id': ObjectId(questionnaire_id)}, {'$push': {'questions': new_question_data}})
     return jsonify({'message': 'Data updated successfully'}), 200
 
-@app.route('/register', methods=['POST'])
-def register():
-    pass
+# JSON-based
+
+@app.route('/verify-admin', methods=['POST'])
+def login():
+    admin_data=request.get_json();
+    userName = admin_data['admin_username']
+    passWord = admin_data['admin_password']
+    user = server.user_collection.find_one({'Username': userName, 'Password': passWord, 'Type': 'admin'})
+    if user:
+        return "Access Granted"
+    else:
+        return "Invalid Credentials", 401
+
+@app.route('/verify_oh', methods=['POST'])
+def verify_oh():
+    officeHead_data = request.get_json()
+    dept = officeHead_data['officeHead_department']
+    pWord = officeHead_data['officeHead_password']
+    user = server.user_collection.find_one({'Department': dept, 'Password': pWord, 'Type': "office head"})
+    if user:
+        return "Access Granted"
+    else:
+        return "Invalid Credentials", 401
+
+@app.route('/add-student', methods=['POST'])
+def add_student():
+    signUpData = request.get_json()
+    sid = signUpData['student_id']
+    dept = signUpData['student_dept']
+    spass = signUpData['student_pass']
+    cspass = signUpData['student_cpass']
+    if spass == cspass:
+        student = {'student_id': sid, 'department': dept, 'password': encryptPass(spass), 'type': 'student'}
+        server.user_collection.insert_one(student)
+        return "Credentials Accepted"
+    else:
+        return "Invalid Sign Up Credentials", 401
+
+@app.route('/student-login', methods=['POST'])
+def student_login():
+    data = request.get_json()
+    sid = data['student_id']
+    spass = data['password']
+    user = server.user_collection.find_one({'student_id': sid, 'password': verifyPass(spass), 'type': 'student'})
+    if user:
+        return "Access Granted"
+    else:
+        return "Invalid credentials.", 401
+        #return redirect('/')
+
+@app.route('/add-employee', methods=['POST'])
+def add_employee():
+    employee_creds = request.get_json()
+    eid = employee_creds['employee_id']
+    dept = employee_creds['employee_dept']
+    epass = employee_creds['employee_pass']
+    cepass = employee_creds['employee_cpass']
+    if epass == cepass:
+        employee = {'employee_id':eid, 'department':dept, 'password':encryptPass(epass), 'type':'employee'}
+        server.user_collection.insert_one(employee)
+        return "Credentials Accepted"
+    else:
+        return "Invalid Sign Up Request", 401
+
+@app.route('/employee-login', methods=['POST'])
+def employee_login():
+    employee_data = request.get_json()
+    eid = employee_data['employee_id']
+    epass = employee_data['employee_pass']
+    user = server.user_collection.find_one({'employee_id':eid, 'password':verifyPass(epass), 'type':'employee'})
+    if user:
+        return "Access Granted"
+    else:
+        return "Access Denied", 401
+
+@app.route('/client-login', methods=['POST'])
+def login_client():
+    client_data = request.get_json()
+    client_name = client_data['client_name']
+    client_addr = client_data['client_addr']
+    client_type = client_data['client_type']
+    client = server.user_collection.insert_one({'name': client_name, 'address': client_addr, 'type': client_type})
+    return "Access Granted"
+
+@app.route('/all_department')
+def get_all_dept():
+    data = server.dept_collection.find()
+    data_list = [dept for dept in data]
+    departments = [dept["department"] for dept in data_list]
+    return jsonify({'departments': departments})
+
+@app.route('/academic_department')
+def get_acad_dept():
+    data = server.dept_collection.find()
+    data_list = [dept for dept in data]
+    departments = [dept["department"] for dept in data_list if dept["type"] == "academic"]
+    return jsonify({'departments': departments})
+
+@app.route('/service_department')
+def get_service_dept():
+    data = server.dept_collection.find()
+    data_list = [dept for dept in data]
+    departments = [dept["department"] for dept in data_list if dept["type"] == "service"]
+    return jsonify({'departments': departments})
+
+@app.route('/get_acad_years', methods=['POST', 'GET'])
+def get_acad_years():
+    years = []
+    for year in range(2024, 2031):
+        years.append(str(year) + " - " + str(year + 1))
+
+    return years
 
 if __name__ == '__main__':
     app.run(port="8082")
