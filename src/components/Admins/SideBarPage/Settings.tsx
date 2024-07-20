@@ -7,6 +7,7 @@ const Settings: React.FC = () => {
   const [questionnaires, setQuestionnaires] = useState<string[]>([]);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   type Office = (typeof departments)[number];
+  type Questionnaire = (typeof questionnaires)[number];
 
   const handleClick = (department) => {
     setSelectedOffice(department);
@@ -38,79 +39,9 @@ const Settings: React.FC = () => {
     fetchQuestionnares("ICS");
   }, []);
 
-  const questionsData: Record<Office, string[]> = {
-    "Office 1": [
-      "skdjflksjd",
-      "Q2 for Office 1",
-      "Q3 for Office 1",
-      "Q4 for Office 1",
-      "Q5 for Office 1",
-    ],
-    "Office 2": [
-      "Q1 for Office 2",
-      "Q2 for Office 2",
-      "Q3 for Office 2",
-      "Q4 for Office 2",
-      "Q5 for Office 2",
-    ],
-    "Office 3": [
-      "Q1 for Office 3",
-      "Q2 for Office 3",
-      "Q3 for Office 3",
-      "Q4 for Office 3",
-      "Q5 for Office 3",
-    ],
-    "Office 4": [
-      "Q1 for Office 4",
-      "Q2 for Office 4",
-      "Q3 for Office 4",
-      "Q4 for Office 4",
-      "Q5 for Office 4",
-    ],
-    "Office 5": [
-      "Q1 for Office 5",
-      "Q2 for Office 5",
-      "Q3 for Office 5",
-      "Q4 for Office 5",
-      "Q5 for Office 5",
-    ],
-    "Office 6": [
-      "Q1 for Office 6",
-      "Q2 for Office 6",
-      "Q3 for Office 6",
-      "Q4 for Office 6",
-      "Q5 for Office 6",
-    ],
-    "Office 7": [
-      "Q1 for Office 7",
-      "Q2 for Office 7",
-      "Q3 for Office 7",
-      "Q4 for Office 7",
-      "Q5 for Office 7",
-    ],
-    "Office 8": [
-      "Q1 for Office 8",
-      "Q2 for Office 8",
-      "Q3 for Office 8",
-      "Q4 for Office 8",
-      "Q5 for Office 8",
-    ],
-    "Office 9": [
-      "Q1 for Office 9",
-      "Q2 for Office 9",
-      "Q3 for Office 9",
-      "Q4 for Office 9",
-      "Q5 for Office 9",
-    ],
-    "Office 10": [
-      "Q1 for Office 10",
-      "Q2 for Office 10",
-      "Q3 for Office 10",
-      "Q4 for Office 10",
-      "Q5 for Office 10",
-    ],
-  };
   const [selectedOffice, setSelectedOffice] = useState<Office>("ICS");
+  const [selectedQuestionnaire, setSelectedQuestionnaire] =
+    useState<Questionnaire>();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -143,22 +74,15 @@ const Settings: React.FC = () => {
 
             {/* Questions Section */}
             <div className="md:w-3/4 w-full p-4 overflow-y-auto text-center">
-              <h2 className="font-bold mb-4">Questions for {selectedOffice}</h2>
+              <h2 className="font-bold mb-4">
+                Questionnaires for {selectedOffice}
+              </h2>
               <ul className="space-y-2">
-                {/*
-                {questionsData[selectedOffice].map((question, index) => (
-                  <li
-                    key={index}
-                    className="mb-2 text-ellipsis overflow-hidden whitespace-nowrap"
-                  >
-                    {question}
-                  </li>
-                ))}
-                */}
                 {questionnaires.map((questionnaire, index) => (
                   <li
                     key={index}
-                    className="mb-2 text-ellipsis overflow-hidden whitespace-nowrap"
+                    className={`mb-2 text-ellipsis overflow-hidden whitespace-nowrap cursor-pointer p-2 ${selectedQuestionnaire === questionnaire ? "bg-gray-200" : "hover:bg-gray-100"}`}
+                    onClick={() => setSelectedQuestionnaire(questionnaire)}
                   >
                     {questionnaire}
                   </li>
