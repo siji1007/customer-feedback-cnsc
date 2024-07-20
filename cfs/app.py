@@ -24,11 +24,6 @@ def showDepts():
     departments = [dept["department"] for dept in dept_list]
     return departments
 
-def showQuestionnaires(sd = "OSSD"):
-    questionnaire_data = server.questionnaire_collection.find()
-    questionnaire_list = [q for q in questionnaire_data]
-    questionnaires = [(q["_id"],q["title"]) for q in questionnaire_list if q["department"] == sd]
-    return questionnaires
 
 def generate_question_id():
     timestamp = int(time.time())
@@ -99,7 +94,7 @@ def delete_all():
 
 @app.route('/admin')
 def showAdmin():
-    return render_template('admin.html', selected_dept="OSSD", questionnnaires=showQuestionnaires(), departments=showDepts())
+    return render_template('admin.html', selected_dept="OSSD", departments=showDepts())
 
 @app.route('/add-dept', methods=['POST'])
 def add_dept():
@@ -119,7 +114,7 @@ def add_type():
 def select_department():
     try:
         selected_dept = request.form.get('dept_select')
-        return render_template('admin.html', selected_dept=selected_dept, questionnaires=showQuestionnaires(selected_dept), departments=showDepts())
+        return render_template('admin.html', selected_dept=selected_dept, departments=showDepts())
     except:
         return render_template('admin.html')
 
@@ -260,6 +255,14 @@ def get_acad_years():
         years.append(str(year) + " - " + str(year + 1))
 
     return years
+
+@app.route('/flash-questionnaire', methods=['POST'])
+def showQuestionnaires():
+    questionnaire_data_ = request.get_json()
+    questionnaire_data = server.questionnaire_collection.find()
+    questionnaire_list = [q for q in questionnaire_data]
+    questionnaires = [str(q["title"]) for q in questionnaire_list if q["department"] == questionnaire_data_['sDepartment']]
+    return questionnaires
 
 if __name__ == '__main__':
     app.run(port="8082")
