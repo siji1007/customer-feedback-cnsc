@@ -31,8 +31,9 @@ const LandingPage: React.FC = () => {
       </header>
 
       <main className="flex-grow flex flex-col justify-center items-center overflow-auto">
+        
         {!showSurveyForm && selectedLogin === '' && (
-          <nav className="flex flex-col space-y-4  p-10 mt-10 shadow-lg" >
+          <nav className="flex flex-col space-y-4 p-10 mt-10 shadow-lg">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">CUSTOMERS</h1>
             <button className="bg-red-900 text-white py-2 px-4 rounded-lg" onClick={() => handleLoginSelection('student')}>
               Student
@@ -57,7 +58,7 @@ const LandingPage: React.FC = () => {
         {showSurveyForm && <SurveyForm />}
       </main>
 
-      <footer className="w-full h-33 bg-red-900 bottom-0 left-0 flex justify-between p-2">
+      <footer className="w-full h-33 bg-red-900 flex justify-between p-4">
         <div className="flex-1">
           <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Contact Information</h1>
           <p className="text-white text-xs sm:text-xxs md:text-xs lg:text-xm">

@@ -271,7 +271,7 @@ const AdminLogins: React.FC = () => {
 
         {/* Conditional rendering of VPREPage */}
         {!showLoginForm && (
-          <div className="flex-grow w-full flex">
+        <div className="flex-grow w-full flex main-content">
             <VPREPage />
           </div>
         )}
