@@ -30,7 +30,7 @@ const LandingPage: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-grow flex flex-col justify-center items-center py-10 ">
+      <main className="flex-grow flex flex-col justify-center items-center overflow-auto">
         {!showSurveyForm && selectedLogin === '' && (
           <nav className="flex flex-col space-y-4  p-10 mt-10 shadow-lg" >
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">CUSTOMERS</h1>

@@ -112,7 +112,7 @@ const SurveyContents: React.FC = () => {
             const questionIndex = startIndex + index + 1;
             return (
                 <form key={questionIndex} className="bg-gray-100 p-4 rounded-md shadow-md">
-                 <p className="text-xs md:text-xs lg:text-2xl mb-4 shadow-lg">{question}</p>
+                 <p className="text-xxs md:text-xs lg:text-2xl mb-4 shadow-lg">{question}</p>
 
                     <div
                         className="relative w-full h-16 md:h-20"
@@ -143,7 +143,7 @@ const SurveyContents: React.FC = () => {
                         <p className='text-lg md:text-xl lg:text-2xl mb-4 shadow-lg '>Complaints, Comments, and Suggestion </p>
                         <textarea
                             placeholder="Your comments here..."
-                            className="w-full h-32 border rounded-md p-2"
+                              className="w-full h-32 border rounded-md p-2 sm:h-40 md:h-48 lg:h-56 xl:h-64"
                         ></textarea>
                     </form>
                 )}

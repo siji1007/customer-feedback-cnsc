@@ -103,7 +103,9 @@ const AdminLogins: React.FC = () => {
         )}
       </header>
 
-      <main className="flex-grow flex flex-col justify-center items-center overflow-auto">
+      <main className="flex-grow flex flex-col justify-center items-center overflow-y-auto overflow-x-hidden">
+ 
+
         {showLoginForm && formType === 'administrator' && (
           <form className="flex flex-col items-center justify-center" onSubmit={handleAdminSignIn}>
             <h1>ADMINISTRATOR</h1>
