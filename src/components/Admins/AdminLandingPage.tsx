@@ -59,7 +59,6 @@ const AdminLogins: React.FC = () => {
   const handleAdminSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      setShowLoginForm(false); //lagyan ko muna to d ko maaccess pag nag dedesign ako HAHAHAHHAHA
       const response = await axios.post(
         serverUrl + "verify-admin",
         adminCredentials,
@@ -68,6 +67,7 @@ const AdminLogins: React.FC = () => {
       setShowLoginForm(false);
     } catch (error) {
       setHasError(true);
+      setShowLoginForm(true);
     }
   };
 
@@ -271,7 +271,7 @@ const AdminLogins: React.FC = () => {
 
         {/* Conditional rendering of VPREPage */}
         {!showLoginForm && (
-        <div className="flex-grow w-full flex main-content">
+          <div className="flex-grow w-full flex main-content">
             <VPREPage />
           </div>
         )}
