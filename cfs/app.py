@@ -262,7 +262,8 @@ def showQuestionnaires():
     questionnaire_data = server.questionnaire_collection.find()
     questionnaire_list = [q for q in questionnaire_data]
     questionnaires = [str(q["title"]) for q in questionnaire_list if q["department"] == questionnaire_data_['sDepartment']]
-    return questionnaires
+    questionnaire_id = [str(q["_id"]) for q in questionnaire_list if q["department"] == questionnaire_data_['sDepartment']]
+    return {"qid":questionnaire_id,"questionData": questionnaires}
 
 if __name__ == '__main__':
     app.run(port="8082")
