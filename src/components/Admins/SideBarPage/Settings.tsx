@@ -61,8 +61,8 @@ const Settings: React.FC = () => {
   };
 
   const handleSaveClick = () => {
-    console.log(editQuestion, editIndex);
-    console.log(questionnaires["qid"][editIndex]);
+    editQuestinnaires(questionnaires["qid"][editIndex], editQuestion);
+    setEditIndex(null);
   };
 
   const handleCancelClick = () => {

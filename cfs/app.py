@@ -125,13 +125,6 @@ def add_questionnaire():
     questionnaire = server.questionnaire_collection.insert_one({'title': questionnaire_title, 'department': department_type})
     return redirect('/admin')
 
-@app.route("/edit-questionnaire", methods=['POST'])
-def edit_questionnaire():
-    qid=request.form.get('qid')
-    qtitle=request.form.get('qtitle')
-    qdept=request.form.get('qdept')
-    return render_template('edit.html', questionnaire_id=qid, department=qdept, title=qtitle, questions=showQuestions(ObjectId(qid)))
-
 @app.route("/add-question", methods=['POST'])
 def add_question():
     questionnaire_id=request.form.get('questionnaire_id')
@@ -264,6 +257,13 @@ def showQuestionnaires():
     questionnaires = [str(q["title"]) for q in questionnaire_list if q["department"] == questionnaire_data_['sDepartment']]
     questionnaire_id = [str(q["_id"]) for q in questionnaire_list if q["department"] == questionnaire_data_['sDepartment']]
     return {"qid":questionnaire_id,"questionData": questionnaires}
+
+@app.route("/edit-questionnaire", methods=['POST'])
+def edit_questionnaire():
+    question_data = request.get_json()
+    server.questionnaire_collection.update_one({'_id': ObjectId(question_data["qid"])}, {'$set': {'title': question_data["question"]}})
+    return "Questionnaire Edited Successfully.", 200
+
 
 if __name__ == '__main__':
     app.run(port="8082")
