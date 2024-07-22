@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { FaPrint } from 'react-icons/fa'; // Assuming you're using react-icons for the print icon
+import { FaPrint } from 'react-icons/fa'; 
 
 const PrintReport: React.FC = () => {
-    const [content, setContent] = useState<string>('Print Overall Result'); // Initialize with 'Print Overall' for initial display
-    const [selectedDepartment, setSelectedDepartment] = useState<string>(''); // State for selected department
-    const [startDate, setStartDate] = useState<string>(''); // State for start date
-    const [endDate, setEndDate] = useState<string>(''); // State for end date
+    const [content, setContent] = useState<string>('Print Overall Result'); 
+    const [selectedDepartment, setSelectedDepartment] = useState<string>(''); 
+    const [startDate, setStartDate] = useState<string>(''); 
+    const [endDate, setEndDate] = useState<string>(''); 
 
-    // Function to handle button clicks and change content accordingly
+  
     const handleButtonClick = (type: string) => {
         if (type === 'overall') {
             setContent('Print Overall Result');
@@ -47,7 +47,7 @@ const PrintReport: React.FC = () => {
                                         <option value="CBPA">CBPA</option>
                                         <option value="COENG">COENG</option>
                                         <option value="ARTS and SCIENCES">ARTS and SCIENCES</option>
-                                        {/* Add more options as needed */}
+                                        {/* Add more options as needed  pero mas maganda kung ilagay mo nlng sa array*/}
                                     </select>
                                 </div>
                                 <div className="flex gap-4 mb-4 w-full">
