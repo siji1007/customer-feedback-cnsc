@@ -2,21 +2,46 @@ import React, { useState, useEffect } from "react";
 import { FaEdit, FaSave, FaTimes } from "react-icons/fa";
 import axios from "axios";
 
+interface DepartmentData {
+  department: string;
+  dept_type: string;
+}
+
 const Settings: React.FC = () => {
+  const [offices, setOffices] = useState<string[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Department");
   const [questionnaires, setQuestionnaires] = useState<string[]>([]);
+  const [deptData, setDeptData] = useState<DepartmentData>({
+    department: "",
+    dept_type: "academic",
+  });
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
-  type Office = (typeof departments)[number];
+  type Office = (typeof offices)[number];
 
   const handleClick = (department) => {
     setSelectedOffice(department);
     fetchQuestionnares(department);
   };
 
+  const handleAddDept = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDeptData({ ...deptData, [event.target.name]: event.target.value });
+  };
+
+  const handleAddClick = async (event: React.FormEvent<HTMLFormElement>) => {
+    try {
+      event.preventDefault();
+      const response = await axios.post(serverUrl + "add-dept", deptData);
+      fetchDepartments();
+      setDeptData({ ...deptData, department: "" });
+    } catch (error) {
+      console.log("Error adding department: ", error);
+    }
+  };
+
   const fetchQuestionnares = async (dept) => {
     try {
-      const response = await axios.post(serverUrl + "/flash-questionnaire", {
+      const response = await axios.post(serverUrl + "flash-questionnaire", {
         sDepartment: dept,
       });
       setQuestionnaires(response.data);
@@ -27,7 +52,7 @@ const Settings: React.FC = () => {
 
   const editQuestinnaires = async (qid, question) => {
     try {
-      const response = await axios.post(serverUrl + "/edit-questionnaire", {
+      const response = await axios.post(serverUrl + "edit-questionnaire", {
         qid: qid,
         question: question,
       });
@@ -36,15 +61,26 @@ const Settings: React.FC = () => {
     }
   };
 
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(serverUrl + "academic_department");
+      setDepartments(response.data.departments);
+    } catch (error) {
+      console.error("Error fetching departments: ", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchDepartments = async () => {
+    const fetchOffices = async () => {
       try {
-        const response = await axios.get(serverUrl + "all_department");
-        setDepartments(response.data.departments);
+        const response = await axios.get(serverUrl + "service_department");
+        setOffices(response.data.departments);
       } catch (error) {
         console.error("Error fetching departments: ", error);
       }
     };
+
+    fetchOffices();
 
     fetchDepartments();
     fetchQuestionnares(null);
@@ -75,33 +111,56 @@ const Settings: React.FC = () => {
         return (
           <div className="mt-4 flex">
             <section className="w-1/2 p-4 bg-gray-300 rounded-lg mr-4 border border-black">
-              <h2 className="text-xl font-semibold mb-4 text-center">Add Department</h2>
-              <form className="flex flex-col space-y-4 ">
+              <h2 className="text-xl font-semibold mb-4 text-center">
+                Add Department
+              </h2>
+              <form
+                className="flex flex-col space-y-4 "
+                onSubmit={handleAddClick}
+              >
                 <div>
                   <label className="block text-gray-700 mb-2">Department</label>
-                  <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500" />
+                  <input
+                    type="text"
+                    name="department"
+                    value={deptData.department}
+                    onChange={handleAddDept}
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                  />
                 </div>
                 <div>
-                  <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500" placeholder="No label input" />
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                    placeholder="No label input"
+                  />
                 </div>
                 <div className="flex justify-center">
-                  <button type="submit" className="px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-blue-600">Add</button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-blue-600"
+                  >
+                    Add
+                  </button>
                 </div>
               </form>
             </section>
-        
+
             <section className="w-1/2 p-4 rounded-lg">
               <h2 className="text-xl font-semibold mb-4">Added Departments</h2>
               {/* Placeholder for dynamically added departments */}
               <ul className="pl-5 max-h-40 overflow-y-auto">
-                  <li className="mb-5 bg-gray-300 p-2 rounded-lg border border-black">Department 1</li>
-                  <li className="mb-5 bg-gray-300 p-2 rounded-lg border border-black">Department 2</li>
-                  <li className="mb-5 bg-gray-300 p-2 rounded-lg border border-black">Department 3</li>
-                  <li className="mb-5 bg-gray-300 p-2 rounded-lg border border-black">Department 4</li>
-                  {/* Add more departments as needed */}
+                {departments.map((department, index) => (
+                  <li
+                    key={index}
+                    className="mb-5 bg-gray-300 p-2 rounded-lg border border-black"
+                  >
+                    {department}
+                  </li>
+                ))}
+                {/* Add more departments as needed */}
               </ul>
-              </section>
-
+            </section>
           </div>
         );
       case "Questions":
@@ -125,13 +184,13 @@ const Settings: React.FC = () => {
                   background: "#c3c3c3",
                 }}
               >
-                {departments.map((department, index) => (
+                {offices.map((office, index) => (
                   <li
                     key={index}
-                    className={`cursor-pointer p-2 border border-white rounded-lg ${selectedOffice === department ? "bg-red-800 text-white" : "hover:bg-gray-100"}`}
-                    onClick={() => handleClick(department)}
+                    className={`cursor-pointer p-2 border border-white rounded-lg ${selectedOffice === office ? "bg-red-800 text-white" : "hover:bg-gray-100"}`}
+                    onClick={() => handleClick(office)}
                   >
-                    {department}
+                    {office}
                   </li>
                 ))}
               </ul>
@@ -195,7 +254,10 @@ const Settings: React.FC = () => {
           <div className="mt-4 space-y-4">
             <section className="relative bg-gray-300 p-4 rounded-lg border border-black">
               <h1 className="text-xl font-semibold">Feedback</h1>
-              <p>These are notifications for feedback on <br /> Student/staff/faculty, service satisfaction.</p>
+              <p>
+                These are notifications for feedback on <br />{" "}
+                Student/staff/faculty, service satisfaction.
+              </p>
               <div className="absolute top-0 right-0 mt-2 mr-2">
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" className="sr-only peer" />
@@ -203,10 +265,13 @@ const Settings: React.FC = () => {
                 </label>
               </div>
             </section>
-        
+
             <section className="relative bg-gray-300 p-4 rounded-lg border border-black">
               <h1 className="text-xl font-semibold">Reminders</h1>
-              <p>These are notifications to remind for updates <br /> might be missed</p>
+              <p>
+                These are notifications to remind for updates <br /> might be
+                missed
+              </p>
               <div className="absolute top-0 right-0 mt-2 mr-2">
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" className="sr-only peer" />

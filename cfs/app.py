@@ -96,14 +96,6 @@ def delete_all():
 def showAdmin():
     return render_template('admin.html', selected_dept="OSSD", departments=showDepts())
 
-@app.route('/add-dept', methods=['POST'])
-def add_dept():
-    deptName = request.form.get('dept-name')
-    deptType = request.form.get('dept-type')
-    data = {'department': deptName, 'type': deptType}
-    server.dept_collection.insert_one(data)
-    return redirect('/')
-
 @app.route('/add-type', methods=['POST'])
 def add_type():
     type_name = request.form.get('type_input')
@@ -264,6 +256,12 @@ def edit_questionnaire():
     server.questionnaire_collection.update_one({'_id': ObjectId(question_data["qid"])}, {'$set': {'title': question_data["question"]}})
     return "Questionnaire Edited Successfully.", 200
 
+@app.route('/add-dept', methods=['POST'])
+def add_dept():
+    dept_data = request.get_json()
+    data = {'department': dept_data["department"], 'type': dept_data["dept_type"]}
+    server.dept_collection.insert_one(data)
+    return "Department added successfully.", 200
 
 if __name__ == '__main__':
     app.run(port="8082")
