@@ -54,7 +54,7 @@ const LandingPage: React.FC = () => {
         )}
         {!showSurveyForm && selectedLogin === 'student' && <StudentLogin onLoginSuccess={handleShowSurveyForm} />}
         {!showSurveyForm && selectedLogin === 'employee' && <EmployeeLogin />}
-        {!showSurveyForm && selectedLogin === 'other' && <OtherLogin />}
+        {!showSurveyForm && selectedLogin === 'other' && <OtherLogin onLoginSuccess={handleShowSurveyForm} />}
         {showSurveyForm && <SurveyForm />}
       </main>
 

@@ -100,10 +100,12 @@ const AdminLogins: React.FC = () => {
       setHasError(false);
       setShowLoginForm(false);
       setShowOfficeHead(true);
+
       const response = await axios.post(
         serverUrl + "verify_oh",
         officeHeadCredentials,
       );
+      
       setHasError(false);
       setShowLoginForm(false);
       setShowOfficeHead(true); // Show OfficeHead after successful login

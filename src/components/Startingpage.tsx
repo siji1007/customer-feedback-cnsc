@@ -27,16 +27,20 @@ const StartingPage: React.FC = () => {
         <img src="src/assets/cnsc_logo.png" alt="CNSC LOGO" className="max-w-full max-h-full" />
       </div>
       <div className="right-side flex-1 h-1/2 md:h-full bg-zinc-50 flex justify-center items-center flex-col p-4 md:p-0 md:order-1">
-        <p className="text-center">Camarines Norte State College</p>
-        <p className="mb-10 text-center">Customer Feedback System</p>
-        <div className="h-20 w-20 bg-black mb-20"></div> {/* add the logo here */}
+        <p  className="text-center font-bold text-lg" style={{ fontFamily: 'Copperplate, serif' }}>Camarines Norte State College</p>
+        <p  className="text-center font-bold text-lg mb-10" style={{ fontFamily: 'Copperplate, serif' }}>Customer Feedback System</p>
         {!showTwoButtons ? (
-          <button
-            className="w-40 text-black bg-gray-300  hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full shadow-maroon "
-            onClick={handleStartClick}
-          >
-            Start
-          </button>
+          <>
+            <div className="h-20 w-20  mb-20">
+              <img src="src/assets/customer_feedback.png" alt="logo" />
+              </div> 
+            <button
+              className="w-40 text-black bg-gray-300  hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full shadow-maroon "
+              onClick={handleStartClick}
+            >
+              Start
+            </button>
+          </>
         ) : showSecondSetOfButtons ? (
           <div className="flex flex-col items-center">
             <Link to="/admin?form=administrator">
@@ -57,8 +61,8 @@ const StartingPage: React.FC = () => {
             </button>
           </div>
         ) : (
-<div className="flex flex-col sm:flex-row sm:space-x-4">
-  <div className="flex flex-col items-center">
+<div className="flex flex-row sm:flex-row sm:space-x-4">
+  <div className="flex flex-col items-center flex flex-col items-center sm:mt-0">
     <button
       className="w-24 h-24 sm:w-32 sm:h-32 text-white bg-gray-300 hover:bg-gray-100 font-bold rounded-lg m-2 flex items-center justify-center shadow-maroon"
       onClick={() => setShowSecondSetOfButtons(true)}
@@ -67,7 +71,7 @@ const StartingPage: React.FC = () => {
     </button>
     <span className="text-center mt-2 text-black font-bold">Admin</span>
   </div>
-  <div className="flex flex-col items-center mt-4 sm:mt-0"> {/* Adjust margin for mobile */}
+  <div className="flex flex-col items-center flex flex-col items-center sm:mt-0"> {/* Adjust margin for mobile */}
     <Link to="/customer">
       <button
         className="w-24 h-24 sm:w-32 sm:h-32 text-white bg-gray-300 hover:bg-gray-100 font-bold rounded-lg m-2 flex items-center justify-center shadow-maroon"

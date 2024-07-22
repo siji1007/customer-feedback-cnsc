@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CheckIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/solid"; // Import QuestionMarkCircleIcon
 
 const PageDots: React.FC<{ currentPage: number; totalPages: number }> = ({
@@ -44,6 +45,10 @@ const SurveyContents: React.FC = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+  const Navigate = useNavigate();
+
 
   const questions = [
     "Ang mga patakaran at iba't ibang kursong mapag-aaralan sa Kolehiyo ay malawak na naipapabatid sa pamamagitan ng 'bronchures', 'pamphlets' at mga lathala at anunsiyong nakapaskil sa 'bulletin boad'",
@@ -116,11 +121,20 @@ const SurveyContents: React.FC = () => {
   const handleSubmit = () => {
     // Handle form submission logic here
     console.log("Form Submitted with values:", positions);
+    setIsSuccessModalOpen(true); 
   };
 
   const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen); // Toggle modal visibility
   };
+
+  const Dashboard = () => {
+    window.location.reload();
+    setIsSuccessModalOpen(false); // Close success modal
+   
+
+  };
+
 
   const renderQuestions = () => {
     const startIndex = (currentPage - 1) * 2;
@@ -298,6 +312,40 @@ const SurveyContents: React.FC = () => {
           <QuestionMarkCircleIcon className="h-6 w-6" />
         </button>
       </div>
+
+      {/* Success Modal */}
+      {isSuccessModalOpen && (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 ">
+        <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full m-10">
+          <h2 className="text-xl font-semibold mb-4 text-center">Success</h2>
+          <p className="mb-4 text-center">Your responses have been successfully submitted!</p>
+          <div className="flex flex-col justify-center space-y-4">
+
+          <button
+             
+              className="bg-red-800 text-white px-4 py-2 rounded"
+            >
+              Review Responses
+            </button>
+
+            <button
+             
+             className="bg-red-800 text-white px-4 py-2 rounded"
+           >
+              Create another feedback
+           </button>
+
+            <button
+              onClick={Dashboard}
+              className="bg-red-800 text-white px-4 py-2 rounded"
+            >
+              Proceed to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+    
+      )}
     </div>
   );
 };
