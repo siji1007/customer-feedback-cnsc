@@ -59,6 +59,7 @@ const AdminLogins: React.FC = () => {
   const handleAdminSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
+      setShowLoginForm(false);
       const response = await axios.post(
         serverUrl + "verify-admin",
         adminCredentials,
