@@ -25,7 +25,7 @@ const VPREPage: React.FC = () => {
   return (
     <div className="flex flex-col lg:flex-row p-4 w-full">
       {/* Sidebar */}
-      <section className="w-full lg:w-60 bg-gray-200 p-4 space-y-4 rounded-lg border border-gray-400">
+      <section className="w-full lg:w-60 bg-gray-200 p-4 space-y-4 rounded-lg border border-gray-500">
         <h1 className="text-lg font-bold mb-4 text-center">Admin</h1>
         <button
           className="w-full flex items-center text-left py-2 px-4 bg-red-900 text-white rounded-lg hover:bg-red-700 transition duration-300 ease-in-out"

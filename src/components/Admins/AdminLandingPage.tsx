@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaFacebook, FaTwitter } from "react-icons/fa";
 import VPREPage from "./AdminMainContent"; // Import VPREPage component
+import OfficeHead from "./OfficeHead";
 import axios from "axios";
 
 interface AdminCredentials {
@@ -21,19 +22,26 @@ const AdminLogins: React.FC = () => {
   const formType = queryParams.get("form");
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
-  // State to manage whether to show the login form or VPREPage
+  // State to manage which form is shown and which component to display
   const [showLoginForm, setShowLoginForm] = useState(true);
   const [adminCredentials, setAdminCredentials] = useState<AdminCredentials>({
     admin_username: "",
     admin_password: "",
   });
-  const [hasError, setHasError] = useState(false);
-  const [departments, setDepartments] = useState<string[]>([]);
   const [officeHeadCredentials, setOfficeHeadCredentials] =
     useState<OfficeHeadCredentials>({
       officeHead_department: "",
       officeHead_password: "",
     });
+  const [hasError, setHasError] = useState(false);
+  const [showOfficeHead, setShowOfficeHead] = useState(false);
+  const [showVPREPage, setShowVPREPage] = useState(false);
+
+  const departments = [
+    'COENG',
+    'ARTS and SCIENCES',
+    // Add more departments as needed
+  ];
 
   const handleProceedClick = () => {
     // Navigate to VPREPage or perform any other action
@@ -47,6 +55,8 @@ const AdminLogins: React.FC = () => {
   const handleLogout = () => {
     // Handle logout logic here, e.g., clear session, navigate to login page
     setShowLoginForm(true); // Show login form again after logout
+    setShowVPREPage(false);
+    setShowOfficeHead(false);
   };
 
   const handleSignInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,16 +69,19 @@ const AdminLogins: React.FC = () => {
   const handleAdminSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
+      setHasError(false);
       setShowLoginForm(false);
+      setShowVPREPage(true);
+
       const response = await axios.post(
         serverUrl + "verify-admin",
         adminCredentials,
       );
       setHasError(false);
       setShowLoginForm(false);
+      setShowVPREPage(true); // Show VPREPage after successful login
     } catch (error) {
       setHasError(true);
-      setShowLoginForm(true);
     }
   };
 
@@ -84,12 +97,16 @@ const AdminLogins: React.FC = () => {
   ) => {
     event.preventDefault();
     try {
+      setHasError(false);
+      setShowLoginForm(false);
+      setShowOfficeHead(true);
       const response = await axios.post(
         serverUrl + "verify_oh",
         officeHeadCredentials,
       );
       setHasError(false);
-      alert(response.data);
+      setShowLoginForm(false);
+      setShowOfficeHead(true); // Show OfficeHead after successful login
     } catch (error) {
       setHasError(true);
     }
@@ -130,7 +147,7 @@ const AdminLogins: React.FC = () => {
         {!showLoginForm && (
           <button
             onClick={handleLogout}
-            className="text-white hover:text-gray-300  font-bold ml-auto"
+            className="text-white hover:text-gray-300 font-bold ml-auto"
           >
             Logout
           </button>
@@ -251,7 +268,7 @@ const AdminLogins: React.FC = () => {
               <h4
                 className={`${"text-sm text-center text-red-500"} ${hasError ? "" : "hidden"}`}
               >
-                Incorrect Password. Please try again.
+                Office Head credentials not found
               </h4>
             </div>
             <button
@@ -270,13 +287,15 @@ const AdminLogins: React.FC = () => {
           </form>
         )}
 
-        {/* Conditional rendering of VPREPage */}
-        {!showLoginForm && (
-          <div className="flex-grow w-full flex main-content">
+        {showVPREPage &&  
+        <div className="flex-grow w-full flex main-content">
             <VPREPage />
-          </div>
-        )}
-      </main>
+          </div>} {/* Render VPREPage if showVPREPage is true */}
+        {showOfficeHead && 
+        <div className="flex-grow w-full flex main-content">
+        <OfficeHead />
+        </div>} {/* Render OfficeHead if showOfficeHead is true */}
+        </main>
 
       <footer className="w-full h-33 bg-red-900 flex justify-between p-2">
         <div className="flex-1">
@@ -293,6 +312,7 @@ const AdminLogins: React.FC = () => {
             Email: <span className="underline">president@cnsc.edu.ph</span>
           </p>
         </div>
+      
 
         <div className="ml-2">
           <p className="text-white font-bold">Help</p>
