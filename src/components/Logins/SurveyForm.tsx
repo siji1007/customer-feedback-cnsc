@@ -76,7 +76,7 @@ const SurveyForm: React.FC = () => {
   {content === 'Select Offices' && (
   <>
   <h1 className="text-lg md:text-xl lg:text-2xl font-bold mb-4 text-center">{content}</h1>
-  <div className="flex flex-col space-y-2 ">
+  <div className="flex flex-col space-y-2 m-2">
     {/* List of offices */}
     {['Admission Office', 'Registrar Office', 'Guidance Office', 'Health Service Office', 'Library', 'Canteen (Food Service)', 'Student Publication', 'Scholarship Programs', 'Student Organization Sport and Cultural Services'].map((office, index) => (
       <label key={index} className="flex items-center justify-between">

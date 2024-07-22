@@ -53,13 +53,13 @@ const LandingPage: React.FC = () => {
           </nav>
         )}
         {!showSurveyForm && selectedLogin === 'student' && <StudentLogin onLoginSuccess={handleShowSurveyForm} />}
-        {!showSurveyForm && selectedLogin === 'employee' && <EmployeeLogin />}
+        {!showSurveyForm && selectedLogin === 'employee' && <EmployeeLogin onLoginSuccess={handleShowSurveyForm} />}
         {!showSurveyForm && selectedLogin === 'other' && <OtherLogin onLoginSuccess={handleShowSurveyForm} />}
         {showSurveyForm && <SurveyForm />}
       </main>
 
       <footer className="w-full h-33 bg-red-900 flex justify-between p-4">
-        <div className="flex-1">
+        <div className="flex-1 ">
           <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Contact Information</h1>
           <p className="text-white text-xs sm:text-xxs md:text-xs lg:text-xm">
             Camarines Norte State College Information Technology Services Office<br />

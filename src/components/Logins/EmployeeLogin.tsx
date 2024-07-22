@@ -13,7 +13,11 @@ interface SignUpData {
   employee_cpass: string;
 }
 
-const EmployeeLogin: React.FC = () => {
+interface EmployeeLoginProps {
+  onLoginSuccess: () => void;
+}
+
+const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [showSignUpForm, setShowSignUpForm] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -43,29 +47,27 @@ const EmployeeLogin: React.FC = () => {
     setSignInData({ ...signInData, [event.target.name]: event.target.value });
   };
 
-  const handleSignUpChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSignUpChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setSignUpData({ ...signUpData, [event.target.name]: event.target.value });
   };
 
-  const handleEmployeeSignIn = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleEmployeeSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
+      onLoginSuccess();
       const response = await axios.post(
         import.meta.env.VITE_APP_SERVERHOST + "employee-login",
         signInData,
       );
       setHasError(false);
       alert(response.data);
+      onLoginSuccess();
     } catch (error) {
       setHasError(true);
     }
   };
 
-  const handleEmployeeSignUp = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleEmployeeSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       const response = await axios.post(
@@ -84,7 +86,7 @@ const EmployeeLogin: React.FC = () => {
         const response = await axios.get(
           import.meta.env.REACT_APP_SERVERHOST + "service_department",
         );
-        setDepartments(response.data.departments);
+        setDepartments(response.data.departments || []);
       } catch (error) {
         console.error("Error fetching departments: ", error);
       }
@@ -102,10 +104,7 @@ const EmployeeLogin: React.FC = () => {
         <form onSubmit={handleEmployeeSignUp}>
           <div className="bg-gray-200 border-stone-400 border rounded-lg shadow-md p-4 w-full max-w-md">
             <section className="flex justify-between items-center mb-4">
-              <label
-                htmlFor="employeeId"
-                className="w-1/3 text-sm sm:text-base md:text-lg"
-              >
+              <label htmlFor="employeeId" className="w-1/3 text-sm sm:text-base md:text-lg">
                 Employee ID
               </label>
               <input
@@ -119,14 +118,10 @@ const EmployeeLogin: React.FC = () => {
               />
             </section>
             <section className="flex justify-between items-center mb-4">
-              <label
-                htmlFor="department"
-                className="w-1/3 text-sm sm:text-base md:text-lg"
-              >
+              <label htmlFor="department" className="w-1/3 text-sm sm:text-base md:text-lg">
                 Department
               </label>
               <select
-                type="text"
                 id="department"
                 className="w-2/3 rounded-full border bg-white"
                 value={signUpData.employee_dept}
@@ -135,7 +130,7 @@ const EmployeeLogin: React.FC = () => {
                 required
               >
                 <option value="">Select Department</option>
-                {departments.map((department) => (
+                {departments.length > 0 && departments.map((department) => (
                   <option key={department} value={department}>
                     {department}
                   </option>
@@ -143,10 +138,7 @@ const EmployeeLogin: React.FC = () => {
               </select>
             </section>
             <section className="flex justify-between items-center mb-4">
-              <label
-                htmlFor="password"
-                className="w-1/3 text-sm sm:text-base md:text-lg"
-              >
+              <label htmlFor="password" className="w-1/3 text-sm sm:text-base md:text-lg">
                 Password
               </label>
               <input
@@ -160,10 +152,7 @@ const EmployeeLogin: React.FC = () => {
               />
             </section>
             <section className="flex justify-between items-center mb-4">
-              <label
-                htmlFor="confirmPassword"
-                className="w-1/3 text-sm sm:text-base md:text-lg"
-              >
+              <label htmlFor="confirmPassword" className="w-1/3 text-sm sm:text-base md:text-lg">
                 Confirm Password
               </label>
               <input
@@ -177,10 +166,7 @@ const EmployeeLogin: React.FC = () => {
               />
             </section>
           </div>
-          <button
-            type="submit"
-            className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full"
-          >
+          <button type="submit" className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full">
             Sign-up
           </button>
         </form>
@@ -189,16 +175,13 @@ const EmployeeLogin: React.FC = () => {
         <form onSubmit={handleEmployeeSignIn}>
           <div className="bg-gray-200 border-stone-400 border rounded-lg shadow-md p-4 w-full max-w-md">
             <section className="flex justify-between items-center mb-4">
-              <label
-                htmlFor="employeeId"
-                className="w-1/3 text-sm sm:text-base md:text-lg"
-              >
+              <label htmlFor="employeeId" className="w-1/3 text-sm sm:text-base md:text-lg">
                 Employee ID
               </label>
               <input
                 type="text"
                 id="employeeId"
-                className={`${"w-2/3 rounded-full border"} ${hasError ? "border-red-500" : ""}`}
+                className={`w-2/3 rounded-full border ${hasError ? "border-red-500" : ""}`}
                 name="employee_id"
                 onChange={handleLoginChange}
                 value={signInData.employee_id}
@@ -206,39 +189,27 @@ const EmployeeLogin: React.FC = () => {
               />
             </section>
             <section className="flex justify-between items-center mb-4">
-              <label
-                htmlFor="password"
-                className="w-1/3 text-sm sm:text-base md:text-lg"
-              >
+              <label htmlFor="password" className="w-1/3 text-sm sm:text-base md:text-lg">
                 Password
               </label>
               <input
                 type="password"
                 id="password"
-                className={`${"w-2/3 rounded-full border"} ${hasError ? "border-red-500" : ""}`}
+                className={`w-2/3 rounded-full border ${hasError ? "border-red-500" : ""}`}
                 name="employee_pass"
                 onChange={handleLoginChange}
                 value={signInData.employee_pass}
                 required
               />
             </section>
-            <h4
-              className={`${"text-sm text-center text-red-500"} ${hasError ? "" : "hidden"}`}
-            >
+            <h4 className={`text-sm text-center text-red-500 ${hasError ? "" : "hidden"}`}>
               User credential not found
             </h4>
           </div>
-          <button
-            type="submit"
-            className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full"
-          >
+          <button type="submit" className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full">
             Login
           </button>
-          <button
-            type="button"
-            className="mt-4 px-4 py-2 text-black w-full"
-            onClick={handleBackClick}
-          >
+          <button type="button" className="mt-4 px-4 py-2 text-black w-full" onClick={handleBackClick}>
             Back
           </button>
         </form>

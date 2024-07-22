@@ -43,10 +43,7 @@ const AdminLogins: React.FC = () => {
     // Add more departments as needed
   ];
 
-  const handleProceedClick = () => {
-    // Navigate to VPREPage or perform any other action
-    setShowLoginForm(false); // Set state to hide login form
-  };
+
 
   const handleBackClick = () => {
     navigate("/?showSecondSetOfButtons=true");
