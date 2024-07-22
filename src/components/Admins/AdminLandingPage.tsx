@@ -37,13 +37,7 @@ const AdminLogins: React.FC = () => {
   const [showOfficeHead, setShowOfficeHead] = useState(false);
   const [showVPREPage, setShowVPREPage] = useState(false);
 
-  const departments = [
-    'COENG',
-    'ARTS and SCIENCES',
-    // Add more departments as needed
-  ];
-
-
+  const [departments, setDepartments] = useState<string[]>([]);
 
   const handleBackClick = () => {
     navigate("/?showSecondSetOfButtons=true");
@@ -66,10 +60,6 @@ const AdminLogins: React.FC = () => {
   const handleAdminSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      setHasError(false);
-      setShowLoginForm(false);
-      setShowVPREPage(true);
-
       const response = await axios.post(
         serverUrl + "verify-admin",
         adminCredentials,
@@ -94,15 +84,11 @@ const AdminLogins: React.FC = () => {
   ) => {
     event.preventDefault();
     try {
-      setHasError(false);
-      setShowLoginForm(false);
-      setShowOfficeHead(true);
-
       const response = await axios.post(
         serverUrl + "verify_oh",
         officeHeadCredentials,
       );
-      
+
       setHasError(false);
       setShowLoginForm(false);
       setShowOfficeHead(true); // Show OfficeHead after successful login
@@ -114,7 +100,7 @@ const AdminLogins: React.FC = () => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get(serverUrl + "all_department");
+        const response = await axios.get(serverUrl + "service_department");
         setDepartments(response.data.departments);
       } catch (error) {
         console.error("Error fetching departments: ", error);
@@ -216,7 +202,6 @@ const AdminLogins: React.FC = () => {
             </button>
           </form>
         )}
-
         {showLoginForm && formType === "officehead" && (
           <form
             className="flex flex-col items-center justify-center"
@@ -285,16 +270,19 @@ const AdminLogins: React.FC = () => {
             </button>
           </form>
         )}
-
-        {showVPREPage &&  
-        <div className="flex-grow w-full flex main-content">
+        {showVPREPage && (
+          <div className="flex-grow w-full flex main-content">
             <VPREPage />
-          </div>} {/* Render VPREPage if showVPREPage is true */}
-        {showOfficeHead && 
-        <div className="flex-grow w-full flex main-content">
-        <OfficeHead />
-        </div>} {/* Render OfficeHead if showOfficeHead is true */}
-        </main>
+          </div>
+        )}{" "}
+        {/* Render VPREPage if showVPREPage is true */}
+        {showOfficeHead && (
+          <div className="flex-grow w-full flex main-content">
+            <OfficeHead />
+          </div>
+        )}{" "}
+        {/* Render OfficeHead if showOfficeHead is true */}
+      </main>
 
       <footer className="w-full h-33 bg-red-900 flex justify-between p-2">
         <div className="flex-1">
@@ -311,7 +299,6 @@ const AdminLogins: React.FC = () => {
             Email: <span className="underline">president@cnsc.edu.ph</span>
           </p>
         </div>
-      
 
         <div className="ml-2">
           <p className="text-white font-bold">Help</p>

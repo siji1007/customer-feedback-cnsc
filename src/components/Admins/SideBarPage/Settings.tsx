@@ -16,6 +16,8 @@ const Settings: React.FC = () => {
     department: "",
     dept_type: "academic",
   });
+  const [feedbackChecked, setFeedBackChecked] = useState();
+  const [remindersChecked, setRemindersChecked] = useState();
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   type Office = (typeof offices)[number];
 
@@ -70,6 +72,46 @@ const Settings: React.FC = () => {
     }
   };
 
+  const fetchFeedbackState = async () => {
+    try {
+      const response = await axios.get(serverUrl + "get-config");
+      setFeedBackChecked(response.data.feedback_state[0]);
+    } catch (error) {
+      console.error("Error fetching state: ", error);
+    }
+  };
+
+  const fetchReminderState = async () => {
+    try {
+      const response = await axios.get(serverUrl + "get-config");
+      setRemindersChecked(response.data.reminder_state[0]);
+    } catch (error) {
+      console.log("Error fetching state: ", error);
+    }
+  };
+
+  const toggleFeedback = async (event) => {
+    setFeedBackChecked(event.target.checked);
+    try {
+      const response = await axios.post(serverUrl + "set-feedback-conf", {
+        "feedback-conf": event.target.checked,
+      });
+    } catch (error) {
+      console.log("Error fetching state: ", error);
+    }
+  };
+
+  const toggleReminder = async (event) => {
+    setRemindersChecked(event.target.checked);
+    try {
+      const response = await axios.post(serverUrl + "set-reminder-conf", {
+        "reminder-conf": event.target.checked,
+      });
+    } catch (error) {
+      console.log("Error fetching state: ", error);
+    }
+  };
+
   useEffect(() => {
     const fetchOffices = async () => {
       try {
@@ -81,9 +123,10 @@ const Settings: React.FC = () => {
     };
 
     fetchOffices();
-
     fetchDepartments();
     fetchQuestionnares(null);
+    fetchFeedbackState();
+    fetchReminderState();
   }, []);
 
   const [selectedOffice, setSelectedOffice] = useState<Office>(null);
@@ -260,7 +303,12 @@ const Settings: React.FC = () => {
               </p>
               <div className="absolute top-0 right-0 mt-2 mr-2">
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" />
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={feedbackChecked}
+                    onChange={toggleFeedback}
+                  />
                   <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-800"></div>
                 </label>
               </div>
@@ -274,7 +322,12 @@ const Settings: React.FC = () => {
               </p>
               <div className="absolute top-0 right-0 mt-2 mr-2">
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" />
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={remindersChecked}
+                    onChange={toggleReminder}
+                  />
                   <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-800"></div>
                 </label>
               </div>

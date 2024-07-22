@@ -263,5 +263,25 @@ def add_dept():
     server.dept_collection.insert_one(data)
     return "Department added successfully.", 200
 
+@app.route('/get-config', methods=['GET'])
+def get_config():
+    data = server.settings_collection.find()
+    data_list = [config for config in data]
+    rs = [config["reminder_state"] for config in data_list]
+    fbs = [config["feedback_state"] for config in data_list]
+    return jsonify({'reminder_state': rs, 'feedback_state': fbs})
+
+@app.route('/set-feedback-conf', methods=['POST'])
+def setFeedbackConf():
+    config_data = request.get_json();
+    server.settings_collection.update_one({'_id': ObjectId('669ebc9fbe9cfcf910ab30c1')}, {'$set': {'feedback_state': config_data["feedback-conf"]}})
+    return "Questionnaire Edited Successfully.", 200
+
+@app.route('/set-reminder-conf', methods=['POST'])
+def setReminderConf():
+    config_data = request.get_json();
+    server.settings_collection.update_one({'_id': ObjectId('669ebc9fbe9cfcf910ab30c1')}, {'$set': {'reminder_state': config_data["reminder-conf"]}})
+    return "Questionnaire Edited Successfully.", 200
+
 if __name__ == '__main__':
     app.run(port="8082")
