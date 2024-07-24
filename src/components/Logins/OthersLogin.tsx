@@ -25,6 +25,7 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
   const handleClientLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
+      onLoginSuccess();
       const response = await axios.post(
         import.meta.env.SERVERHOST + "client-login",
         clientData,
