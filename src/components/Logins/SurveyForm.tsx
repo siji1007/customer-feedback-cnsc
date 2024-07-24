@@ -16,11 +16,16 @@ const SurveyForm: React.FC = () => {
     setContent('Instruction');
   };
 
-
-
+  const [selectedOffice, setSelectedOffice] = useState([]);
 
   function handleCheckboxChange(_event: ChangeEvent<HTMLInputElement>): void {
-    throw new Error('Function not implemented.');
+    //throw new Error('Function not implemented.');
+    const { checked, name } = _event.target;
+    if(checked){
+      setSelectedOffice([...selectedOffice, name]);
+    }else{
+      setSelectedOffice(selectedOffice.filter((office) => office !== name));
+    }
   }
 
   return (
