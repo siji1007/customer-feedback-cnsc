@@ -126,12 +126,12 @@ const AdminLogins: React.FC = () => {
             className="h-10 w-16 object-contain"
           />
           <div className="ml-4 flex flex-col justify-center">
-          <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold "
+          <h1 className="text-white text-xs sm:text-xs md:text-xs lg:text-xm font-bold "
           style={{ borderBottom: '2px solid gold' }}>
               Camarines Norte State College
           </h1>
 
-            <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Customer Feedback System</h1>
+            <h1 className="text-white text-xs sm:text-xs md:text-xs lg:text-xm font-bold">Client Feedback System</h1>
           </div>
         </div>
         {/* Conditionally render logout button */}

@@ -29,7 +29,7 @@ const LandingPage: React.FC = () => {
               Camarines Norte State College
           </h1>
 
-            <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Customer Feedback System</h1>
+            <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Client Feedback System</h1>
           </div>
         </div>
       </header>
@@ -38,7 +38,7 @@ const LandingPage: React.FC = () => {
         
         {!showSurveyForm && selectedLogin === '' && (
           <nav className="flex flex-col space-y-4 p-10 mt-10 shadow-lg">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">CUSTOMERS</h1>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center m-5">CLIENTS</h1>
             <button className="bg-red-900 text-white py-2 px-4 rounded-lg" onClick={() => handleLoginSelection('student')}>
               Student
             </button>

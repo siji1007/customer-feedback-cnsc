@@ -115,15 +115,15 @@ const Dashboard: React.FC = () => {
       <main className="px-4 ">
         {!showDetailedView ? (
           <>
-            <header className="w-full border-b pb-4 mb-4 flex items-center justify-between bg-red-900 p-2 rounded-lg">
-              <div className="flex items-center">
+            <header className="w-full border-b  flex items-center justify-between bg-red-900  rounded-lg">
+              <div className="flex items-center ml-2">
                 <input type="checkbox" id="selectAll" className="mr-2 h-5 w-5" />
-                <label htmlFor="selectAll" className="text-lg text-white font-bold">All</label>
+                <label htmlFor="selectAll" className="text-xs sm:text-xs md:text-xs lg:text-xm text-white font-bold">All</label>
               </div>
 
               <div className="ml-auto relative">
-                <label htmlFor="officeSelect" className="text-lg text-white font-bold mr-2">Select Office</label>
-                <select id="officeSelect" className="bg-white-100 text-black border border-gray-600 rounded-md py-1 px-2">
+                <label htmlFor="officeSelect" className="text-xs sm:text-xs md:text-xs lg:text-xm text-white font-bold mr-2">Select Office</label>
+                <select id="officeSelect" className="bg-white-100 text-xs sm:text-xs md:text-xs lg:text-xm text-black border border-gray-600 rounded-md py-1 px-2">
                   <option value=""></option>
                   {departments.map((department) => (
                     <option key={department} value={department}>{department} Office</option>
@@ -134,7 +134,7 @@ const Dashboard: React.FC = () => {
               <div className="ml-10 flex flex-col">
                 <div>
                   <label htmlFor="semesterSelect" className="text-sm text-white font-bold mr-2">Semester</label>
-                  <select id="semesterSelect" className="bg-white-100 text-black border border-gray-600">
+                  <select id="semesterSelect" className="bg-white-100 text-black text-xs sm:text-xs md:text-xs lg:text-xm border border-gray-600">
                     <option value=""></option>
                     <option value="first">First Semester</option>
                     <option value="second">Second Semester</option>
@@ -142,7 +142,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="mt-2">
                   <label htmlFor="academicYearSelect" className="text-sm text-white font-bold mr-2">Academic Year</label>
-                  <select id="academicYearSelect" className="bg-white-100 text-black border border-gray-600 text-sm ml-5">
+                  <select id="academicYearSelect" className="bg-white-100 text-xs sm:text-xs md:text-xs lg:text-xm text-black border border-gray-600 text-sm mr-5">
                     <option value=""></option>
                     {acadYears.map((acadYear) => (
                       <option key={acadYear} value={acadYear}>{acadYear}</option>
@@ -152,18 +152,18 @@ const Dashboard: React.FC = () => {
               </div>
             </header>
 
-            <div className="flex flex-col sm:flex-row justify-between mb-4 px-4">
-              <h1 className="text-xl font-bold">Overview Of Result</h1>
-                <div className=" bg-gray-300 p-4 rounded-lg">
+            <div className="flex flex-col sm:flex-row justify-between  px-4">
+              <h1 className=" text-lg font-bold">Overview Of Result</h1>
+                <div className=" bg-gray-300 p-2 rounded-lg m-2">
                   <section className="flex items-center justify-center">
                     <FaThumbsUp className="text-xl mr-2" /> 
-                    <p className="text-lg font-bold">Total Feedback</p>
+                    <p className=" text-xs sm:text-xs md:text-xs lg:text-xm font-bold">Total Feedback</p>
                   </section>
-                  <p className="text-center mt-2">100</p> {/* Total Feedback content here */}
+                  <p className="text-center mt-2  text-xs sm:text-xs md:text-xs lg:text-xm">100</p> {/* Total Feedback content here */}
                 </div>
             </div>
 
-            <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-[50px] w-[200px] mx-auto my-2 rounded-lg font-bold">
+            <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-[50px] w-[200px] mx-auto  rounded-lg font-bold">
               Insights Here
               <div>
                 {/* Content here */}
@@ -172,10 +172,10 @@ const Dashboard: React.FC = () => {
 
 
             <div className="flex w-full overflow-x-auto">
-              <div className="w-full sm:w-1/2 border  p-4">
+              <div className="w-full sm:w-1/2 border  p-2">
                 <Bar data={getBarChartData()} />
               </div>
-              <div className="w-full sm:w-1/2 border  p-4 flex items-center justify-end">
+              <div className="w-full sm:w-1/2 border  p-2 flex items-center justify-end">
                 <div className="w-full sm:w-1/2 flex flex-row">
                   <Pie data={getPieChartData()} options={getPieChartOptions()} />
                 </div>
