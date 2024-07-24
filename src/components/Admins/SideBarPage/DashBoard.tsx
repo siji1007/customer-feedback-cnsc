@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div>
-      <main className="px-4">
+      <main className="px-4 ">
         {!showDetailedView ? (
           <>
             <header className="w-full border-b pb-4 mb-4 flex items-center justify-between bg-red-900 p-2 rounded-lg">
@@ -167,12 +167,11 @@ const Dashboard: React.FC = () => {
             </section>
 
 
-
-            <div className="flex justify-between w-full">
-              <div className="w-full sm:w-1/2 border p-4">
+            <div className="flex w-full overflow-x-auto">
+              <div className="w-full sm:w-1/2 border  p-4">
                 <Bar data={getBarChartData()} />
               </div>
-              <div className="w-full sm:w-1/2 border p-4 flex items-center justify-end">
+              <div className="w-full sm:w-1/2 border  p-4 flex items-center justify-end">
                 <div className="w-full sm:w-1/2 flex flex-row">
                   <Pie data={getPieChartData()} options={getPieChartOptions()} />
                 </div>
@@ -181,7 +180,7 @@ const Dashboard: React.FC = () => {
             <div className="flex justify-end mt-4">
               <button
                 onClick={() => setShowDetailedView(true)}
-                className="text-center"
+                className="text-center underline"
               >
                 View Detailed Result
               </button>

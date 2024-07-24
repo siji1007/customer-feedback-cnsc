@@ -51,7 +51,7 @@ const VPREPage: React.FC = () => {
       </section>
 
       {/* Main Content */}
-      <div className="flex-1 pl-4">
+      <div className="flex-1 pl-4 max-h-[60vh] overflow-y-auto md:max-h-screen md:overflow-y-visible">
         {renderComponent()}
       </div>
     </div>
