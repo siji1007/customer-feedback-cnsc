@@ -153,7 +153,7 @@ const Dashboard: React.FC = () => {
             </header>
 
             <div className="flex flex-col sm:flex-row justify-between  px-4">
-              <h1 className=" text-lg font-bold">Overview Of Result</h1>
+              <h1 className=" text-lg font-bold m-2">Overview Of Result</h1>
                 <div className=" bg-gray-300 p-2 rounded-lg m-2">
                   <section className="flex items-center justify-center">
                     <FaThumbsUp className="text-xl mr-2" /> 
@@ -163,7 +163,7 @@ const Dashboard: React.FC = () => {
                 </div>
             </div>
 
-            <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-[50px] w-[200px] mx-auto  rounded-lg font-bold">
+            <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-[50px] w-[200px] mx-auto  rounded-lg font-bold m-2">
               Insights Here
               <div>
                 {/* Content here */}
