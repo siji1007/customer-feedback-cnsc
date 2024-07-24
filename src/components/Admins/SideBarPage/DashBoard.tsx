@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Bar, Pie } from 'react-chartjs-2';
+import { FaThumbsUp } from 'react-icons/fa';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
@@ -153,14 +154,17 @@ const Dashboard: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row justify-between mb-4 px-4">
               <h1 className="text-xl font-bold">Overview Of Result</h1>
-              <div className="text-right">
-                <p className="text-lg font-bold">Total Feedback</p>
-                {/* Total Feedback content here */}
-              </div>
+                <div className=" bg-gray-300 p-4 rounded-lg">
+                  <section className="flex items-center justify-center">
+                    <FaThumbsUp className="text-xl mr-2" /> 
+                    <p className="text-lg font-bold">Total Feedback</p>
+                  </section>
+                  <p className="text-center mt-2">100</p> {/* Total Feedback content here */}
+                </div>
             </div>
 
             <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-[50px] w-[200px] mx-auto my-2 rounded-lg font-bold">
-              Insights
+              Insights Here
               <div>
                 {/* Content here */}
               </div>

@@ -87,6 +87,9 @@ const AdminLogins: React.FC = () => {
   ) => {
     event.preventDefault();
     try {
+      setHasError(false);
+      setShowLoginForm(false);
+      setShowOfficeHead(true); 
       const response = await axios.post(
         serverUrl + "verify_oh",
         officeHeadCredentials,
@@ -148,7 +151,7 @@ const AdminLogins: React.FC = () => {
             className="flex flex-col items-center justify-center"
             onSubmit={handleAdminSignIn}
           >
-            <h1>ADMINISTRATOR</h1>
+            <h1 className="text-2xl font-bold mb-4">ADMINISTRATOR</h1>
             <div className="bg-gray-200 border-stone-400 border rounded-lg shadow-md p-4 w-full max-w-md">
               <section className="flex justify-between items-center mb-4">
                 <label
@@ -192,7 +195,7 @@ const AdminLogins: React.FC = () => {
             </div>
             <button
               type="submit"
-              className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full"
+              className="mt-4 px-4 py-2 bg-red-900 text-white rounded-lg w-full"
             >
               PROCEED
             </button>
@@ -228,11 +231,18 @@ const AdminLogins: React.FC = () => {
                   required
                 >
                   <option value="">Select Department</option>
-                  {departments.map((department) => (
-                    <option key={department} value={department}>
-                      {department}
-                    </option>
-                  ))}
+                  {/* {departments.map((department) => (
+                    // <option key={department} value={department}>
+                    //   {department}
+                    // </option>
+                  ))} */}
+                  <option key="value1" value="value1">
+                    Static Value 1
+                  </option>
+                  <option key="value2" value="value2">
+                    Static Value 2
+                  </option>
+
                 </select>
               </section>
               <section className="flex justify-between items-center mb-4">
@@ -260,7 +270,7 @@ const AdminLogins: React.FC = () => {
             </div>
             <button
               type="submit"
-              className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full"
+              className="mt-4 px-4 py-2 bg-red-900 text-white rounded-lg w-full"
             >
               PROCEED
             </button>
@@ -283,6 +293,7 @@ const AdminLogins: React.FC = () => {
           <div className="flex-grow w-full flex main-content">
             <OfficeHead />
           </div>
+          
         )}{" "}
         {/* Render OfficeHead if showOfficeHead is true */}
       </main>

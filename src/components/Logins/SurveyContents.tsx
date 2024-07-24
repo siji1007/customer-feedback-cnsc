@@ -47,7 +47,6 @@ const SurveyContents: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
-  const Navigate = useNavigate();
 
 
   const questions = [
