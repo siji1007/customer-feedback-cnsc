@@ -56,7 +56,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   ) => {
     event.preventDefault();
     try {
-      onLoginSuccess();
+      //onLoginSuccess();
       const response = await axios.post(
         import.meta.env.VITE_APP_SERVERHOST + "student-login",
         formData,

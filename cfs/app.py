@@ -30,12 +30,6 @@ def generate_question_id():
     random_part = random.randint(1000, 9999)  # Generate random 4-digit number
     return f"Q-{timestamp}-{random_part}"
 
-def showQuestions(qid):
-    question_data = server.questionnaire_collection.find({})
-    question_list = [q for qd in question_data if qd.get('_id')==qid for q in qd.get('questions')]
-    questions = [(q["q_id"], q["question"]) for q in question_list]
-    return questions
-
 def encryptPass(password):
     if len(password) < 8:
         return "Invalid Password", 401
@@ -282,6 +276,14 @@ def setReminderConf():
     config_data = request.get_json();
     server.settings_collection.update_one({'_id': ObjectId('669ebc9fbe9cfcf910ab30c1')}, {'$set': {'reminder_state': config_data["reminder-conf"]}})
     return "Questionnaire Edited Successfully.", 200
+
+@app.route('/show_questions', methods=['POST'])
+def showQuestions():
+    selected_offices = request.get_json()
+    question_data = server.questionnaire_collection.find({})
+    question_list = [q for q in question_data if q.get('department') in selected_offices["department"]]
+    questions = [q["title"] for q in question_list]
+    return questions
 
 if __name__ == '__main__':
     app.run(port="8082")

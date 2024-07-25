@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/solid"; // Import QuestionMarkCircleIcon
+import axios from "axios";
 
 const PageDots: React.FC<{ currentPage: number; totalPages: number }> = ({
   currentPage,
@@ -48,7 +49,6 @@ const SurveyContents: React.FC = () => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
 
-
   const questions = [
     "Ang mga patakaran at iba't ibang kursong mapag-aaralan sa Kolehiyo ay malawak na naipapabatid sa pamamagitan ng 'bronchures', 'pamphlets' at mga lathala at anunsiyong nakapaskil sa 'bulletin boad'",
     "Ang mga panuntunan, patakaran, tuntunin at gabay patungkol sa 'admission' ay malinaw at ipinatutupad nang may sistema.",
@@ -56,6 +56,16 @@ const SurveyContents: React.FC = () => {
     "Ang pagpapaskil ng mga nakapasa sa CNSC at (CNSC Admission Test) ay naaayon sa talatakdaan.",
     "Ang result ng CNSC AT ay maaaring malaman kung kinakailangan.",
   ];
+  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  {/*const fetchQuestions = async () => {
+    try {
+      const response = await axios.post(serverUrl + "show_questions", );
+    } catch (error) {
+      console.log(error);
+    }
+  };8/}
+
+  useEffect(() => {});
 
   const totalPages = Math.ceil(questions.length / 2);
 
@@ -120,7 +130,7 @@ const SurveyContents: React.FC = () => {
   const handleSubmit = () => {
     // Handle form submission logic here
     console.log("Form Submitted with values:", positions);
-    setIsSuccessModalOpen(true); 
+    setIsSuccessModalOpen(true);
   };
 
   const handleModalToggle = () => {
@@ -130,10 +140,7 @@ const SurveyContents: React.FC = () => {
   const Dashboard = () => {
     window.location.reload();
     setIsSuccessModalOpen(false); // Close success modal
-   
-
   };
-
 
   const renderQuestions = () => {
     const startIndex = (currentPage - 1) * 2;
@@ -300,39 +307,35 @@ const SurveyContents: React.FC = () => {
       )}
 
       {/* Floating button positioned at the bottom of the viewport */}
-      <div
-        className={`fixed p-2 bottom-0 right-2 z-${isModalOpen ? "50" : "10"}`}
-      >
-        <button
-          onClick={handleModalToggle}
-          style={{ backgroundColor: "#800000", color: "white" }}
-          className="text-white p-1 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          <QuestionMarkCircleIcon className="h-6 w-6" />
-        </button>
-      </div>
+  <div
+    className={`fixed p-2 bottom-0 right-2 z-${isModalOpen ? "50" : "10"}`}
+  >
+    <button
+      onClick={handleModalToggle}
+      style={{ backgroundColor: "#800000", color: "white" }}
+      className="text-white p-1 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    >
+      <QuestionMarkCircleIcon className="h-6 w-6" />
+    </button>
+  </div>
 
-      {/* Success Modal */}
-      {isSuccessModalOpen && (
+  {/* Success Modal */ }
+  {
+    isSuccessModalOpen && (
       <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 ">
         <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full m-10">
           <h2 className="text-xl font-semibold mb-4 text-center">Success</h2>
-          <p className="mb-4 text-center">Your responses have been successfully submitted!</p>
+          <p className="mb-4 text-center">
+            Your responses have been successfully submitted!
+          </p>
           <div className="flex flex-col justify-center space-y-4">
-
-          <button
-             
-              className="bg-red-800 text-white px-4 py-2 rounded"
-            >
+            <button className="bg-red-800 text-white px-4 py-2 rounded">
               Review Responses
             </button>
 
-            <button
-             
-             className="bg-red-800 text-white px-4 py-2 rounded"
-           >
+            <button className="bg-red-800 text-white px-4 py-2 rounded">
               Create another feedback
-           </button>
+            </button>
 
             <button
               onClick={Dashboard}
@@ -343,9 +346,9 @@ const SurveyContents: React.FC = () => {
           </div>
         </div>
       </div>
-    
-      )}
-    </div>
+    )
+  }
+    </div >
   );
 };
 
