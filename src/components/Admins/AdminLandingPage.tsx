@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Outlet, useMatch } from "react-router-dom";
 import { FaFacebook, FaTwitter } from "react-icons/fa";
-import VPREPage from "./AdminMainContent"; // Import VPREPage component
-import OfficeHead from "./OfficeHead";
 import axios from "axios";
 
 interface AdminCredentials {
@@ -19,7 +17,7 @@ const AdminLogins: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-  const formType = queryParams.get("form");
+  const formType = queryParams.get("form") || localStorage.getItem('formType');
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
   // State to manage which form is shown and which component to display
@@ -34,20 +32,21 @@ const AdminLogins: React.FC = () => {
       officeHead_password: "",
     });
   const [hasError, setHasError] = useState(false);
-  const [showOfficeHead, setShowOfficeHead] = useState(false);
-  const [showVPREPage, setShowVPREPage] = useState(false);
 
   const [departments, setDepartments] = useState<string[]>([]);
 
   const handleBackClick = () => {
     navigate("/?showSecondSetOfButtons=true");
+    localStorage.removeItem('formType');
   };
 
+ 
   const handleLogout = () => {
-    // Handle logout logic here, e.g., clear session, navigate to login page
-    setShowLoginForm(true); // Show login form again after logout
-    setShowVPREPage(false);
-    setShowOfficeHead(false);
+    const savedFormType = localStorage.getItem('formType');
+    if (savedFormType) {
+      navigate(`/admin?form=${savedFormType}`);
+      setShowLoginForm(true);
+    }
   };
 
   const handleSignInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,17 +58,21 @@ const AdminLogins: React.FC = () => {
 
   const handleAdminSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
     try {
       setHasError(false);
       setShowLoginForm(false);
-      setShowVPREPage(true);
+      localStorage.setItem('formType', 'administrator');
+      navigate("/admin/vpre");
       const response = await axios.post(
         serverUrl + "verify-admin",
-        adminCredentials,
+        adminCredentials
       );
       setHasError(false);
       setShowLoginForm(false);
-      setShowVPREPage(true); // Show VPREPage after successful login
+  
+      navigate("/admin/vpre"); // Navigate to the VPREPage
+      
     } catch (error) {
       setHasError(true);
     }
@@ -83,21 +86,21 @@ const AdminLogins: React.FC = () => {
   };
 
   const handleOfficeHeadSignIn = async (
-    event: React.FormEvent<HTMLFormElement>,
+    event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
     try {
       setHasError(false);
       setShowLoginForm(false);
-      setShowOfficeHead(true); 
+      localStorage.setItem('formType', 'officehead');
+      navigate("/admin/officehead"); 
       const response = await axios.post(
         serverUrl + "verify_oh",
-        officeHeadCredentials,
+        officeHeadCredentials
       );
-
       setHasError(false);
       setShowLoginForm(false);
-      setShowOfficeHead(true); // Show OfficeHead after successful login
+      navigate("/admin/officehead"); // Navigate to the OfficeHead page
     } catch (error) {
       setHasError(true);
     }
@@ -115,6 +118,15 @@ const AdminLogins: React.FC = () => {
 
     fetchDepartments();
   }, []);
+
+  useEffect(() => {
+    if (formType) {
+      localStorage.setItem('formType', formType);
+    }
+  }, [formType]);
+
+  const isAdminLogin = useMatch("/admin");
+  const isOfficeHeadLogin = useMatch("/admin/officehead");
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -283,19 +295,11 @@ const AdminLogins: React.FC = () => {
             </button>
           </form>
         )}
-        {showVPREPage && (
+      {!showLoginForm &&
           <div className="flex-grow w-full flex main-content">
-            <VPREPage />
-          </div>
-        )}{" "}
-        {/* Render VPREPage if showVPREPage is true */}
-        {showOfficeHead && (
-          <div className="flex-grow w-full flex main-content">
-            <OfficeHead />
-          </div>
-          
-        )}{" "}
-        {/* Render OfficeHead if showOfficeHead is true */}
+          <Outlet />
+            </div>
+       } {/* Render nested routes here */}
       </main>
 
       <footer className="w-full bg-red-900 flex justify-between p-2">
