@@ -46,13 +46,14 @@ const SurveyContents: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [questions, setQuestions] = useState<string[]>([]);
+  //const [questions, setQuestions] = useState<string[]>([]);
+  const questions = ["Question 1", "Question 2", "Question 3", "Question 4", "Question 5"]
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
-  const fetchQuestions = async () => {
+  {/*const fetchQuestions = async () => {
     try {
-      const response = await axios.post(serverUrl + "show_questions");
-      setQuestions(response.data); // Assuming response.data contains the questions
+      const response = await axios.post(serverUrl + "show_questions", );
+      setQuestions(response.data);
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
@@ -60,7 +61,7 @@ const SurveyContents: React.FC = () => {
 
   useEffect(() => {
     fetchQuestions();
-  }, []);
+  }, []);*/}
 
   const totalPages = Math.ceil(questions.length / 2);
 

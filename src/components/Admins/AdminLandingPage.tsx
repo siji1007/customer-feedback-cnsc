@@ -244,14 +244,6 @@ const AdminLogins: React.FC = () => {
                        {department}
                    </option>
                   ))} 
-                  
-                  {/*<option key="value1" value="value1">
-                    Static Value 1
-                  </option>
-                  <option key="value2" value="value2">
-                    Static Value 2
-                  </option>*/}
-
                 </select>
               </section>
               <section className="flex justify-between items-center mb-4">
