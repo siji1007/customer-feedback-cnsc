@@ -60,13 +60,10 @@ const AdminLogins: React.FC = () => {
     event.preventDefault();
     
     try {
-<<<<<<< HEAD
       setHasError(false);
       setShowLoginForm(false);
       localStorage.setItem('formType', 'administrator');
       navigate("/admin/vpre");
-=======
->>>>>>> 4f44e507ed6ff039a40b36b731934092dddb0d92
       const response = await axios.post(
         serverUrl + "verify-admin",
         adminCredentials
@@ -93,13 +90,10 @@ const AdminLogins: React.FC = () => {
   ) => {
     event.preventDefault();
     try {
-<<<<<<< HEAD
       setHasError(false);
       setShowLoginForm(false);
       localStorage.setItem('formType', 'officehead');
       navigate("/admin/officehead"); 
-=======
->>>>>>> 4f44e507ed6ff039a40b36b731934092dddb0d92
       const response = await axios.post(
         serverUrl + "verify_oh",
         officeHeadCredentials
@@ -144,16 +138,12 @@ const AdminLogins: React.FC = () => {
             className="h-10 w-16 object-contain"
           />
           <div className="ml-4 flex flex-col justify-center">
-            <h1
-              className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold "
-              style={{ borderBottom: "2px solid gold" }}
-            >
+          <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold "
+          style={{ borderBottom: '2px solid gold' }}>
               Camarines Norte State College
-            </h1>
+          </h1>
 
-            <h1 className="text-white text-sm sm:text-sm md:text-xs lg:text-xm font-bold">
-              Client Feedback System
-            </h1>
+            <h1 className="text-white text-sm sm:text-sm md:text-xs lg:text-xm font-bold">Client Feedback System</h1>
           </div>
         </div>
         {/* Conditionally render logout button */}
@@ -253,17 +243,18 @@ const AdminLogins: React.FC = () => {
                   required
                 >
                   <option value="">Select Department</option>
-                  {departments.map((department) => (
-                    <option key={department} value={department}>
-                      {department}
-                    </option>
-                  ))}
-                  {/*<option key="value1" value="value1">
+                  {/* {departments.map((department) => (
+                    // <option key={department} value={department}>
+                    //   {department}
+                    // </option>
+                  ))} */}
+                  <option key="value1" value="value1">
                     Static Value 1
                   </option>
                   <option key="value2" value="value2">
                     Static Value 2
-                  </option>*/}
+                  </option>
+
                 </select>
               </section>
               <section className="flex justify-between items-center mb-4">
@@ -306,22 +297,9 @@ const AdminLogins: React.FC = () => {
         )}
       {!showLoginForm &&
           <div className="flex-grow w-full flex main-content">
-<<<<<<< HEAD
           <Outlet />
             </div>
        } {/* Render nested routes here */}
-=======
-            <VPREPage />
-          </div>
-        )}{" "}
-        {/* Render VPREPage if showVPREPage is true */}
-        {showOfficeHead && (
-          <div className="flex-grow w-full flex main-content">
-            <OfficeHead />
-          </div>
-        )}{" "}
-        {/* Render OfficeHead if showOfficeHead is true */}
->>>>>>> 4f44e507ed6ff039a40b36b731934092dddb0d92
       </main>
 
       <footer className="w-full bg-red-900 flex justify-between p-2">

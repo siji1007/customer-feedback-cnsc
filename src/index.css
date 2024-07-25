@@ -1,8 +1,13 @@
-/* * {
+* {
   
    border: 1px solid red;
+<<<<<<< Updated upstream
   } 
    */
+=======
+  }
+  
+>>>>>>> Stashed changes
   body{
     overflow:hidden;
     background-color: white;
