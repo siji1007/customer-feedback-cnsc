@@ -60,10 +60,10 @@ const AdminLogins: React.FC = () => {
     event.preventDefault();
     
     try {
-      setHasError(false);
-      setShowLoginForm(false);
-      localStorage.setItem('formType', 'administrator');
-      navigate("/admin/vpre");
+      //setHasError(false);
+      //setShowLoginForm(false);
+      //localStorage.setItem('formType', 'administrator');
+      //navigate("/admin/vpre");
       const response = await axios.post(
         serverUrl + "verify-admin",
         adminCredentials
@@ -90,10 +90,10 @@ const AdminLogins: React.FC = () => {
   ) => {
     event.preventDefault();
     try {
-      setHasError(false);
-      setShowLoginForm(false);
-      localStorage.setItem('formType', 'officehead');
-      navigate("/admin/officehead"); 
+      //setHasError(false);
+      //setShowLoginForm(false);
+      //localStorage.setItem('formType', 'officehead');
+      //navigate("/admin/officehead"); 
       const response = await axios.post(
         serverUrl + "verify_oh",
         officeHeadCredentials
@@ -239,17 +239,18 @@ const AdminLogins: React.FC = () => {
                   required
                 >
                   <option value="">Select Department</option>
-                  {/* {departments.map((department) => (
-                    // <option key={department} value={department}>
-                    //   {department}
-                    // </option>
-                  ))} */}
-                  <option key="value1" value="value1">
+                  {departments.map((department) => (
+                    <option key={department} value={department}>
+                       {department}
+                   </option>
+                  ))} 
+                  
+                  {/*<option key="value1" value="value1">
                     Static Value 1
                   </option>
                   <option key="value2" value="value2">
                     Static Value 2
-                  </option>
+                  </option>*/}
 
                 </select>
               </section>
