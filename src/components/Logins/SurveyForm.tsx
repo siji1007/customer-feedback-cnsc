@@ -116,7 +116,7 @@ const SurveyForm: React.FC = () => {
 
    {/* Survey Contents section */}
    {content === 'Survey Contents' && (
-            <SurveyContents />
+            <SurveyContents selectedOffice={selectedOffice}/>
           )}
 </>
 
