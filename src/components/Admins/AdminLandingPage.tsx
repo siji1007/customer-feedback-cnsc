@@ -60,10 +60,10 @@ const AdminLogins: React.FC = () => {
     event.preventDefault();
     
     try {
-      //setHasError(false);
-      //setShowLoginForm(false);
-      //localStorage.setItem('formType', 'administrator');
-      //navigate("/admin/vpre");
+      setHasError(false);
+      setShowLoginForm(false);
+      localStorage.setItem('formType', 'administrator');
+      navigate("/admin/vpre");
       const response = await axios.post(
         serverUrl + "verify-admin",
         adminCredentials

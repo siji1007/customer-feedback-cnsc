@@ -4,6 +4,7 @@ import LandingPage from "./components/LandingPage";
 import AdminLogins from "./components/Admins/AdminLandingPage";
 import VPREPage from "./components/Admins/AdminMainContent"; // Import VPREPage component
 import OfficeHead from "./components/Admins/OfficeHead"; // Import OfficeHead component
+
 import Error from "./components/Error";
 import "./App.css";
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/customer" element={<LandingPage />} />
         <Route path="/admin/*" element={<AdminLogins />}>
           <Route path="vpre" element={<VPREPage />} />
+      
           <Route path="officehead" element={<OfficeHead />} />
         </Route>
         {/* Add a route for handling 404 errors */}
