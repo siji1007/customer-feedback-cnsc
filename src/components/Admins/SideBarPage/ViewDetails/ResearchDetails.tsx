@@ -3,7 +3,7 @@ import BarChart from '../BarChart';
 import PieChart from '../PieChart';
 import axios from 'axios';
 
-const StudentDetails: React.FC = () => {
+const ResearchDetails: React.FC = () => {
   const [acadYears, setAcadYears] = useState<string[]>([]);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
@@ -20,7 +20,7 @@ const StudentDetails: React.FC = () => {
     fetchAcadYears();
   }, []);
 
-  const getStudentBarChartData = () => {
+  const getResearchBarChartData = () => {
     const labels = ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'];
     const backgroundColors = ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'];
   
@@ -46,7 +46,7 @@ const StudentDetails: React.FC = () => {
       labels: sortedLabels,
       datasets: [
         {
-          label: 'Student Feedback',
+          label: 'Research Office Feedback',
           data: sortedValues,
           backgroundColor: sortedColors,
           borderColor: sortedColors,
@@ -57,10 +57,10 @@ const StudentDetails: React.FC = () => {
   };
   
 
-  const getStudentPieChartData = () => {
-    const pieLabels = ['College of Engineering', 'Institute of Computer Studies', 'College of Business Administration'];
-    const pieData = [35, 45, 20]; // Dummy data for pie chart, replace with actual values
-    const pieColors = ['#4A90E2', '#50E3C2', '#F5A623'];
+  const getResearchPieChartData = () => {
+    const pieLabels = ['Student','Visitor'];
+    const pieData = [35, 45]; // Dummy data for pie chart, replace with actual values
+    const pieColors = ['#4A90E2', '#50E3C2'];
   
 
     return {
@@ -99,14 +99,14 @@ const StudentDetails: React.FC = () => {
         </div>
       </header>
       <div className="p-4">
-      <h1 className='font-bold text-center m-2'>Overall Students Satisfactions</h1>
+      <h1 className='font-bold text-center m-2'>Overall Research Office Satisfactions</h1>
         <div className="flex w-full overflow-x-auto mb-4">
           <div className="w-full sm:w-1/2 border p-2">
-            <BarChart data={getStudentBarChartData()} />
+            <BarChart data={getResearchBarChartData()} />
           </div>
           <div className="w-full sm:w-1/2 border p-2 flex items-center justify-end">
           <div className="w-full sm:w-1/2 flex flex-row">
-            <PieChart data={getStudentPieChartData()} />
+            <PieChart data={getResearchPieChartData()} />
           </div>
         </div>
         </div>
@@ -115,4 +115,4 @@ const StudentDetails: React.FC = () => {
   );
 };
 
-export default StudentDetails;
+export default ResearchDetails;

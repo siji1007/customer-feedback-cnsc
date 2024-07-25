@@ -6,6 +6,9 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import BarChart from './BarChart';
 import PieChart from './PieChart';
 import StudentDetails  from "./ViewDetails/StudentsDetails";
+import EmployeeDetails from "./ViewDetails/EmployeeDetails";
+import OthersDetails from "./ViewDetails/OthersDetails";
+import ResearchDetails from './ViewDetails/ResearchDetails';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -16,6 +19,7 @@ const Dashboard: React.FC = () => {
 
   const [content, setContent] = useState(''); // State to manage main content
   const [feedbackData, setFeedbackData] = useState([10, 81, 80, 25, 15]); // Dummy feedback data for categories
+  
 
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
@@ -26,11 +30,17 @@ const Dashboard: React.FC = () => {
         <StudentDetails/>
         );    
       case 'Employee':
-        return <div>Employee Content</div>;
+        return (
+          <EmployeeDetails/>
+          ); 
       case 'Others Customer':
-        return <div>Others Customer Content</div>;
+        return (
+          <OthersDetails/>
+          ); 
       case 'Research':
-        return <div>Research Content</div>;
+        return (
+          <ResearchDetails/>
+          ); 
       default:
         return <div>Select an option from the sidebar</div>;
     }
@@ -114,6 +124,8 @@ const Dashboard: React.FC = () => {
       ],
     };
   };
+
+  
 
   return (
     <div>
@@ -217,8 +229,11 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
             <div className="flex justify-end mt-4">
-              <button
-                onClick={() => setShowDetailedView(true)}
+            <button
+                onClick={() => {
+                  setShowDetailedView(true);
+                  setContent('Students'); // Set content to 'Students' when toggling detailed view
+                }}
                 className="text-center underline"
               >
                 View Detailed Result
@@ -232,7 +247,7 @@ const Dashboard: React.FC = () => {
               <li className="mb-2">
                 <button
                   onClick={() => setContent('Students')}
-                  className="w-full text-left text-sm sm:text-sm md:text-sm lg:text-xm font-bold border p-2"
+                  className={`w-full text-left text-sm sm:text-sm md:text-sm lg:text-xm font-bold border p-2 ${content === 'Students' ? 'bg-gray-300' : ''}`}
                 >
                   Students
                 </button>
@@ -240,7 +255,7 @@ const Dashboard: React.FC = () => {
               <li className="mb-2">
                 <button
                   onClick={() => setContent('Employee')}
-                  className="w-full text-left text-sm sm:text-sm md:text-sm lg:text-xm font-bold border p-2"
+                  className={`w-full text-left text-sm sm:text-sm md:text-sm lg:text-xm font-bold border p-2 ${content === 'Employee' ? 'bg-gray-300' : ''}`}
                 >
                   Employee
                 </button>
@@ -248,7 +263,7 @@ const Dashboard: React.FC = () => {
               <li className="mb-2">
                 <button
                   onClick={() => setContent('Others Customer')}
-                  className="w-full text-left text-sm sm:text-sm md:text-sm lg:text-xm font-bold border p-2"
+                  className={`w-full text-left text-sm sm:text-sm md:text-sm lg:text-xm font-bold border p-2 ${content === 'Others Customer' ? 'bg-gray-300' : ''}`}
                 >
                   Others Customer
                 </button>
@@ -256,12 +271,14 @@ const Dashboard: React.FC = () => {
               <li className="mb-2">
                 <button
                   onClick={() => setContent('Research')}
-                  className="w-full text-left text-sm sm:text-sm md:text-sm lg:text-xm font-bold border p-2"
+                  className={`w-full text-left text-sm sm:text-sm md:text-sm lg:text-xm font-bold border p-2 ${content === 'Research' ? 'bg-gray-300' : ''}`}
                 >
                   Research
                 </button>
               </li>
+              <p className="text-xs m-5 text-gray-400">Select the specific data to sort the Result of Clients</p>
             </ul>
+     
             <button
               onClick={() => setShowDetailedView(false)}
               className="w-full text-left text-sm sm:text-sm md:text-sm lg:text-xm border p-2 text-center mt-auto"
