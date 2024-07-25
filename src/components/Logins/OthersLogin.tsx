@@ -36,7 +36,7 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full ">
+    <div className="flex flex-col items-center w-full p-10">
       <h2 className="text-xl mb-4">Personal Information</h2>
 
       <form
