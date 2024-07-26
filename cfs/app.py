@@ -285,10 +285,10 @@ def showQuestions():
     questions = [q["title"] for q in question_list if q["department"] in selected_offices["department"]["selectedOffice"]]
     return questions
 
-@app.route('/survey_submit_success', methods=["POST"])
+@app.route('/submit_answer', methods=["POST"])
 def surveySuccess():
     survey_result = request.get_json()
-    print(survey_result)
+    server.answer_collection.insert_one(survey_result)
     return "Recorded Successfully"
 
 if __name__ == '__main__':

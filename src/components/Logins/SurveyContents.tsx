@@ -2,20 +2,10 @@ import React, { useState, useEffect } from "react";
 import { CheckIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 
-const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
-
-const ErrorComponent = () => {
-  return <div>No Survey Available</div>;
-};
-
 const PageDots: React.FC<{ currentPage: number; totalPages: number }> = ({
   currentPage,
   totalPages,
 }) => {
-  if (totalPages <= 0) {
-    return <ErrorComponent />;
-  }
-
   return (
     <div className="relative flex items-center justify-center mb-3">
       {/* Connecting Lines */}
@@ -45,7 +35,7 @@ const PageDots: React.FC<{ currentPage: number; totalPages: number }> = ({
   );
 };
 
-const SurveyContents: React.FC = ({ selectedOffice }) => {
+const SurveyContents: React.FC = ({selectedOffice}) => {
   const [positions, setPositions] = useState<{ [key: number]: number }>({
     1: 0,
     2: 0,
@@ -56,21 +46,13 @@ const SurveyContents: React.FC = ({ selectedOffice }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [questions, setQuestions] = useState<string[]>([
-    "Question 1",
-    "Question 2",
-    "Question 3",
-    "Question 4",
-    "Question 5",
-  ]);
-  const [surveyAnswer, setSurveyAnswer] = useState<string[]>([]);
+  console.log(selectedOffice)
+  const [questions, setQuestions] = useState<string[]>(["Question 1", "Question 2", "Question 3", "Question 4", "Question 5"]);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.post(serverUrl + "show_questions", {
-        department: { selectedOffice },
-      });
+      const response = await axios.post(serverUrl + "show_questions", {department: {selectedOffice}});
       setQuestions(response.data);
     } catch (error) {
       console.error("Error fetching questions:", error);
@@ -127,7 +109,7 @@ const SurveyContents: React.FC = ({ selectedOffice }) => {
       // Log the selected values for the current page's questions
       for (let i = 1; i <= 2; i++) {
         const selectedValue = getScaleValue(i);
-        setSurveyAnswer([...surveyAnswer, selectedValue]);
+        console.log(`Question ${i}: ${selectedValue}`);
       }
     }
     if (currentPage < totalPages) {
@@ -141,16 +123,14 @@ const SurveyContents: React.FC = ({ selectedOffice }) => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async() => {
     // Handle form submission logic here
-    //console.log("Form Submitted with values:", positions);
-    try {
-      const response = await axios.post(serverUrl + "survey_submit_success", {
-        answers: positions,
-      });
+    // console.log("Form Submitted with values:", positions);
+    try{
+      const response = await axios.post(serverUrl + "submit_answer", {student_id: globalThis.activeId, answer: positions})
       setIsSuccessModalOpen(true);
-    } catch (error) {
-      console.log(error);
+    }catch(error){
+      console.log(error)
     }
   };
 
@@ -253,9 +233,7 @@ const SurveyContents: React.FC = ({ selectedOffice }) => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-4 rounded-md shadow-lg max-w-sm">
-            <p className="text-lg font-semibold">
-              Are you sure you want to close?
-            </p>
+            <p className="text-lg font-semibold">Are you sure you want to close?</p>
             <div className="flex justify-end mt-4">
               <button onClick={handleModalToggle} className="text-gray-700">
                 Cancel

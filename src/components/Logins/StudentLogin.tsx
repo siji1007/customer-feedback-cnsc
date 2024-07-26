@@ -51,6 +51,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
     setShowSignUpForm(true);
   };
 
+
   const handleStudentSignIn = async (
     event: React.FormEvent<HTMLFormElement>,
   ) => {
@@ -62,6 +63,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
         formData,
       );
       setHasError(false);
+      globalThis.activeId = formData["student_id"]
       onLoginSuccess();
     } catch (error) {
       setHasError(true);
