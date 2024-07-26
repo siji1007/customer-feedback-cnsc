@@ -280,9 +280,9 @@ def setReminderConf():
 @app.route('/show_questions', methods=['POST'])
 def showQuestions():
     selected_offices = request.get_json()
-    question_data = server.questionnaire_collection.find({})
-    question_list = [q for q in question_data if q.get('department') in selected_offices["department"]]
-    questions = [q["title"] for q in question_list]
+    question_data = server.questionnaire_collection.find()
+    question_list = [q for q in question_data]
+    questions = [q["title"] for q in question_list if q["department"] in selected_offices["department"]["selectedOffice"]]
     return questions
 
 if __name__ == '__main__':
