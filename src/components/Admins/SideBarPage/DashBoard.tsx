@@ -218,12 +218,12 @@ const Dashboard: React.FC = () => {
               Insights
             </section>
 
-            <div className="flex w-full overflow-x-auto mb-4">
-              <div className="w-full sm:w-1/2 border p-2">
+            <div className="flex w-full overflow-x-auto mb-4  items-center justify-center">
+              <div className="w-full sm:w-1/3 border p-2 flex justify-center items-center">
                 <BarChart data={getBarChartData()} />
               </div>
-              <div className="w-full sm:w-1/2 border p-2 flex items-center justify-end">
-                <div className="w-full sm:w-1/2 flex flex-row">
+              <div className="w-full sm:w-1/2 border p-2 flex justify-center items-center">
+                <div className="sm:w-1/3 ">
                   <PieChart data={getPieChartData()} options={getPieChartOptions()} />
                 </div>
               </div>

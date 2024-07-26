@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import BarChart from './SideBarPage/BarChart';
+import PieChart from './SideBarPage/PieChart';
+import { FaThumbsUp } from 'react-icons/fa';
 
 const OfficeHead: React.FC = () => {
   // Define arrays for departments and academic years
@@ -7,6 +10,7 @@ const OfficeHead: React.FC = () => {
   const [acadYears, setAcadYears] = useState<string[]>([]);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
+  const [feedbackData, setFeedbackData] = useState([10, 81, 80, 25, 15]); // Dummy feedback data for categories
   const fetchDepartments = async () => {
     try {
       const response = await axios.get(serverUrl + "service_department");
@@ -29,6 +33,62 @@ const OfficeHead: React.FC = () => {
     fetchDepartments();
     fetchAcademicYear();
   });
+  const getBarChartData = () => {
+    const labels = ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'];
+    const backgroundColors = ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'];
+
+    const sortedData = feedbackData
+      .map((value, index) => ({ value, label: labels[index], color: backgroundColors[index] }))
+      .sort((a, b) => b.value - a.value); // Sort descending by value
+
+    const sortedLabels = sortedData.map(data => data.label);
+    const sortedValues = sortedData.map(data => data.value);
+    const sortedColors = sortedData.map(data => data.color);
+
+    return {
+      labels: sortedLabels,
+      datasets: [
+        {
+          label: 'Feedback',
+          data: sortedValues,
+          backgroundColor: sortedColors,
+          borderColor: sortedColors, // Border color same as background color for consistency
+          borderWidth: 1, // Optional: Adjust the border width if needed
+        },
+      ],
+    };
+  };
+
+  const getPieChartOptions = () => ({
+    plugins: {
+      legend: {
+        position: 'left', // Position legend to the left
+        labels: {
+          usePointStyle: true, // Optional: Use point style for labels
+        },
+      },
+    },
+  });
+  
+  const getPieChartData = () => {
+    const pieLabels = ['Students', 'Employee', 'Others'];
+    const pieData = [35, 45, 20]; // Dummy data for pie chart, replace with actual values
+    const pieColors = ['#4A90E2', '#50E3C2', '#F5A623'];
+  
+    return {
+      label: 'Feedback',
+      labels: pieLabels,
+      datasets: [
+        {
+          data: pieData,
+          backgroundColor: pieColors,
+          borderColor: '#fff', // Optional: Set border color for pie segments
+          borderWidth: 2, // Optional: Adjust the border width if needed
+        },
+      ],
+    };
+  };
+
 
   return (
     <main className="w-full m-4">
@@ -99,27 +159,31 @@ const OfficeHead: React.FC = () => {
         </div>
       </header>
 
-      <div className="flex justify-between mb-4">
-        <h1 className="text-xl font-bold">Overview Of Result</h1>
-        <div className="text-right">
-          <p className="text-lg font-bold">Total Feedback</p>
-          {/* Total Feedback content here */}
-        </div>
-      </div>
+      <div className="flex justify-between ">
+              <h1 className="text-lg font-bold m-2">Overview Of Result</h1>
+              <div className="bg-gray-300 rounded-lg">
+                <section className="flex items-center justify-center p-2">
+                  <FaThumbsUp className="text-xl mr-2" />
+                  <p className="text-xs sm:text-xs md:text-xs lg:text-xm font-bold">Total Feedback</p>
+                </section>
+                <p className="text-center text-xs sm:text-xs md:text-xs lg:text-xm">100</p>
+              </div>
+            </div>
 
-      <section className="text-center mb-8">
-        <h2 className="text-2xl font-bold">Insights</h2>
-        {/* Insights content here */}
-      </section>
+            <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-[50px] w-[200px] mx-auto rounded-lg font-bold">
+              Insights
+            </section>
+            <div className="flex w-full overflow-x-auto mb-4  items-center justify-center">
+              <div className="w-full sm:w-1/3 border p-2 flex justify-center items-center">
+                <BarChart data={getBarChartData()} />
+              </div>
+              <div className="w-full sm:w-1/2 border p-2 flex justify-center items-center">
+                <div className="sm:w-1/3 ">
+                  <PieChart data={getPieChartData()} options={getPieChartOptions()} />
+                </div>
+              </div>
+            </div>
 
-      <div className="flex space-x-4">
-        <div className="w-1/2 border p-4 bg-gray-200">
-          <p className="text-center">Bar Graph</p>
-        </div>
-        <div className="w-1/2 border p-4 bg-gray-200">
-          <p className="text-center">Pie Graph</p>
-        </div>
-      </div>
     </main>
   );
 };

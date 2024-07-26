@@ -90,10 +90,10 @@ const AdminLogins: React.FC = () => {
   ) => {
     event.preventDefault();
     try {
-      //setHasError(false);
-      //setShowLoginForm(false);
-      //localStorage.setItem('formType', 'officehead');
-      //navigate("/admin/officehead"); 
+      setHasError(false);
+      setShowLoginForm(false);
+      localStorage.setItem('formType', 'officehead');
+      navigate("/admin/officehead"); 
       const response = await axios.post(
         serverUrl + "verify_oh",
         officeHeadCredentials
@@ -239,11 +239,16 @@ const AdminLogins: React.FC = () => {
                   required
                 >
                   <option value="">Select Department</option>
+
                   {departments.map((department) => (
                     <option key={department} value={department}>
                        {department}
                    </option>
+                   
+    
                   ))} 
+                   <option value="IVS">IVS</option>
+                   <option value="asd Department">asd Department</option>
                 </select>
               </section>
               <section className="flex justify-between items-center mb-4">
