@@ -17,7 +17,7 @@ const AdminLogins: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-  const formType = queryParams.get("form") || localStorage.getItem('formType');
+  const formType = queryParams.get("form") || localStorage.getItem("formType");
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
   // State to manage which form is shown and which component to display
@@ -37,12 +37,11 @@ const AdminLogins: React.FC = () => {
 
   const handleBackClick = () => {
     navigate("/?showSecondSetOfButtons=true");
-    localStorage.removeItem('formType');
+    localStorage.removeItem("formType");
   };
 
- 
   const handleLogout = () => {
-    const savedFormType = localStorage.getItem('formType');
+    const savedFormType = localStorage.getItem("formType");
     if (savedFormType) {
       navigate(`/admin?form=${savedFormType}`);
       setShowLoginForm(true);
@@ -58,21 +57,20 @@ const AdminLogins: React.FC = () => {
 
   const handleAdminSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
+
     try {
-      setHasError(false);
-      setShowLoginForm(false);
-      localStorage.setItem('formType', 'administrator');
-      navigate("/admin/vpre");
+      //setHasError(false);
+      //setShowLoginForm(false);
+      //localStorage.setItem('formType', 'administrator');
+      //navigate("/admin/vpre");
       const response = await axios.post(
         serverUrl + "verify-admin",
-        adminCredentials
+        adminCredentials,
       );
       setHasError(false);
       setShowLoginForm(false);
-  
+
       navigate("/admin/vpre"); // Navigate to the VPREPage
-      
     } catch (error) {
       setHasError(true);
     }
@@ -86,17 +84,17 @@ const AdminLogins: React.FC = () => {
   };
 
   const handleOfficeHeadSignIn = async (
-    event: React.FormEvent<HTMLFormElement>
+    event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
     try {
       //setHasError(false);
       //setShowLoginForm(false);
       //localStorage.setItem('formType', 'officehead');
-      //navigate("/admin/officehead"); 
+      //navigate("/admin/officehead");
       const response = await axios.post(
         serverUrl + "verify_oh",
-        officeHeadCredentials
+        officeHeadCredentials,
       );
       setHasError(false);
       setShowLoginForm(false);
@@ -121,7 +119,7 @@ const AdminLogins: React.FC = () => {
 
   useEffect(() => {
     if (formType) {
-      localStorage.setItem('formType', formType);
+      localStorage.setItem("formType", formType);
     }
   }, [formType]);
 
@@ -132,14 +130,22 @@ const AdminLogins: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <header className="w-full  bg-red-900 flex justify-between items-center px-4">
         <div className="flex items-center m-2">
-        <img src="src/assets/cnsc_logo.png" alt="Logo" className="h-16 w-16 object-contain" />
+          <img
+            src="src/assets/cnsc_logo.png"
+            alt="Logo"
+            className="h-16 w-16 object-contain"
+          />
           <div className="ml-4 flex flex-col justify-center">
-          <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold "
-          style={{ borderBottom: '2px solid gold' }}>
+            <h1
+              className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold "
+              style={{ borderBottom: "2px solid gold" }}
+            >
               Camarines Norte State College
-          </h1>
+            </h1>
 
-            <h1 className="text-white text-sm sm:text-sm md:text-xs lg:text-xm font-bold">Client Feedback System</h1>
+            <h1 className="text-white text-sm sm:text-sm md:text-xs lg:text-xm font-bold">
+              Client Feedback System
+            </h1>
           </div>
         </div>
         {/* Conditionally render logout button */}
@@ -241,9 +247,9 @@ const AdminLogins: React.FC = () => {
                   <option value="">Select Department</option>
                   {departments.map((department) => (
                     <option key={department} value={department}>
-                       {department}
-                   </option>
-                  ))} 
+                      {department}
+                    </option>
+                  ))}
                 </select>
               </section>
               <section className="flex justify-between items-center mb-4">
@@ -284,11 +290,12 @@ const AdminLogins: React.FC = () => {
             </button>
           </form>
         )}
-      {!showLoginForm &&
+        {!showLoginForm && (
           <div className="flex-grow w-full flex main-content">
-          <Outlet />
-            </div>
-       } {/* Render nested routes here */}
+            <Outlet />
+          </div>
+        )}{" "}
+        {/* Render nested routes here */}
       </main>
 
       <footer className="w-full bg-red-900 flex justify-between p-2">
