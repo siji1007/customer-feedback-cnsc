@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { CheckIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 
+const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+
 const ErrorComponent = () => {
   return <div>No Survey Available</div>;
 };
@@ -125,8 +127,7 @@ const SurveyContents: React.FC = ({ selectedOffice }) => {
       // Log the selected values for the current page's questions
       for (let i = 1; i <= 2; i++) {
         const selectedValue = getScaleValue(i);
-        //console.log(questions[i], selectedValue);
-        setSurveyAnswer([...selectedValue]);
+        setSurveyAnswer([...surveyAnswer, selectedValue]);
       }
     }
     if (currentPage < totalPages) {
@@ -140,10 +141,17 @@ const SurveyContents: React.FC = ({ selectedOffice }) => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Handle form submission logic here
-    console.log("Form Submitted with values:", positions);
-    setIsSuccessModalOpen(true);
+    //console.log("Form Submitted with values:", positions);
+    try {
+      const response = await axios.post(serverUrl + "survey_submit_success", {
+        answers: positions,
+      });
+      setIsSuccessModalOpen(true);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleModalToggle = () => {
