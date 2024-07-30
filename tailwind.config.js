@@ -9,7 +9,7 @@ export default {
         pop: {
           '0%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.5)' },
-          '100%': { transform: 'scale(1)' },
+          '100%': { transform: 'scale(1.5)' }, // Keep it scaled up at the end
         },
       },
       animation: {

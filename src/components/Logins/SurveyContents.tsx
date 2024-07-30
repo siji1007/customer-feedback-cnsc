@@ -35,6 +35,7 @@ const PageDots: React.FC<{ currentPage: number; totalPages: number }> = ({
   );
 };
 
+
 const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice }) => {
   const [positions, setPositions] = useState<{ [key: number]: number }>({
     1: 0,
@@ -46,7 +47,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [poppingEmoji, setPoppingEmoji] = useState<number | null>(null); // Track which emoji is popping
+  const [poppingEmoji, setPoppingEmoji] = useState<number | null>(null);
   const [questions, setQuestions] = useState<string[]>([
     "Question 1",
     "Question 2",
@@ -78,13 +79,49 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
       ...prevPositions,
       [questionIndex]: value,
     }));
-    setPoppingEmoji(questionIndex); // Set the emoji to pop
-    setTimeout(() => setPoppingEmoji(null), 400); // Remove pop class after animation
+    setPoppingEmoji(questionIndex);
+  };
+
+  const getEmojiClass = (questionIndex: number, value: number) => {
+    const isSelected = positions[questionIndex] === value;
+    return `cursor-pointer text-2xl ${isSelected ? "scale-150 text-blue-500" : ""} ${poppingEmoji === questionIndex && !isSelected ? "animate-pop" : ""}`;
   };
 
   const getEmoji = (value: number) => {
-    const emojis = ["😔", "😟", "😐", "😃", "🤩"];
-    return emojis[value - 1];
+    const emojiSources = [
+      {
+        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.webp",
+        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.gif",
+        alt: "😔",
+      },
+      {
+        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.webp",
+        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.gif",
+        alt: "🙁",
+      },
+      {
+        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.webp",
+        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.gif",
+        alt: "😐",
+      },
+      {
+        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.webp",
+        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.gif",
+        alt: "😊",
+      },
+      {
+        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.webp",
+        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.gif",
+        alt: "🤩",
+      },
+    ];
+    const emoji = emojiSources[value - 1];
+    return (
+      <picture>
+        <source srcSet={emoji.srcSet} type="image/webp" />
+        <img src={emoji.src} alt={emoji.alt} width="32" height="32" />
+      </picture>
+    );
   };
 
   const getScaleValue = (questionIndex: number) => {
@@ -150,15 +187,14 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
             {[1, 2, 3, 4, 5].map((value) => (
               <div
                 key={value}
-                className={`cursor-pointer text-2xl ${
-                  positions[questionIndex] === value ? "text-blue-500" : ""
-                } ${poppingEmoji === questionIndex && positions[questionIndex] === value ? "animate-pop" : ""}`}
+                className={getEmojiClass(questionIndex, value)}
                 onClick={() => handleEmojiClick(questionIndex, value)}
               >
                 {getEmoji(value)}
               </div>
             ))}
           </div>
+
           <div className="text-center mt-2">
             {positions[questionIndex] > 0 && (
               <span className="text-xs md:text-sm lg:text-lg font-semibold">
@@ -173,85 +209,69 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
 
   return (
     <div className="p-4 md:p-6 lg:p-8 mx-auto max-w-screen-md relative">
-      <div className="flex flex-col space-y-4">
-        {renderQuestions()}
-        {currentPage === totalPages && (
-          <form className="bg-gray-100 p-4 rounded-md shadow-md">
-            <p className="text-lg md:text-xl lg:text-2xl mb-4 shadow-lg ">
-              Complaints, Comments, and Suggestion{" "}
-            </p>
-            <textarea
-              placeholder="Your comments here..."
-              className="w-full h-32 border rounded-md p-2"
-            ></textarea>
-          </form>
+    <div className="flex flex-col space-y-4">
+      {renderQuestions()}
+      {currentPage === totalPages && (
+        <form className="bg-gray-100 p-4 rounded-md shadow-md">
+          <p className="text-lg md:text-xl lg:text-2xl mb-4 shadow-lg ">
+            Complaints, Comments, and Suggestion{" "}
+          </p>
+          <textarea
+            placeholder="Your comments here..."
+            className="w-full h-32 border rounded-md p-2"
+          ></textarea>
+        </form>
+      )}
+    </div>
+
+    <div className="flex flex-col items-center mt-4">
+      <div className="flex items-center justify-between w-full">
+        <button
+          onClick={handlePrevious}
+          disabled={currentPage === 1}
+          className="p-2 rounded-md text-gray-700 text-xs md:text-sm lg:text-base"
+        >
+          Previous
+        </button>
+        <PageDots currentPage={currentPage} totalPages={totalPages} />
+        {currentPage === totalPages ? (
+          <button
+            onClick={handleSubmit}
+            style={{ backgroundColor: "#800000", color: "white" }}
+            className="p-2 rounded-md text-white text-xs md:text-sm lg:text-base"
+          >
+            Submit
+          </button>
+        ) : (
+          <button
+            onClick={handleNext}
+            disabled={currentPage === totalPages}
+            style={{ backgroundColor: "#800000", color: "white" }}
+            className="p-2 rounded-md text-white text-xs md:text-sm lg:text-base"
+          >
+            Next
+          </button>
         )}
       </div>
+    </div>
 
-      <div className="flex flex-col items-center mt-4">
-        <div className="flex items-center justify-between w-full">
-          <button
-            onClick={handlePrevious}
-            disabled={currentPage === 1}
-            className="p-2 rounded-md text-gray-700 text-xs md:text-sm lg:text-base"
-          >
-            Previous
-          </button>
-          <PageDots currentPage={currentPage} totalPages={totalPages} />
-          {currentPage === totalPages ? (
-            <button
-              onClick={handleSubmit}
-              style={{ backgroundColor: "#800000", color: "white" }}
-              className="p-2 rounded-md text-white text-xs md:text-sm lg:text-base"
-            >
-              Submit
-            </button>
-          ) : (
-            <button
-              onClick={handleNext}
-              disabled={currentPage === totalPages}
-              style={{ backgroundColor: "#800000", color: "white" }}
-              className="p-2 rounded-md text-white text-xs md:text-sm lg:text-base"
-            >
-              Next
-            </button>
-          )}
-        </div>
-      </div>
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded-md shadow-lg max-w-sm">
-            <p className="text-lg font-semibold">
-              Are you sure you want to submit?
-            </p>
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={handleSubmit}
-                className="bg-blue-500 text-white p-2 rounded-md"
-              >
-                Yes
-              </button>
-              <button
-                onClick={handleModalToggle}
-                className="bg-red-500 text-white p-2 rounded-md ml-2"
-              >
-                No
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modal for Success */}
       {isSuccessModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded-md shadow-lg max-w-sm">
-            <p className="text-lg font-semibold">
-              Successfully Submitted!
-            </p>
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50"
+          onClick={() => setIsSuccessModalOpen(false)}
+        >
+          <div
+            className="bg-white p-6 rounded-md shadow-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-xl font-semibold mb-4">Submission Successful!</h2>
+            <p className="text-gray-700 mb-4">Your responses have been recorded.</p>
             <button
               onClick={Dashboard}
-              className="bg-blue-500 text-white p-2 rounded-md mt-4"
+              className="bg-blue-500 text-white p-2 rounded-md"
             >
-              OK
+              Go to Dashboard
             </button>
           </div>
         </div>
