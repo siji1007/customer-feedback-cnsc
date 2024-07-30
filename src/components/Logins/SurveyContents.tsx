@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { CheckIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
+import { CheckIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 
 const PageDots: React.FC<{ currentPage: number; totalPages: number }> = ({
@@ -35,7 +35,7 @@ const PageDots: React.FC<{ currentPage: number; totalPages: number }> = ({
   );
 };
 
-const SurveyContents: React.FC = ({selectedOffice}) => {
+const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice }) => {
   const [positions, setPositions] = useState<{ [key: number]: number }>({
     1: 0,
     2: 0,
@@ -46,13 +46,21 @@ const SurveyContents: React.FC = ({selectedOffice}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  console.log(selectedOffice)
-  const [questions, setQuestions] = useState<string[]>(["Question 1", "Question 2", "Question 3", "Question 4", "Question 5"]);
+  const [poppingEmoji, setPoppingEmoji] = useState<number | null>(null); // Track which emoji is popping
+  const [questions, setQuestions] = useState<string[]>([
+    "Question 1",
+    "Question 2",
+    "Question 3",
+    "Question 4",
+    "Question 5",
+  ]);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.post(serverUrl + "show_questions", {department: {selectedOffice}});
+      const response = await axios.post(serverUrl + "show_questions", {
+        department: selectedOffice,
+      });
       setQuestions(response.data);
     } catch (error) {
       console.error("Error fetching questions:", error);
@@ -65,53 +73,33 @@ const SurveyContents: React.FC = ({selectedOffice}) => {
 
   const totalPages = Math.ceil(questions.length / 2);
 
-  const handleDrag = (
-    e: React.MouseEvent<HTMLDivElement>,
-    questionIndex: number,
-  ) => {
-    const slider = e.currentTarget;
-    const rect = slider.getBoundingClientRect();
-    let newPosition = ((e.clientX - rect.left) / rect.width) * 100;
-
-    if (newPosition < 0) newPosition = 0;
-    if (newPosition > 100) newPosition = 100;
-
+  const handleEmojiClick = (questionIndex: number, value: number) => {
     setPositions((prevPositions) => ({
       ...prevPositions,
-      [questionIndex]: newPosition,
+      [questionIndex]: value,
     }));
+    setPoppingEmoji(questionIndex); // Set the emoji to pop
+    setTimeout(() => setPoppingEmoji(null), 400); // Remove pop class after animation
   };
 
-  const getPointerColor = (questionIndex: number) => {
-    const scaleWidth = 100 / 5; // 5 segments
-    const position = positions[questionIndex] || 0;
-    const index = Math.floor(position / scaleWidth);
-    const colors = ["from-green-400", "via-yellow-400", "to-red-400"];
-    return colors[index % colors.length];
+  const getEmoji = (value: number) => {
+    const emojis = ["😔", "😟", "😐", "😃", "🤩"];
+    return emojis[value - 1];
   };
 
   const getScaleValue = (questionIndex: number) => {
-    const scaleWidth = 100 / 5; // 5 segments
     const position = positions[questionIndex] || 0;
-    const index = Math.floor(position / scaleWidth);
     const values = [
-      "Very Satisfied",
-      "Satisfied",
-      "Neutral",
-      "Dissatisfied",
       "Very Dissatisfied",
+      "Dissatisfied",
+      "Neutral",
+      "Satisfied",
+      "Very Satisfied",
     ];
-    return values[index];
+    return values[position - 1];
   };
 
   const handleNext = () => {
-    if (currentPage === 1) {
-      // Log the selected values for the current page's questions
-      for (let i = 1; i <= 2; i++) {
-        const selectedValue = getScaleValue(i);
-        console.log(`Question ${i}: ${selectedValue}`);
-      }
-    }
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
     }
@@ -123,24 +111,25 @@ const SurveyContents: React.FC = ({selectedOffice}) => {
     }
   };
 
-  const handleSubmit = async() => {
-    // Handle form submission logic here
-    // console.log("Form Submitted with values:", positions);
-    try{
-      const response = await axios.post(serverUrl + "submit_answer", {student_id: globalThis.activeId, answer: positions})
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(serverUrl + "submit_answer", {
+        student_id: globalThis.activeId,
+        answer: positions,
+      });
       setIsSuccessModalOpen(true);
-    }catch(error){
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const handleModalToggle = () => {
-    setIsModalOpen(!isModalOpen); // Toggle modal visibility
+    setIsModalOpen(!isModalOpen);
   };
 
   const Dashboard = () => {
-    window.location.reload(); // Consider if this is the correct behavior
-    setIsSuccessModalOpen(false); // Close success modal
+    window.location.reload();
+    setIsSuccessModalOpen(false);
   };
 
   const renderQuestions = () => {
@@ -157,26 +146,25 @@ const SurveyContents: React.FC = ({selectedOffice}) => {
           <p className="text-xs md:text-xs lg:text-2xl mb-4 shadow-lg">
             {question}
           </p>
-
-          <div
-            className="relative w-full h-16 md:h-20"
-            onMouseMove={(e) => handleDrag(e, questionIndex)}
-            onMouseDown={(e) => e.preventDefault()} // To prevent text selection while dragging
-          >
-            <div className="absolute inset-0 h-10 md:h-12 bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 rounded flex items-center overflow-hidden">
+          <div className="flex justify-between">
+            {[1, 2, 3, 4, 5].map((value) => (
               <div
-                className={`absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-2 border-black ${getPointerColor(questionIndex)}`}
-                style={{
-                  left: `${positions[questionIndex] || 0}%`,
-                  transition: "background-color 0.2s",
-                }}
-              ></div>
-            </div>
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center">
-              <span className="text-xs md:text-sm lg:text-lg font-semibold whitespace-nowrap">
+                key={value}
+                className={`cursor-pointer text-2xl ${
+                  positions[questionIndex] === value ? "text-blue-500" : ""
+                } ${poppingEmoji === questionIndex && positions[questionIndex] === value ? "animate-pop" : ""}`}
+                onClick={() => handleEmojiClick(questionIndex, value)}
+              >
+                {getEmoji(value)}
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-2">
+            {positions[questionIndex] > 0 && (
+              <span className="text-xs md:text-sm lg:text-lg font-semibold">
                 {getScaleValue(questionIndex)}
               </span>
-            </div>
+            )}
           </div>
         </form>
       );
@@ -233,16 +221,21 @@ const SurveyContents: React.FC = ({selectedOffice}) => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-4 rounded-md shadow-lg max-w-sm">
-            <p className="text-lg font-semibold">Are you sure you want to close?</p>
+            <p className="text-lg font-semibold">
+              Are you sure you want to submit?
+            </p>
             <div className="flex justify-end mt-4">
-              <button onClick={handleModalToggle} className="text-gray-700">
-                Cancel
+              <button
+                onClick={handleSubmit}
+                className="bg-blue-500 text-white p-2 rounded-md"
+              >
+                Yes
               </button>
               <button
-                onClick={Dashboard}
-                className="ml-4 bg-blue-500 text-white p-2 rounded-md"
+                onClick={handleModalToggle}
+                className="bg-red-500 text-white p-2 rounded-md ml-2"
               >
-                Confirm
+                No
               </button>
             </div>
           </div>
@@ -251,15 +244,15 @@ const SurveyContents: React.FC = ({selectedOffice}) => {
       {isSuccessModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-4 rounded-md shadow-lg max-w-sm">
-            <p className="text-lg font-semibold">Submission Successful!</p>
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={Dashboard}
-                className="bg-blue-500 text-white p-2 rounded-md"
-              >
-                OK
-              </button>
-            </div>
+            <p className="text-lg font-semibold">
+              Successfully Submitted!
+            </p>
+            <button
+              onClick={Dashboard}
+              className="bg-blue-500 text-white p-2 rounded-md mt-4"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}

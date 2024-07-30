@@ -2,3 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Keyframe for the shake animation */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-10px); }
+    80% { transform: translateX(10px); }
+    100% { transform: translateX(0); }
+  }
+  
+  /* Class to apply the shake animation */
+  .shake {
+    animation: shake 0.5s;
+  }
+  
