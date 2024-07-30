@@ -194,7 +194,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
           </div>
           <button
             type="submit"
-            className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full"
+            className="mt-4 px-4 py-2 bg-red-900 text-white rounded-lg w-full"
           >
             Sign-up
           </button>
