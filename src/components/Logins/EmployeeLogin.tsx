@@ -18,8 +18,8 @@ interface EmployeeLoginProps {
 }
 
 const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
-  const [showLoginForm, setShowLoginForm] = useState(false);
-  const [showSignUpForm, setShowSignUpForm] = useState(true);
+  const [showLoginForm, setShowLoginForm] = useState(true);
+  const [showSignUpForm, setShowSignUpForm] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [signInData, setSignInData] = useState<SignInData>({
     employee_id: "",
@@ -39,6 +39,11 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
   };
 
   const handleBackClick = () => {
+    setShowLoginForm(false); // Hide login form
+    setShowSignUpForm(true); // Show signup form again
+  };
+
+  const handleSignUpClick = () => {
     setShowLoginForm(false); // Hide login form
     setShowSignUpForm(true); // Show signup form again
   };
@@ -186,7 +191,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
           </div>
           <button
             type="submit"
-            className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full"
+            className="mt-4 px-4 py-2 bg-red-900 text-white rounded-lg w-full"
           >
             Sign-up
           </button>
@@ -237,13 +242,13 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
           </div>
           <button
             type="submit"
-            className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full"
+            className="mt-4 px-4 py-2 bg-red-900 text-white rounded-lg w-full"
           >
             Login
           </button>
           <button
             type="button"
-            className="mt-4 px-4 py-2 text-black w-full"
+            className="mt-4 px-4 py-2 text-black w-full bg-gray-200 rounded-lg"
             onClick={handleBackClick}
           >
             Back
@@ -254,6 +259,12 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
         <>
           <label>___________or__________</label>
           <button onClick={handleLoginClick}>Already a customer? Login</button>
+        </>
+      )}
+        {showLoginForm && (
+        <>
+          <label>___________or__________</label>
+          <button onClick={handleSignUpClick}>Create an account? Signup</button>
         </>
       )}
     </div>
