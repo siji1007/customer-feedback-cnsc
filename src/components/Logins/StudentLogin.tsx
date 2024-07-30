@@ -18,8 +18,8 @@ interface SignUpData {
 }
 
 const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
-  const [showLoginForm, setShowLoginForm] = useState(false);
-  const [showSignUpForm, setShowSignUpForm] = useState(true);
+  const [showLoginForm, setShowLoginForm] = useState(true);
+  const [showSignUpForm, setShowSignUpForm] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     student_id: "",
     password: "",
@@ -48,8 +48,14 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
 
   const handleBackClick = () => {
     setShowLoginForm(false);
+    setShowSignUpForm(true);   // wala pa akong maisip na logic paano e pababalikin sa mismong page namay queryparam, wala pang net HAHAHHA
+  };
+
+  const handleSignUpClick = () => {
+    setShowLoginForm(false);
     setShowSignUpForm(true);
   };
+
 
 
   const handleStudentSignIn = async (
@@ -57,7 +63,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   ) => {
     event.preventDefault();
     try {
-      //onLoginSuccess();
+      onLoginSuccess();
       const response = await axios.post(
         import.meta.env.VITE_APP_SERVERHOST + "student-login",
         formData,
@@ -239,13 +245,13 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
           </div>
           <button
             type="submit"
-            className="mt-4 px-4 py-2 bg-red-900 text-white rounded-full w-full"
+            className="mt-4 px-4 py-2 bg-red-900 text-white rounded-lg w-full"
           >
             Login
           </button>
           <button
             type="button"
-            className="mt-4 px-4 py-2 text-black w-full"
+            className="mt-4 px-4 py-2 text-black w-full bg-gray-200 rounded-lg"
             onClick={handleBackClick}
           >
             Back
@@ -256,6 +262,12 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
         <>
           <label>___________or__________</label>
           <button onClick={handleLoginClick}>Already a customer? Login</button>
+        </>
+      )}
+      {showLoginForm && (
+        <>
+             <label>___________or__________</label>
+             <button onClick={handleSignUpClick}>Create accout? Signup</button>
         </>
       )}
     </div>
