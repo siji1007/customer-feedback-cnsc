@@ -49,8 +49,8 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [poppingEmoji, setPoppingEmoji] = useState<number | null>(null);
   const [questions, setQuestions] = useState<string[]>([
-    "Question 1",
-    "Question 2",
+    "Question 1:", 
+    "Question 2:",
     "Question 3",
     "Question 4",
     "Question 5",
@@ -81,13 +81,12 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
     }));
     setPoppingEmoji(questionIndex);
   };
-
+  
   const getEmojiClass = (questionIndex: number, value: number) => {
     const isSelected = positions[questionIndex] === value;
-    return `cursor-pointer text-2xl ${isSelected ? "scale-150 text-blue-500" : ""} ${poppingEmoji === questionIndex && !isSelected ? "animate-pop" : ""}`;
+     return `cursor-pointer text-2xl ${isSelected ? "scale-150 text-blue-500" : ""} ${poppingEmoji === questionIndex && !isSelected ? "text-yellow-500 animate-pop" : "text-customGray"}`;
   };
-
-  const getEmoji = (value: number) => {
+  const getEmoji = (value: number, isSelected: boolean) => {
     const emojiSources = [
       {
         srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.webp",
@@ -116,10 +115,18 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
       },
     ];
     const emoji = emojiSources[value - 1];
+    const filter = isSelected ? 'none' : 'grayscale(100%)';
+    
     return (
       <picture>
         <source srcSet={emoji.srcSet} type="image/webp" />
-        <img src={emoji.src} alt={emoji.alt} width="32" height="32" />
+        <img 
+          src={emoji.src} 
+          alt={emoji.alt} 
+          width="32" 
+          height="32" 
+          style={{ filter: filter }} 
+        />
       </picture>
     );
   };
@@ -185,13 +192,14 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
           </p>
           <div className="flex justify-between">
             {[1, 2, 3, 4, 5].map((value) => (
-              <div
-                key={value}
-                className={getEmojiClass(questionIndex, value)}
-                onClick={() => handleEmojiClick(questionIndex, value)}
-              >
-                {getEmoji(value)}
-              </div>
+            <div
+            key={value}
+            className={getEmojiClass(questionIndex, value)}
+            onClick={() => handleEmojiClick(questionIndex, value)}
+          >
+            {getEmoji(value, positions[questionIndex] === value)}
+          </div>
+          
             ))}
           </div>
 

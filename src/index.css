@@ -31,7 +31,13 @@ html, body {
   min-height: calc(100vh - 50px); 
 }
 
-  
+.text-gray-400 {
+  color: gray;
+}
+
+.text-yellow-500 {
+  color: #facc15;
+}
 
 
 

@@ -5,6 +5,9 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        customGray: '#b0b0b0', // Define your custom gray color
+      },
       keyframes: {
         pop: {
           '0%': { transform: 'scale(1)' },
