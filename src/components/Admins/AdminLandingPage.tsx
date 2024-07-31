@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, Outlet, useMatch } from "react-router-dom";
-import { FaFacebook, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaArrowDown, FaArrowUp  } from "react-icons/fa";
 import axios from "axios";
+import { FaArrowDownLong } from "react-icons/fa6";
 
 interface AdminCredentials {
   admin_username: string;
@@ -19,6 +20,11 @@ const AdminLogins: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const formType = queryParams.get("form") || localStorage.getItem('formType');
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const [isFooterVisible, setIsFooterVisible] = useState(true);
+
+  const toggleFooter = () => {
+    setIsFooterVisible(prev => !prev);
+  };
 
   // State to manage which form is shown and which component to display
   const [showLoginForm, setShowLoginForm] = useState(true);
@@ -297,7 +303,33 @@ const AdminLogins: React.FC = () => {
        } {/* Render nested routes here */}
       </main>
 
-      <footer className="w-full bg-red-900 flex justify-between p-2">
+      <footer
+  className={`fixed bottom-0 w-full bg-red-900 p-2 transition-transform ${isFooterVisible ? "transform-none" : "transform translate-y-full"}`}
+>
+  {/* Arrow Buttons */}
+  <div className="fixed bottom-0 w-full flex justify-between px-4">
+    {!isFooterVisible && (
+      <button 
+        onClick={toggleFooter} 
+        className="text-black text-xl bg-white p-2 rounded-l-lg shadow-md fixed bottom-5 right-2 m-2"
+      >
+        <FaArrowUp/>
+      </button>
+    )}
+    {isFooterVisible && (
+      <button 
+        onClick={toggleFooter} 
+        className="text-white text-xl fixed bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-900 p-2 rounded-lg shadow-md"
+      >
+        <FaArrowDown />
+      </button>
+    )}
+  </div>
+
+  {/* Footer Content */}
+  {isFooterVisible && (
+    <div className="flex flex-col items-center">
+      <div className="flex-1 flex justify-between w-full">
         <div className="flex-1">
           <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">
             Contact Information
@@ -320,7 +352,11 @@ const AdminLogins: React.FC = () => {
             <FaTwitter className="text-white text-xl cursor-pointer hover:text-blue-500" />
           </div>
         </div>
-      </footer>
+      </div>
+    </div>
+  )}
+</footer>
+
     </div>
   );
 };
