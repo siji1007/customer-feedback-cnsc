@@ -23,7 +23,6 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
   const questionRefs = useRef<Array<HTMLFormElement | null>>([]);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
-
   const fetchQuestions = async () => {
     try {
       const response = await axios.post(serverUrl + "show_questions", {
@@ -37,7 +36,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
 
   useEffect(() => {
     fetchQuestions();
-  }, []);
+  }, [selectedOffice]);
 
   const handleEmojiClick = (questionIndex: number, value: number) => {
     setPositions((prevPositions) => ({
@@ -46,8 +45,10 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
     }));
     setPoppingEmoji(questionIndex);
 
-    if (questionIndex < questions.length) {
-      questionRefs.current[questionIndex]?.scrollIntoView({
+    // Scroll to the next question if available
+    const nextQuestionIndex = questionIndex + 1;
+    if (nextQuestionIndex <= questions.length) {
+      questionRefs.current[nextQuestionIndex - 1]?.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
@@ -63,31 +64,11 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
 
   const getEmoji = (value: number, isSelected: boolean) => {
     const emojiSources = [
-      {
-        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.webp",
-        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.gif",
-        alt: "😔",
-      },
-      {
-        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.webp",
-        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.gif",
-        alt: "🙁",
-      },
-      {
-        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.webp",
-        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.gif",
-        alt: "😐",
-      },
-      {
-        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.webp",
-        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.gif",
-        alt: "😊",
-      },
-      {
-        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.webp",
-        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.gif",
-        alt: "🤩",
-      },
+      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.gif", alt: "😔" },
+      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.gif", alt: "🙁" },
+      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.gif", alt: "😐" },
+      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.gif", alt: "😊" },
+      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.gif", alt: "🤩" },
     ];
     const emoji = emojiSources[value - 1];
     const filter = isSelected ? "none" : "grayscale(100%)";
@@ -95,20 +76,14 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
     return (
       <picture>
         <source srcSet={emoji.srcSet} type="image/webp" />
-        <img src={emoji.src} alt={emoji.alt} width="32" height="32" style={{ filter: filter }} />
+        <img src={emoji.src} alt={emoji.alt} width="32" height="32" style={{ filter }} />
       </picture>
     );
   };
 
   const getScaleValue = (questionIndex: number) => {
     const position = positions[questionIndex] || 0;
-    const values = [
-      "Needs Improvement",
-      "Failed to Meet Expectations",
-      "Meet Expectations",
-      "Exceeds Expectations",
-      "Outstanding",
-    ];
+    const values = ["Needs Improvement", "Failed to Meet Expectations", "Meet Expectations", "Exceeds Expectations", "Outstanding"];
     return values[position - 1];
   };
 
@@ -124,17 +99,9 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
     }
   };
 
-  const Dashboard = () => {
-    window.location.reload();
+  const handleModalClose = () => {
     setIsSuccessModalOpen(false);
-  };
-
-  const handleScroll = () => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      const isBottom = container.scrollHeight - container.scrollTop === container.clientHeight;
-      setIsArrowUp(isBottom);
-    }
+    window.location.reload();
   };
 
   const renderQuestions = () => {
@@ -158,7 +125,6 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
               </div>
             ))}
           </div>
-
           <div className="text-center mt-2">
             {positions[questionIndex] > 0 && (
               <span className="text-xs md:text-sm lg:text-lg font-semibold">{getScaleValue(questionIndex)}</span>
@@ -176,18 +142,14 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
           className="overflow-y-auto relative max-h-[30vh] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent"
           style={{ maxHeight: "30vh" }}
           ref={scrollContainerRef}
-          onScroll={handleScroll}
         >
-          {renderQuestions()}      
+          {renderQuestions()}
         </div>
-
-        
         <form className="bg-gray-100 p-4 rounded-md shadow-md">
           <p className="text-lg md:text-xl lg:text-2xl mb-4 shadow-lg">Complaints, Comments, and Suggestion</p>
           <textarea placeholder="Your comments here..." className="w-full h-32 border rounded-md p-2"></textarea>
         </form>
       </div>
-
       <div className="flex flex-col items-center mt-4">
         <button
           onClick={handleSubmit}
@@ -197,7 +159,6 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
           Submit
         </button>
       </div>
-     
       {isSuccessModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 rounded-md shadow-md text-center">
@@ -205,7 +166,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
             <h2 className="text-2xl font-semibold mb-4">Success!</h2>
             <p className="mb-4">Your answers have been submitted successfully.</p>
             <button
-              onClick={Dashboard}
+              onClick={handleModalClose}
               style={{ backgroundColor: "#800000", color: "white" }}
               className="px-4 py-2 rounded-md text-white text-xs md:text-sm lg:text-base"
             >

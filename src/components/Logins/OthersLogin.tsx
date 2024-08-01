@@ -37,7 +37,7 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
 
   return (
     <div className="flex flex-col items-center w-full p-10">
-      <h2 className="text-xl mb-4">Personal Information</h2>
+      <h2 className="text-xl mb-4 ">Personal Information</h2>
 
       <form
         className="flex flex-col items-center w-full "
@@ -69,7 +69,7 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
         <section className="bg-gray-200 p-2 rounded-lg w-full max-w-md mb-4">
           <label className="block mb-1">TYPE OF CLIENT</label>
           <select
-            className="w-full p-2 border border-gray-300 rounded-md"
+            className="w-full p-2 border border-gray-300 bg-gray-300 rounded-md"
             name="client_type"
             value={clientData.client_type}
             onChange={handleOtherChange}

@@ -20,7 +20,7 @@ const AdminLogins: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const formType = queryParams.get("form") || localStorage.getItem('formType');
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
-  const [isFooterVisible, setIsFooterVisible] = useState(true);
+  const [isFooterVisible, setIsFooterVisible] = useState(false);
 
   const toggleFooter = () => {
     setIsFooterVisible(prev => !prev);
