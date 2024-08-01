@@ -21,7 +21,7 @@ const StudentDetails: React.FC = () => {
   }, []);
 
   const getStudentBarChartData = () => {
-    const labels = ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'];
+    const labels = ["Needs Improvement", "Failed to Meet Expectations", "Meet Expectations", "Exceeds Expectations", "Outstanding"];
     const backgroundColors = ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'];
   
     // Example data, replace with actual data

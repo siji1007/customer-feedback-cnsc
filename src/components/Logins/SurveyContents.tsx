@@ -13,7 +13,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [poppingEmoji, setPoppingEmoji] = useState<number | null>(null);
   const [questions, setQuestions] = useState<string[]>([
-    "Question 1:  ",
+    "Question 1: __________________________________________________",
     "Question 2:",
     "Question 3",
     "Question 4",
@@ -107,11 +107,12 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
   const renderQuestions = () => {
     return questions.map((question, index) => {
       const questionIndex = index + 1;
+      const isAnswered = positions[questionIndex] > 0; // Check if the question is answered
       return (
         <form
           key={questionIndex}
           ref={(el) => (questionRefs.current[questionIndex - 1] = el)}
-          className="bg-gray-100 p-4 rounded-md shadow-md mb-4"
+          className={`bg-gray-100 p-4 rounded-md border-b-2 border-red-800 mb-4 ${isAnswered ? "bg-green-200" : ""}`}
         >
           <p className="text-xs md:text-xs lg:text-2xl mb-4 shadow-lg">{question}</p>
           <div className="flex justify-between">
@@ -146,7 +147,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
           {renderQuestions()}
         </div>
         <form className="bg-gray-100 p-4 rounded-md shadow-md">
-          <p className="text-lg md:text-xl lg:text-2xl mb-4 shadow-lg">Complaints, Comments, and Suggestion</p>
+          <p className="text-sm md:text-xl lg:text-2xl mb-4 shadow-lg">Please indicate below your other concerns or suggestions on how we can further improve our services</p>
           <textarea placeholder="Your comments here..." className="w-full h-32 border rounded-md p-2"></textarea>
         </form>
       </div>
@@ -154,7 +155,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
         <button
           onClick={handleSubmit}
           style={{ backgroundColor: "#800000", color: "white" }}
-          className="p-2 rounded-md text-white text-xs md:text-sm lg:text-base"
+          className="p-2 rounded-md text-white text-xs md:text-sm lg:text-base font-bold"
         >
           Submit
         </button>

@@ -76,7 +76,7 @@ const LandingPage: React.FC = () => {
         </div>
 
         <div className="ml-2">
-          <p className="text-white font-bold">Help</p>
+          <p className="text-white text-xs font-bold">Help</p>
           <div className="flex">
             <FaFacebook className="text-white text-xl cursor-pointer hover:text-blue-500 mr-4" />
             <FaTwitter className="text-white text-xl cursor-pointer hover:text-blue-500" />
