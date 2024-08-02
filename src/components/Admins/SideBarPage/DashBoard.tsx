@@ -1,46 +1,108 @@
-// Dashboard.tsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaThumbsUp } from 'react-icons/fa';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, LineElement, PointElement, LineController } from 'chart.js';
 import BarChart from './BarChart';
 import PieChart from './PieChart';
-import StudentDetails  from "./ViewDetails/StudentsDetails";
+import LineChart from './LineChart'; // Import LineChart component
+import StudentDetails from "./ViewDetails/StudentsDetails";
 import EmployeeDetails from "./ViewDetails/EmployeeDetails";
 import OthersDetails from "./ViewDetails/OthersDetails";
 import ResearchDetails from './ViewDetails/ResearchDetails';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend, LineController, LineElement, PointElement);
 
 const Dashboard: React.FC = () => {
   const [departments, setDepartments] = useState<string[]>([]);
   const [acadYears, setAcadYears] = useState<string[]>([]);
   const [showDetailedView, setShowDetailedView] = useState(false);
-
-  const [content, setContent] = useState(''); // State to manage main content
-  const [feedbackData, setFeedbackData] = useState([10, 81, 80, 25, 15]); // Dummy feedback data for categories
-  
+  const [content, setContent] = useState('');
+  const [chart1Type, setChart1Type] = useState<'BarChart' | 'PieChart' | 'LineChart'>('BarChart');
+  const [chart2Type, setChart2Type] = useState<'BarChart' | 'PieChart' | 'LineChart'>('PieChart');
 
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+
+  // Fixed data for the charts
+  const chartLabelsLeft = ["Needs Improvement", "Failed to Meet Expectations", "Meet Expectations", "Exceeds Expectations", "Outstanding"];  //add here the data scale connection for leftside chart
+  const dataChartLeft = [10, 81, 80, 25, 15];  // add here the data number leftside chart
+  const chart1Data = {
+    BarChart: {
+      labels: chartLabelsLeft,
+      datasets: [{
+        label: 'Feedback',
+        data: dataChartLeft,
+        backgroundColor: ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'],
+        borderColor: ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'],
+        borderWidth: 1,
+      }],
+    },
+    PieChart: {
+      labels: chartLabelsLeft,
+      datasets: [{
+        data: dataChartLeft,
+        backgroundColor: ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'],
+        borderColor: '#fff',
+        borderWidth: 2,
+      }],
+    },
+    LineChart: {
+      labels: chartLabelsLeft,
+      datasets: [{
+        label: 'Feedback',
+        data: dataChartLeft,
+        backgroundColor: 'rgba(75,192,192,0.4)',
+        borderColor: 'rgba(75,192,192,1)',
+        borderWidth: 1,
+        fill: true,
+      }],
+    }
+  };
+
+  const chartLabelsRight = ['Students', 'Employee', 'Others'];
+  const chartDataRight = [30, 40, 30];
+  const chart2Data = {
+    BarChart: {
+      labels: chartLabelsRight,
+      datasets: [{
+        label: 'Feedback',
+        data: chartDataRight,
+        backgroundColor: ['#4A90E2', '#50E3C2', '#F5A623'],
+        borderColor: ['#4A90E2', '#50E3C2', '#F5A623'],
+        borderWidth: 1,
+      }],
+    },
+    PieChart: {
+      labels: chartLabelsRight,
+      datasets: [{
+        data: chartDataRight,
+        backgroundColor: ['#4A90E2', '#50E3C2', '#F5A623'],
+        borderColor: '#fff',
+        borderWidth: 2,
+      }],
+    },
+    LineChart: {
+      labels: chartLabelsRight,
+      datasets: [{
+        label: 'Feedback',
+        data: chartDataRight,
+        backgroundColor: 'rgba(75,192,192,0.4)',
+        borderColor: 'rgba(75,192,192,1)',
+        borderWidth: 1,
+        fill: true,
+      }],
+    }
+  };
 
   const renderContent = () => {
     switch (content) {
       case 'Students':
-        return (
-        <StudentDetails/>
-        );    
+        return <StudentDetails />;
       case 'Employee':
-        return (
-          <EmployeeDetails/>
-          ); 
+        return <EmployeeDetails />;
       case 'Others Customer':
-        return (
-          <OthersDetails/>
-          ); 
+        return <OthersDetails />;
       case 'Research':
-        return (
-          <ResearchDetails/>
-          ); 
+        return <ResearchDetails />;
       default:
         return <div>Select an option from the sidebar</div>;
     }
@@ -69,63 +131,19 @@ const Dashboard: React.FC = () => {
     fetchDepartments();
   }, []);
 
-  const getBarChartData = () => {
-    const labels = ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'];
-    const backgroundColors = ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'];
-
-    const sortedData = feedbackData
-      .map((value, index) => ({ value, label: labels[index], color: backgroundColors[index] }))
-      .sort((a, b) => b.value - a.value); // Sort descending by value
-
-    const sortedLabels = sortedData.map(data => data.label);
-    const sortedValues = sortedData.map(data => data.value);
-    const sortedColors = sortedData.map(data => data.color);
-
-    return {
-      labels: sortedLabels,
-      datasets: [
-        {
-          label: 'Feedback',
-          data: sortedValues,
-          backgroundColor: sortedColors,
-          borderColor: sortedColors, // Border color same as background color for consistency
-          borderWidth: 1, // Optional: Adjust the border width if needed
-        },
-      ],
-    };
-  };
+  const getChart1Data = () => chart1Data[chart1Type];
+  const getChart2Data = () => chart2Data[chart2Type];
 
   const getPieChartOptions = () => ({
     plugins: {
       legend: {
-        position: 'left', // Position legend to the left
+        position: 'left',
         labels: {
-          usePointStyle: true, // Optional: Use point style for labels
+          usePointStyle: true,
         },
       },
     },
   });
-  
-  const getPieChartData = () => {
-    const pieLabels = ['Students', 'Employee', 'Others'];
-    const pieData = [35, 45, 20]; // Dummy data for pie chart, replace with actual values
-    const pieColors = ['#4A90E2', '#50E3C2', '#F5A623'];
-  
-    return {
-      label: 'Feedback',
-      labels: pieLabels,
-      datasets: [
-        {
-          data: pieData,
-          backgroundColor: pieColors,
-          borderColor: '#fff', // Optional: Set border color for pie segments
-          borderWidth: 2, // Optional: Adjust the border width if needed
-        },
-      ],
-    };
-  };
-
-  
 
   return (
     <div>
@@ -134,78 +152,44 @@ const Dashboard: React.FC = () => {
           <>
             <header className="w-full border-b pb-4 mb-2 flex items-center justify-between bg-red-900 p-2 rounded-lg">
               <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="selectAll"
-                  className="mr-2 h-5 w-5"
-                />
-                <label htmlFor="selectAll" className="text-lg text-white font-bold">
-                  All
-                </label>
+                <input type="checkbox" id="selectAll" className="mr-2 h-5 w-5" />
+                <label htmlFor="selectAll" className="text-lg text-white font-bold">All</label>
               </div>
 
               <div className="ml-auto relative">
-                <label
-                  htmlFor="officeSelect"
-                  className="text-lg text-white font-bold mr-2"
-                >
-                  Select Office
-                </label>
-                <select
-                  id="officeSelect"
-                  className="bg-white-100 text-black border border-gray-600 rounded-md py-1 px-2"
-                >
+                <label htmlFor="officeSelect" className="text-lg text-white font-bold mr-2">Select Office</label>
+                <select id="officeSelect" className="bg-white-100 text-black border border-gray-600 rounded-md py-1 px-2">
                   <option value=""></option>
-                  {departments.map((department) => (
-                    <option key={department} value={department}>
-                      {department} Office
-                    </option>
+                  {departments.map(department => (
+                    <option key={department} value={department}>{department} Office</option>
                   ))}
                 </select>
               </div>
 
               <div className="ml-10 flex flex-col">
                 <div>
-                  <label
-                    htmlFor="semesterSelect"
-                    className="text-sm text-white font-bold mr-2"
-                  >
-                    Semester
-                  </label>
-                  <select
-                    id="semesterSelect"
-                    className="bg-white-100 text-black border border-gray-600"
-                  >
+                  <label htmlFor="semesterSelect" className="text-sm text-white font-bold mr-2">Semester</label>
+                  <select id="semesterSelect" className="bg-white-100 text-black border border-gray-600">
                     <option value=""></option>
                     <option value="first">First Semester</option>
                     <option value="second">Second Semester</option>
                   </select>
                 </div>
                 <div className="mt-2">
-                  <label
-                    htmlFor="academicYearSelect"
-                    className="text-sm text-white font-bold mr-2"
-                  >
-                    Academic Year
-                  </label>
-                  <select
-                    id="academicYearSelect"
-                    className="bg-white-100 text-black border border-gray-600 text-sm ml-5"
-                  >
+                  <label htmlFor="academicYearSelect" className="text-sm text-white font-bold mr-2">Academic Year</label>
+                  <select id="academicYearSelect" className="bg-white-100 text-black border border-gray-600 text-sm ml-5">
                     <option value=""></option>
-                    {acadYears.map((acadYear) => (
-                      <option key={acadYear} value={acadYear}>
-                        {acadYear}
-                      </option>
+                    {acadYears.map(acadYear => (
+                      <option key={acadYear} value={acadYear}>{acadYear}</option>
                     ))}
                   </select>
                 </div>
               </div>
             </header>
 
-            <div className="flex justify-between ">
+            <div className="flex justify-between items-center mb-4">
               <h1 className="text-lg font-bold m-2">Overview Of Result</h1>
-              <div className="bg-gray-300 rounded-lg">
+              <div className="bg-gray-300 rounded-lg flex items-center">
                 <section className="flex items-center justify-center p-2">
                   <FaThumbsUp className="text-xl mr-2" />
                   <p className="text-xs sm:text-xs md:text-xs lg:text-xm font-bold">Total Feedback</p>
@@ -218,13 +202,54 @@ const Dashboard: React.FC = () => {
               Insights
             </section>
 
-            <div className="flex w-full overflow-x-auto mb-4  items-center justify-center">
-              <div className="w-full sm:w-1/3 border p-2 flex justify-center items-center">
-                <BarChart data={getBarChartData()} />
+            <div className="flex flex-col lg:flex-row w-full overflow-x-auto mb-4 items-center justify-center">
+              <div className="w-full lg:w-1/2 border p-2 flex flex-col items-center">
+                <div className="flex items-center mb-2">
+                  <label htmlFor="chart1Type" className="text-sm font-bold mr-2">Choose Visualization Type</label>
+                  <select
+                    id="chart1Type"
+                    className="bg-white border border-gray-600 rounded-md p-1"
+                    value={chart1Type}
+                    onChange={(e) => setChart1Type(e.target.value as 'BarChart' | 'PieChart' | 'LineChart')}
+                  >
+                    <option value="BarChart">Bar Chart</option>
+                    <option value="PieChart">Pie Chart</option>
+                    <option value="LineChart">Line Chart</option>
+                  </select>
+                </div>
+                <div className="w-full flex justify-center">
+                  {chart1Type === 'PieChart' && (
+                    <div className="w-1/2">
+                      <PieChart data={getChart1Data()} options={getPieChartOptions()} />
+                    </div>
+                  )}
+                  {chart1Type === 'BarChart' && <BarChart data={getChart1Data()} />}
+                  {chart1Type === 'LineChart' && <LineChart data={getChart1Data()} />}
+                </div>
               </div>
-              <div className="w-full sm:w-1/2 border p-2 flex justify-center items-center">
-                <div className="sm:w-1/3 ">
-                  <PieChart data={getPieChartData()} options={getPieChartOptions()} />
+
+              <div className="w-full lg:w-1/2 border p-2 flex flex-col items-center">
+                <div className="flex items-center mb-2">
+                  <label htmlFor="chart2Type" className="text-sm font-bold mr-2">Choose Visualization Type</label>
+                  <select
+                    id="chart2Type"
+                    className="bg-white border border-gray-600 rounded-md p-1"
+                    value={chart2Type}
+                    onChange={(e) => setChart2Type(e.target.value as 'BarChart' | 'PieChart' | 'LineChart')}
+                  >
+                    <option value="BarChart">Bar Chart</option>
+                    <option value="PieChart">Pie Chart</option>
+                    <option value="LineChart">Line Chart</option>
+                  </select>
+                </div>
+                <div className="w-full flex justify-center">
+                  {chart2Type === 'PieChart' && (
+                    <div className="w-1/2">
+                      <PieChart data={getChart2Data()} options={getPieChartOptions()} />
+                    </div>
+                  )}
+                  {chart2Type === 'BarChart' && <BarChart data={getChart2Data()} />}
+                  {chart2Type === 'LineChart' && <LineChart data={getChart2Data()} />}
                 </div>
               </div>
             </div>
@@ -296,5 +321,4 @@ const Dashboard: React.FC = () => {
     </div>
   );
 };
-
 export default Dashboard;

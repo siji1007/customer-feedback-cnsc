@@ -71,16 +71,23 @@ const VPREPage: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 ${isSidebarVisible ? 'ml-0' : 'ml-0'}`}>
+      <main className={`flex-1 transition-all duration-300  ${isSidebarVisible ? 'ml-0' : 'ml-0'}`}>
         {!isSidebarVisible && (
           <FaBars
             className="w-7 h-7 text-gray-600 m-3 cursor-pointer top-30  fixed left-1 rounded-lg "
             onClick={() => setIsSidebarVisible(true)}
           />
         )}
-        <div className='m-1 ml-3'>
-        {renderComponent()}
-        </div>
+          <div
+            className={`m-1 ${isSidebarVisible ? 'min-auto' : 'h-full'}`}
+            style={{
+              maxWidth: isSidebarVisible ? 'calc(100% - 50px)' : '100%',
+              height: isSidebarVisible ? 'auto' : '100%',
+              boxSizing: 'border-box',
+            }}
+          >
+            {renderComponent()}
+          </div>
       </main>
     </div>
   );
