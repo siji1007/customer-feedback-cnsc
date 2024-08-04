@@ -39,8 +39,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
   };
 
   const handleBackClick = () => {
-    setShowLoginForm(false); // Hide login form
-    setShowSignUpForm(true); // Show signup form again
+    window.location.href = '/customer';
   };
 
   const handleSignUpClick = () => {

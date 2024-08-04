@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
+import SurveyDashboard from './ClientDashboard'; 
 
 const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice }) => {
   const [positions, setPositions] = useState<{ [key: number]: number }>({
@@ -19,6 +20,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
     "Question 4",
     "Question 5",
   ]);
+  const [view, setView] = useState<'survey' | 'dashboard'>('survey'); // State to manage view
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   const questionRefs = useRef<Array<HTMLFormElement | null>>([]);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -89,6 +91,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
 
   const handleSubmit = async () => {
     try {
+      setIsSuccessModalOpen(true);
       await axios.post(serverUrl + "submit_answer", {
         student_id: globalThis.activeId,
         answer: positions,
@@ -101,7 +104,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
 
   const handleModalClose = () => {
     setIsSuccessModalOpen(false);
-    window.location.reload();
+    setView('dashboard'); // Switch to SurveyDashboard
   };
 
   const renderQuestions = () => {
@@ -135,6 +138,10 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
       );
     });
   };
+
+  if (view === 'dashboard') {
+    return <SurveyDashboard />;
+  }
 
   return (
     <div className="p-4 md:p-6 lg:p-8 mx-auto max-w-screen-md relative">

@@ -47,8 +47,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   };
 
   const handleBackClick = () => {
-    setShowLoginForm(false);
-    setShowSignUpForm(true);   // wala pa akong maisip na logic paano e pababalikin sa mismong page namay queryparam, wala pang net HAHAHHA
+    window.location.href = '/customer';
   };
 
   const handleSignUpClick = () => {
