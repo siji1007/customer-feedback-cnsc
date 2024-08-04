@@ -213,19 +213,19 @@ def get_all_dept():
     departments = [dept["department"] for dept in data_list]
     return jsonify({'departments': departments})
 
-@app.route('/academic_department')
+@app.route('/department')
 def get_acad_dept():
     data = server.dept_collection.find()
     data_list = [dept for dept in data]
-    departments = [dept["department"] for dept in data_list if dept["type"] == "academic"]
+    departments = [dept["department"] for dept in data_list]
     return jsonify({'departments': departments})
 
-@app.route('/service_department')
-def get_service_dept():
-    data = server.dept_collection.find()
-    data_list = [dept for dept in data]
-    departments = [dept["department"] for dept in data_list if dept["type"] == "service"]
-    return jsonify({'departments': departments})
+
+@app.route('/office')
+def get_office():
+    data = server.office_collection.find()
+    offices = [{'id': str(office['_id']), 'name': office['office']} for office in data]
+    return jsonify({'offices': offices})
 
 @app.route('/get_acad_years', methods=['POST', 'GET'])
 def get_acad_years():
@@ -253,9 +253,16 @@ def edit_questionnaire():
 @app.route('/add-dept', methods=['POST'])
 def add_dept():
     dept_data = request.get_json()
-    data = {'department': dept_data["department"], 'type': dept_data["dept_type"]}
+    data = {'department': dept_data["department"]}
     server.dept_collection.insert_one(data)
     return "Department added successfully.", 200
+
+@app.route('/add-office', methods=['POST'])
+def add_office():
+    office_data = request.get_json()
+    data = {'office': office_data["office"]}
+    server.office_collection.insert_one(data)
+    return "Office added successfully.", 200
 
 @app.route('/get-config', methods=['GET'])
 def get_config():
