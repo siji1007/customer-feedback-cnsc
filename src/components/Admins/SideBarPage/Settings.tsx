@@ -124,7 +124,7 @@ const handleOpenModal = (index: number) => {
       try {
          // Temporary fallback list
          setOffices([
-          { id: 1, name: 'HR' },
+          { id: 1, name: 'Registrar' },
           { id: 2, name: 'Engineering' },
           { id: 3, name: 'Marketing' },
         ]);
@@ -251,11 +251,11 @@ const handleOpenModal = (index: number) => {
           return (
             <div className="flex flex-col md:flex-row h-full overflow-hidden">
               {/* Office Selection */}
-              <div className="md:w-1/4 w-full border-b md:border-b-0 md:border-r rounded-lg" style={{ height: "35vh", background: "#c3c3c3" }}>
+              <div className="md:w-1/4 w-full border-b md:border-b-0 md:border-r rounded-lg" style={{ height: "40vh", background: "#c3c3c3" }}>
                 <h2 className="font-bold mb-4 text-center b-border text-black border-b-2 border-white" style={{ color: "maroon" }}>
                   Select Office to Edit Questions
                 </h2>
-                <ul className="space-y-2 overflow-y-auto text-black rounded-lg p-2" style={{ maxHeight: "calc(100% - 1rem)", background: "#c3c3c3" }}>
+                <ul className="space-y-2  overflow-y-auto text-black rounded-lg p-2" style={{ maxHeight: "calc(100% - 1rem)", background: "#c3c3c3" }}>
                   {offices.map((office) => (
                     <li key={office.id} className={`cursor-pointer p-2 border border-white rounded-lg ${selectedOffice && selectedOffice.id === office.id ? "bg-red-800 text-white" : "hover:bg-gray-100"}`} onClick={() => handleClick(office)}>
                       {office.name}
@@ -265,7 +265,7 @@ const handleOpenModal = (index: number) => {
               </div>
         
               {/* Questionnaire List */}
-              <div className="w-full border-b md:border-b-0 md:border-r rounded-lg p-4 ml-2" style={{ height: "35vh", background: "#c3c3c3" }}>
+              <div className="w-full border-b md:border-b-0 md:border-r rounded-lg p-4 ml-2" style={{ height: "40vh", background: "#c3c3c3" }}>
                 <h2 className="font-bold mb-4 text-center b-border text-black border-b-2 border-white" style={{ color: "maroon" }}>
                   Questionnaires for {selectedOffice?.name || "Select an Office"}
                 </h2>
@@ -298,6 +298,7 @@ const handleOpenModal = (index: number) => {
                     </>
                   )}
                 </ul>
+              
               </div>
         
               {/* Modal for Editing Questions */}
@@ -310,10 +311,10 @@ const handleOpenModal = (index: number) => {
                 >
                   <div className="bg-white p-6 rounded-lg shadow-lg max-w-md sm:max-w-lg mx-auto w-full">
                     <h2 className="font-bold mb-4 text-center text-black border-b-2 border-white" style={{ color: "maroon" }}>
-                      Edit Questions
+                      Add/Edit Questions
                     </h2>
                     {selectedQuestionnaire !== null && selectedOffice && (
-                      <ul className="space-y-2">
+                         <ul className="space-y-2 max-h-64 overflow-y-auto">
                         {questionnaires[selectedOffice.name][selectedQuestionnaire].questions.map((question, index) => (
                           <li key={index} className="p-2 bg-white border border-black rounded-lg flex flex-col ">
                             {editIndex === index ? (

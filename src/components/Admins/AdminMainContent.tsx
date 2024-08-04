@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { FaChartLine, FaPrint, FaCog, FaArrowLeft, FaBars } from 'react-icons/fa';
+import { FaChartLine, FaPrint, FaCog, FaArrowLeft, FaBars, FaArchive } from 'react-icons/fa';
 import Dashboard from './SideBarPage/DashBoard';
 import PrintReport from './SideBarPage/PrintReport';
 import Settings from './SideBarPage/Settings';
+import Archive from './SideBarPage/Archive';
 
 const VPREPage: React.FC = () => {
   const [activeComponent, setActiveComponent] = useState('Dashboard');
@@ -16,6 +17,8 @@ const VPREPage: React.FC = () => {
         return <PrintReport />;
       case 'Settings':
         return <Settings />;
+      case 'Archive':
+        return <Archive/>;
       default:
         return <Dashboard />;
     }
@@ -65,6 +68,15 @@ const VPREPage: React.FC = () => {
             >
               <FaCog className="w-5 h-5 mr-2" />
               <span className="ml-2">Settings</span>
+            </button>
+            <button
+              className={`w-full flex items-center text-left py-2 px-4 rounded-lg transition duration-300 ease-in-out ${
+                activeComponent === 'Archive' ? 'bg-red-700 text-white' : 'bg-red-900 text-white hover:bg-red-700'
+              }`}
+              onClick={() => setActiveComponent('Archive')}
+            >
+              <FaArchive className="w-5 h-5 mr-2" />
+              <span className="ml-2">Archive</span>
             </button>
           </nav>
         )}
