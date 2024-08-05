@@ -14,6 +14,7 @@ interface OfficeData {
 interface Questionnaire {
   name: string;
   questions: string[];
+  office: string;
 }
 
 interface Office {
@@ -60,6 +61,7 @@ const Settings: React.FC = () => {
   const handleClick = (office: Office) => {
     setSelectedOffice(office);
     setSelectedQuestionnaire(null);
+    getQuestionnaires(office.name);
   };
 
   const handleAddDept = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,7 +99,7 @@ const Settings: React.FC = () => {
   const fetchDepartments = async () => {
     try {
       const response = await axios.get<{ departments: string[] }>(
-        serverUrl + "academic_department",
+        serverUrl + "department",
       );
       setDepartments(response.data.departments);
     } catch (error) {
@@ -158,6 +160,16 @@ const Settings: React.FC = () => {
     }
   };
 
+  const getQuestionnaires = async (office) => {
+    try {
+      const response = await axios.post(serverUrl + "flash-questionnaire", {
+        office: office,
+      });
+    } catch (error) {
+      console.log("Error fetching questionnaires: ", error);
+    }
+  };
+
   useEffect(() => {
     fetchOffices();
     fetchDepartments();
@@ -192,9 +204,13 @@ const Settings: React.FC = () => {
     setEditIndex(null);
   };
 
-  const handleAddQuestionnaire = () => {
+  const handleAddQuestionnaire = async () => {
     if (selectedOffice) {
-      const newQuestionnaire = { name: newQuestionnaireName, questions: [] };
+      const newQuestionnaire = {
+        name: newQuestionnaireName,
+        questions: [],
+        office: selectedOffice["name"],
+      };
       const updatedQuestionnaires = [
         ...(questionnaires[selectedOffice.name] || []),
       ];
@@ -204,6 +220,14 @@ const Settings: React.FC = () => {
         [selectedOffice.name]: updatedQuestionnaires,
       });
       setNewQuestionnaireName(""); // Clear the input field
+      try {
+        const response = await axios.post(
+          serverUrl + "add-questionnaire",
+          newQuestionnaire,
+        );
+      } catch (error) {
+        console.log("Error adding questionnaire: ", error);
+      }
     }
   };
 

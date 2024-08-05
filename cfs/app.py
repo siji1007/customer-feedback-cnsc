@@ -104,13 +104,6 @@ def select_department():
     except:
         return render_template('admin.html')
 
-@app.route("/add-questionnaire", methods=['POST'])
-def add_questionnaire():
-    questionnaire_title=request.form.get('questionnaire_title')
-    department_type=request.form.get('dept')
-    questionnaire = server.questionnaire_collection.insert_one({'title': questionnaire_title, 'department': department_type})
-    return redirect('/admin')
-
 @app.route("/add-question", methods=['POST'])
 def add_question():
     questionnaire_id=request.form.get('questionnaire_id')
@@ -235,15 +228,6 @@ def get_acad_years():
 
     return years
 
-@app.route('/flash-questionnaire', methods=['POST'])
-def showQuestionnaires():
-    questionnaire_data_ = request.get_json()
-    questionnaire_data = server.questionnaire_collection.find()
-    questionnaire_list = [q for q in questionnaire_data]
-    questionnaires = [str(q["title"]) for q in questionnaire_list if q["department"] == questionnaire_data_['sDepartment']]
-    questionnaire_id = [str(q["_id"]) for q in questionnaire_list if q["department"] == questionnaire_data_['sDepartment']]
-    return {"qid":questionnaire_id,"questionData": questionnaires}
-
 @app.route("/edit-questionnaire", methods=['POST'])
 def edit_questionnaire():
     question_data = request.get_json()
@@ -298,6 +282,24 @@ def surveySuccess():
     survey_result = request.get_json()
     server.answer_collection.insert_one(survey_result)
     return "Recorded Successfully"
+
+@app.route("/add-questionnaire", methods=['POST'])
+def add_questionnaire():
+    questionnaire_data = request.get_json()
+    questionnaire = server.questionnaire_collection.insert_one(questionnaire_data)
+    return "Question Added Successfully"
+
+@app.route('/flash-questionnaire', methods=['POST'])
+def showQuestionnaires():
+    questionnaire_data_ = request.get_json()
+    print(questionnaire_data_)
+    questionnaire_data = server.questionnaire_collection.find()
+    questionnaire_list = [q for q in questionnaire_data]
+    questionnaires = [str(q["name"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office']]
+    questionnaire_id = [str(q["_id"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office']]
+    questionnaire_office = [str(q["office"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office']]
+    return {"qid":questionnaire_id,"name": questionnaires, "office": questionnaire_office}
+
 
 if __name__ == '__main__':
     app.run(port="8082")
