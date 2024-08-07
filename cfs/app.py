@@ -104,16 +104,6 @@ def select_department():
     except:
         return render_template('admin.html')
 
-@app.route("/add-question", methods=['POST'])
-def add_question():
-    questionnaire_id=request.form.get('questionnaire_id')
-    new_question=request.form.get('new_question')
-    new_question_data = {
-        "q_id": generate_question_id(),
-        "question": new_question
-    }
-    server.questionnaire_collection.update_one({'_id': ObjectId(questionnaire_id)}, {'$push': {'questions': new_question_data}})
-    return jsonify({'message': 'Data updated successfully'}), 200
 
 # JSON-based
 
@@ -299,6 +289,18 @@ def showQuestionnaires():
     questionnaire_id = [str(q["_id"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office']]
     questionnaire_office = [str(q["office"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office']]
     return {"qid":questionnaire_id,"name": questionnaires, "office": questionnaire_office}
+
+@app.route("/add-question", methods=['POST'])
+def add_question():
+    questionnaire_id=request.form.get('questionnaire_id')
+    new_question=request.form.get('new_question')
+    new_question_data = {
+        "q_id": generate_question_id(),
+        "question": new_question
+    }
+    server.questionnaire_collection.update_one({'_id': ObjectId(questionnaire_id)}, {'$push': {'questions': new_question_data}})
+    return jsonify({'message': 'Data updated successfully'}), 200
+
 
 
 if __name__ == '__main__':

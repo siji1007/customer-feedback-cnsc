@@ -26,9 +26,8 @@ const Settings: React.FC = () => {
   const [offices, setOffices] = useState<Office[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Department");
-  const [questionnaires, setQuestionnaires] = useState<{
-    [key: string]: Questionnaire[];
-  }>({});
+  const [questionnaires, setQuestionnaires] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<string[]>([] || null);
   const [deptData, setDeptData] = useState<DepartmentData>({
     department: "",
   });
@@ -47,8 +46,13 @@ const Settings: React.FC = () => {
 
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
-  const handleOpenModal = (index: number) => {
-    console.log("Opening modal for questionnaire index:", index); // Debugging line
+  const handleOpenModal = async (index: number) => {
+    //console.log("Opening modal for questionnaire index:", index); // Debugging line
+    /*try {
+      const response = await axios.post(serverUrl + "show_questions");
+    } catch (error) {
+      console.log("Error fetching questions: ", error);
+    }*/
     setSelectedQuestionnaire(index);
     setModalIsOpen(true);
   };
@@ -165,6 +169,7 @@ const Settings: React.FC = () => {
       const response = await axios.post(serverUrl + "flash-questionnaire", {
         office: office,
       });
+      setQuestionnaires(response.data.name);
     } catch (error) {
       console.log("Error fetching questionnaires: ", error);
     }
@@ -188,15 +193,6 @@ const Settings: React.FC = () => {
   const handleSaveClick = () => {
     if (selectedQuestionnaire === null || selectedOffice === null) return;
 
-    const updatedQuestionnaires = [
-      ...(questionnaires[selectedOffice.name] || []),
-    ];
-    updatedQuestionnaires[selectedQuestionnaire].questions[editIndex!] =
-      editQuestion;
-    setQuestionnaires({
-      ...questionnaires,
-      [selectedOffice.name]: updatedQuestionnaires,
-    });
     setEditIndex(null);
   };
 
@@ -211,14 +207,6 @@ const Settings: React.FC = () => {
         questions: [],
         office: selectedOffice["name"],
       };
-      const updatedQuestionnaires = [
-        ...(questionnaires[selectedOffice.name] || []),
-      ];
-      updatedQuestionnaires.push(newQuestionnaire);
-      setQuestionnaires({
-        ...questionnaires,
-        [selectedOffice.name]: updatedQuestionnaires,
-      });
       setNewQuestionnaireName(""); // Clear the input field
       try {
         const response = await axios.post(
@@ -233,30 +221,11 @@ const Settings: React.FC = () => {
 
   const handleDeleteQuestionnaire = (index: number) => {
     if (selectedOffice) {
-      const updatedQuestionnaires = [
-        ...(questionnaires[selectedOffice.name] || []),
-      ];
-      updatedQuestionnaires.splice(index, 1);
-      setQuestionnaires({
-        ...questionnaires,
-        [selectedOffice.name]: updatedQuestionnaires,
-      });
       setSelectedQuestionnaire(null);
     }
   };
 
-  const handleAddQuestion = (question: string) => {
-    if (selectedQuestionnaire === null || selectedOffice === null) return;
-
-    const updatedQuestionnaires = [
-      ...(questionnaires[selectedOffice.name] || []),
-    ];
-    updatedQuestionnaires[selectedQuestionnaire].questions.push(question);
-    setQuestionnaires({
-      ...questionnaires,
-      [selectedOffice.name]: updatedQuestionnaires,
-    });
-  };
+  const handleAddQuestion = (question: string) => {};
 
   const renderContent = () => {
     switch (activeTab) {
@@ -413,58 +382,52 @@ const Settings: React.FC = () => {
                 Questionnaires for {selectedOffice?.name || "Select an Office"}
               </h2>
               <ul className="space-y-2 text-black rounded-lg p-2">
-                {selectedOffice && (
-                  <>
-                    {questionnaires[selectedOffice.name] &&
-                    questionnaires[selectedOffice.name].length > 0 ? (
-                      <>
-                        {questionnaires[selectedOffice.name].map(
-                          (questionnaire, index) => (
-                            <li
-                              key={index}
-                              className={`flex items-center justify-between p-2 border border-white rounded-lg ${selectedQuestionnaire === index ? "bg-red-800 text-white" : "hover:bg-gray-100"}`}
-                              onClick={() => handleOpenModal(index)}
-                            >
-                              <span>{questionnaire.name}</span>
-                              <button
-                                className="text-red-600"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteQuestionnaire(index);
-                                }}
-                              >
-                                <FaTimes />
-                              </button>
-                            </li>
-                          ),
-                        )}
-                      </>
-                    ) : (
-                      <li className="p-2 text-gray-600">
-                        No questionnaires found.
-                      </li>
-                    )}
-                    <li className="p-2">
-                      <div className="flex flex-col items-center">
-                        <input
-                          type="text"
-                          value={newQuestionnaireName}
-                          onChange={(e) =>
-                            setNewQuestionnaireName(e.target.value)
-                          }
-                          placeholder="New Questionnaire Name"
-                          className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800"
-                        />
+                {questionnaires.length != 0 && (
+                  <ul className="space-y-2 text-black rounded-lg p-2">
+                    {questionnaires.map((questionnaire, index) => (
+                      <li
+                        key={index}
+                        className={`flex items-center justify-between p-2 border border-white rounded-lg ${selectedQuestionnaire === index ? "bg-red-800 text-white" : "hover:bg-gray-100"}`}
+                        onClick={() => handleOpenModal(index)}
+                      >
+                        <span>{questionnaire}</span>
                         <button
-                          className="mt-2 bg-red-800 text-white py-1 px-4 rounded-lg"
-                          onClick={handleAddQuestionnaire}
+                          className="text-red-600"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteQuestionnaire(index);
+                          }}
                         >
-                          Add Questionnaire
+                          <FaTimes />
                         </button>
-                      </div>
-                    </li>
-                  </>
+                      </li>
+                    ))}
+                  </ul>
                 )}
+
+                {questionnaires.length == 0 && (
+                  <li className="p-2 text-gray-600">
+                    No questionnaires found.
+                  </li>
+                )}
+
+                <li className="p-2">
+                  <div className="flex flex-col items-center">
+                    <input
+                      type="text"
+                      value={newQuestionnaireName}
+                      onChange={(e) => setNewQuestionnaireName(e.target.value)}
+                      placeholder="New Questionnaire Name"
+                      className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800"
+                    />
+                    <button
+                      className="mt-2 bg-red-800 text-white py-1 px-4 rounded-lg"
+                      onClick={handleAddQuestionnaire}
+                    >
+                      Add Questionnaire
+                    </button>
+                  </div>
+                </li>
               </ul>
             </div>
 
@@ -483,63 +446,53 @@ const Settings: React.FC = () => {
                 >
                   Add/Edit Questions
                 </h2>
-                {selectedQuestionnaire !== null && selectedOffice && (
-                  <ul className="space-y-2 max-h-64 overflow-y-auto">
-                    {questionnaires[selectedOffice.name][
-                      selectedQuestionnaire
-                    ].questions.map((question, index) => (
-                      <li
-                        key={index}
-                        className="p-2 bg-white border border-black rounded-lg flex flex-col "
-                      >
-                        {editIndex === index ? (
-                          <>
-                            <textarea
-                              value={editQuestion}
-                              onChange={(e) => setEditQuestion(e.target.value)}
-                              className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800 resize-none"
-                              rows={3} // Adjust rows as needed
-                            />
-                            <div className="flex space-x-2 mt-2">
-                              <FaSave
-                                className="cursor-pointer w-6 h-6"
-                                onClick={handleSaveClick}
-                              />
-                              <FaTimes
-                                className="cursor-pointer w-6 h-6"
-                                onClick={handleCancelClick}
-                              />
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <span className="break-words">{question}</span>
-                            <FaEdit
-                              className="cursor-pointer mt-2 w-6 h-6"
-                              onClick={() => handleEditClick(index, question)}
-                            />
-                          </>
-                        )}
-                      </li>
-                    ))}
-                    <li className="p-2">
+
+                <ul className="space-y-2 max-h-64 overflow-y-auto">
+                  {questions.map((question, index) => (
+                    <li
+                      className="p-2 bg-white border border-black rounded-lg flex flex-col "
+                      key={index}
+                    >
                       <textarea
-                        placeholder="Add a new question"
+                        value={editQuestion}
+                        onChange={(e) => setEditQuestion(e.target.value)}
                         className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800 resize-none"
-                        onKeyDown={(e) => {
-                          if (
-                            e.key === "Enter" &&
-                            e.currentTarget.value.trim()
-                          ) {
-                            handleAddQuestion(e.currentTarget.value);
-                            e.currentTarget.value = "";
-                          }
-                        }}
                         rows={3} // Adjust rows as needed
                       />
+                      <div className="flex space-x-2 mt-2">
+                        <FaSave
+                          className="cursor-pointer w-6 h-6"
+                          onClick={handleSaveClick}
+                        />
+                        <FaTimes
+                          className="cursor-pointer w-6 h-6"
+                          onClick={handleCancelClick}
+                        />
+                      </div>
+
+                      <span className="break-words">{question}</span>
+                      <FaEdit
+                        className="cursor-pointer mt-2 w-6 h-6"
+                        onClick={() => handleEditClick(index, question)}
+                      />
                     </li>
-                  </ul>
-                )}
+                  ))}
+
+                  <li className="p-2">
+                    <textarea
+                      placeholder="Add a new question"
+                      className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800 resize-none"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                          handleAddQuestion(e.currentTarget.value);
+                          e.currentTarget.value = "";
+                        }
+                      }}
+                      rows={3} // Adjust rows as needed
+                    />
+                  </li>
+                </ul>
+
                 <button
                   className="mt-4 w-full bg-red-800 text-white py-1 rounded-lg"
                   onClick={handleCloseModal}
