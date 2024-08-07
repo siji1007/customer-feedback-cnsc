@@ -27,6 +27,7 @@ const Settings: React.FC = () => {
   const [departments, setDepartments] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Department");
   const [questionnaires, setQuestionnaires] = useState<string[]>([]);
+  const [questionnaireIds, setQuestionnaireIds] = useState<string[]>([]);
   const [questions, setQuestions] = useState<string[]>([] || null);
   const [deptData, setDeptData] = useState<DepartmentData>({
     department: "",
@@ -53,7 +54,9 @@ const Settings: React.FC = () => {
     } catch (error) {
       console.log("Error fetching questions: ", error);
     }*/
+
     setSelectedQuestionnaire(index);
+    getQuestions(index);
     setModalIsOpen(true);
   };
 
@@ -169,9 +172,21 @@ const Settings: React.FC = () => {
       const response = await axios.post(serverUrl + "flash-questionnaire", {
         office: office,
       });
+      setQuestionnaireIds(response.data.qid);
       setQuestionnaires(response.data.name);
     } catch (error) {
       console.log("Error fetching questionnaires: ", error);
+    }
+  };
+
+  const getQuestions = async (index) => {
+    try {
+      const response = await axios.post(serverUrl + "get_questions", {
+        qid: questionnaireIds[index],
+      });
+      setQuestions(response.data);
+    } catch (error) {
+      console.log("Error fetching questions: ", error);
     }
   };
 
@@ -213,6 +228,7 @@ const Settings: React.FC = () => {
           serverUrl + "add-questionnaire",
           newQuestionnaire,
         );
+        getQuestionnaires(selectedOffice.name);
       } catch (error) {
         console.log("Error adding questionnaire: ", error);
       }
@@ -225,7 +241,16 @@ const Settings: React.FC = () => {
     }
   };
 
-  const handleAddQuestion = (question: string) => {};
+  const handleAddQuestion = async (question: string) => {
+    try {
+      const response = await axios.post(serverUrl + "add-question", {
+        qid: questionnaireIds[selectedQuestionnaire],
+        question: question,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -470,7 +495,7 @@ const Settings: React.FC = () => {
                         />
                       </div>
 
-                      <span className="break-words">{question}</span>
+                      <span className="break-words">{question.question}</span>
                       <FaEdit
                         className="cursor-pointer mt-2 w-6 h-6"
                         onClick={() => handleEditClick(index, question)}

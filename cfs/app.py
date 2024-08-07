@@ -292,14 +292,23 @@ def showQuestionnaires():
 
 @app.route("/add-question", methods=['POST'])
 def add_question():
-    questionnaire_id=request.form.get('questionnaire_id')
-    new_question=request.form.get('new_question')
+    question_data = request.get_json()
+    questionnaire_id= question_data["qid"]
+    new_question=question_data["question"]
     new_question_data = {
         "q_id": generate_question_id(),
         "question": new_question
     }
     server.questionnaire_collection.update_one({'_id': ObjectId(questionnaire_id)}, {'$push': {'questions': new_question_data}})
     return jsonify({'message': 'Data updated successfully'}), 200
+
+@app.route("/get_questions", methods=['POST'])
+def get_questions():
+    qid_data = request.get_json()
+    question_data = server.questionnaire_collection.find()
+    question_list = [q for q in question_data]
+    questions = [q["questions"] for q in question_list if q["_id"] == ObjectId(qid_data["qid"])]
+    return jsonify(questions[0])
 
 
 
