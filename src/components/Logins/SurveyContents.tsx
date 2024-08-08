@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
-import SurveyDashboard from './ClientDashboard'; 
+import SurveyDashboard from "./ClientDashboard";
 
-const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice }) => {
+const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
+  selectedOffice,
+}) => {
   const [positions, setPositions] = useState<{ [key: number]: number }>({
     1: 0,
     2: 0,
@@ -20,7 +22,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
     "Question 4",
     "Question 5",
   ]);
-  const [view, setView] = useState<'survey' | 'dashboard'>('survey'); // State to manage view
+  const [view, setView] = useState<"survey" | "dashboard">("survey"); // State to manage view
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   const questionRefs = useRef<Array<HTMLFormElement | null>>([]);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -28,7 +30,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
   const fetchQuestions = async () => {
     try {
       const response = await axios.post(serverUrl + "show_questions", {
-        department: selectedOffice,
+        office: selectedOffice,
       });
       setQuestions(response.data);
     } catch (error) {
@@ -60,17 +62,39 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
   const getEmojiClass = (questionIndex: number, value: number) => {
     const isSelected = positions[questionIndex] === value;
     return `cursor-pointer text-2xl ${isSelected ? "scale-150 text-blue-500" : ""} ${
-      poppingEmoji === questionIndex && !isSelected ? "text-yellow-500 animate-pop" : "text-customGray"
+      poppingEmoji === questionIndex && !isSelected
+        ? "text-yellow-500 animate-pop"
+        : "text-customGray"
     }`;
   };
 
   const getEmoji = (value: number, isSelected: boolean) => {
     const emojiSources = [
-      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.gif", alt: "😔" },
-      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.gif", alt: "🙁" },
-      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.gif", alt: "😐" },
-      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.gif", alt: "😊" },
-      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.gif", alt: "🤩" },
+      {
+        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.webp",
+        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.gif",
+        alt: "😔",
+      },
+      {
+        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.webp",
+        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.gif",
+        alt: "🙁",
+      },
+      {
+        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.webp",
+        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.gif",
+        alt: "😐",
+      },
+      {
+        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.webp",
+        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.gif",
+        alt: "😊",
+      },
+      {
+        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.webp",
+        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.gif",
+        alt: "🤩",
+      },
     ];
     const emoji = emojiSources[value - 1];
     const filter = isSelected ? "none" : "grayscale(100%)";
@@ -78,14 +102,26 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
     return (
       <picture>
         <source srcSet={emoji.srcSet} type="image/webp" />
-        <img src={emoji.src} alt={emoji.alt} width="32" height="32" style={{ filter }} />
+        <img
+          src={emoji.src}
+          alt={emoji.alt}
+          width="32"
+          height="32"
+          style={{ filter }}
+        />
       </picture>
     );
   };
 
   const getScaleValue = (questionIndex: number) => {
     const position = positions[questionIndex] || 0;
-    const values = ["Needs Improvement", "Failed to Meet Expectations", "Meet Expectations", "Exceeds Expectations", "Outstanding"];
+    const values = [
+      "Needs Improvement",
+      "Failed to Meet Expectations",
+      "Meet Expectations",
+      "Exceeds Expectations",
+      "Outstanding",
+    ];
     return values[position - 1];
   };
 
@@ -104,7 +140,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
 
   const handleModalClose = () => {
     setIsSuccessModalOpen(false);
-    setView('dashboard'); // Switch to SurveyDashboard
+    setView("dashboard"); // Switch to SurveyDashboard
   };
 
   const renderQuestions = () => {
@@ -117,7 +153,9 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
           ref={(el) => (questionRefs.current[questionIndex - 1] = el)}
           className={`bg-gray-100 p-4 rounded-md border-b-2 border-red-800 mb-4 ${isAnswered ? "bg-green-200" : ""}`}
         >
-          <p className="text-xs md:text-xs lg:text-2xl mb-4 shadow-lg">{question}</p>
+          <p className="text-xs md:text-xs lg:text-2xl mb-4 shadow-lg">
+            {question}
+          </p>
           <div className="flex justify-between">
             {[1, 2, 3, 4, 5].map((value) => (
               <div
@@ -131,7 +169,9 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
           </div>
           <div className="text-center mt-2">
             {positions[questionIndex] > 0 && (
-              <span className="text-xs md:text-sm lg:text-lg font-semibold">{getScaleValue(questionIndex)}</span>
+              <span className="text-xs md:text-sm lg:text-lg font-semibold">
+                {getScaleValue(questionIndex)}
+              </span>
             )}
           </div>
         </form>
@@ -139,7 +179,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
     });
   };
 
-  if (view === 'dashboard') {
+  if (view === "dashboard") {
     return <SurveyDashboard />;
   }
 
@@ -154,8 +194,14 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
           {renderQuestions()}
         </div>
         <form className="bg-gray-100 p-4 rounded-md shadow-md">
-          <p className="text-sm md:text-xl lg:text-2xl mb-4 shadow-lg">Please indicate below your other concerns or suggestions on how we can further improve our services</p>
-          <textarea placeholder="Your comments here..." className="w-full h-32 border rounded-md p-2"></textarea>
+          <p className="text-sm md:text-xl lg:text-2xl mb-4 shadow-lg">
+            Please indicate below your other concerns or suggestions on how we
+            can further improve our services
+          </p>
+          <textarea
+            placeholder="Your comments here..."
+            className="w-full h-32 border rounded-md p-2"
+          ></textarea>
         </form>
       </div>
       <div className="flex flex-col items-center mt-4">
@@ -172,7 +218,9 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({ selectedOffice 
           <div className="bg-white p-8 rounded-md shadow-md text-center">
             <CheckIcon className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-2xl font-semibold mb-4">Success!</h2>
-            <p className="mb-4">Your answers have been submitted successfully.</p>
+            <p className="mb-4">
+              Your answers have been submitted successfully.
+            </p>
             <button
               onClick={handleModalClose}
               style={{ backgroundColor: "#800000", color: "white" }}

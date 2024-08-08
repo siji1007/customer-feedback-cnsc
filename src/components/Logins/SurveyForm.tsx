@@ -1,21 +1,21 @@
-import React, { ChangeEvent, useState } from 'react';
-import SurveyContents from './SurveyContents'; // Import SurveyContents component
+import React, { ChangeEvent, useState } from "react";
+import SurveyContents from "./SurveyContents"; // Import SurveyContents component
 
 const SurveyForm: React.FC = () => {
-  const [content, setContent] = useState('Instruction');
+  const [content, setContent] = useState("Instruction");
   const [selectedOffice, setSelectedOffice] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState<boolean>(false);
 
   const handleNextClick = () => {
-    if (content === 'Instruction') {
-      setContent('Select Offices');
-    } else if (content === 'Select Offices') {
-      setContent('Survey Contents');
+    if (content === "Instruction") {
+      setContent("Select Offices");
+    } else if (content === "Select Offices") {
+      setContent("Survey Contents");
     }
   };
 
   const handleBackClick = () => {
-    setContent('Instruction');
+    setContent("Instruction");
   };
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -33,9 +33,15 @@ const SurveyForm: React.FC = () => {
       setSelectAll(false);
     } else {
       const allOffices = [
-        'Admission Office', 'Registrar Office', 'Guidance Office', 
-        'Health Service Office', 'Library', 'Canteen (Food Service)', 
-        'Student Publication', 'Scholarship Programs', 'Student Organization Sport and Cultural Services'
+        "Admission Office",
+        "Registrar Office",
+        "Guidance Office",
+        "Health Service Office",
+        "Library",
+        "Canteen (Food Service)",
+        "Student Publication",
+        "Scholarship Programs",
+        "Student Organization Sport and Cultural Services",
       ];
       setSelectedOffice(allOffices);
       setSelectAll(true);
@@ -43,14 +49,19 @@ const SurveyForm: React.FC = () => {
   };
 
   return (
-    <div className='m-4 md:m-10 lg:m-20'>
-      {content === 'Instruction' ? (
+    <div className="m-4 md:m-10 lg:m-20">
+      {content === "Instruction" ? (
         <>
-          <h1 className="text-lg md:text-xl lg:text-2xl font-bold mb-4">{content}</h1>
-          <p className='bg-gray-100 rounded-lg border p-4 text-sm md:text-base lg:text-lg'>
-            We value your feedback! Please share your experience with School Student Services by rating us on a scale of 5 (Outstanding) to 1 (Needs Improvement). Your honest feedback will help us improve our services to better meet your needs.
+          <h1 className="text-lg md:text-xl lg:text-2xl font-bold mb-4">
+            {content}
+          </h1>
+          <p className="bg-gray-100 rounded-lg border p-4 text-sm md:text-base lg:text-lg">
+            We value your feedback! Please share your experience with School
+            Student Services by rating us on a scale of 5 (Outstanding) to 1
+            (Needs Improvement). Your honest feedback will help us improve our
+            services to better meet your needs.
           </p>
-          <div className='flex items-center mt-4'>
+          <div className="flex items-center mt-4">
             <label className="text-sm md:text-base lg:text-lg">5</label>
             <img
               srcSet="https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.webp"
@@ -58,9 +69,11 @@ const SurveyForm: React.FC = () => {
               alt="🤩"
               className="ml-2 w-6 h-6"
             />
-            <span className='ml-2 text-sm md:text-base lg:text-lg'>Outstanding</span>
+            <span className="ml-2 text-sm md:text-base lg:text-lg">
+              Outstanding
+            </span>
           </div>
-          <div className='flex items-center mt-4'>
+          <div className="flex items-center mt-4">
             <label className="text-sm md:text-base lg:text-lg">4</label>
             <img
               srcSet="https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.webp"
@@ -68,9 +81,11 @@ const SurveyForm: React.FC = () => {
               alt="😊"
               className="ml-2 w-6 h-6"
             />
-            <span className='ml-2 text-sm md:text-base lg:text-lg'>Exceeds Expectations</span>
+            <span className="ml-2 text-sm md:text-base lg:text-lg">
+              Exceeds Expectations
+            </span>
           </div>
-          <div className='flex items-center mt-4'>
+          <div className="flex items-center mt-4">
             <label className="text-sm md:text-base lg:text-lg">3</label>
             <img
               srcSet="https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.webp"
@@ -78,9 +93,11 @@ const SurveyForm: React.FC = () => {
               alt="😐"
               className="ml-2 w-6 h-6"
             />
-            <span className='ml-2 text-sm md:text-base lg:text-lg'>Meet Expectations</span>
+            <span className="ml-2 text-sm md:text-base lg:text-lg">
+              Meet Expectations
+            </span>
           </div>
-          <div className='flex items-center mt-4'>
+          <div className="flex items-center mt-4">
             <label className="text-sm md:text-base lg:text-lg">2</label>
             <img
               srcSet="https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.webp"
@@ -88,9 +105,11 @@ const SurveyForm: React.FC = () => {
               alt="🙁"
               className="ml-2 w-6 h-6"
             />
-            <span className='ml-2 text-sm md:text-base lg:text-lg'>Failed to Meet Expectations</span>
+            <span className="ml-2 text-sm md:text-base lg:text-lg">
+              Failed to Meet Expectations
+            </span>
           </div>
-          <div className='flex items-center mt-4'>
+          <div className="flex items-center mt-4">
             <label className="text-sm md:text-base lg:text-lg">1</label>
             <img
               srcSet="https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.webp"
@@ -98,33 +117,47 @@ const SurveyForm: React.FC = () => {
               alt="😔"
               className="ml-2 w-6 h-6"
             />
-            <span className='ml-2 text-sm md:text-base lg:text-lg'>Needs Improvement</span>
+            <span className="ml-2 text-sm md:text-base lg:text-lg">
+              Needs Improvement
+            </span>
           </div>
-          <div className='flex justify-end mt-10'>
+          <div className="flex justify-end mt-10">
             <button
-              className='px-4 py-2 text-black rounded-lg text-sm md:text-base lg:text-lg'
+              className="px-4 py-2 text-black rounded-lg text-sm md:text-base lg:text-lg"
               onClick={handleNextClick}
             >
               Next
             </button>
           </div>
         </>
-      ) : content === 'Select Offices' ? (
+      ) : content === "Select Offices" ? (
         <>
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-center">{content}</h1>
+            <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-center">
+              {content}
+            </h1>
             <button
               className="px-4 py-2 text-black rounded-lg text-sm md:text-base lg:text-lg"
               onClick={handleSelectAll}
             >
-              {selectAll ? 'Deselect All' : 'Select All'}
+              {selectAll ? "Deselect All" : "Select All"}
             </button>
           </div>
           <div className="flex flex-col space-y-2 m-2">
             {/* List of offices */}
-            {['Admission Office', 'Registrar Office', 'Guidance Office', 'Health Service Office', 'Library', 'Canteen (Food Service)', 'Student Publication', 'Scholarship Programs', 'Student Organization Sport and Cultural Services'].map((office, index) => (
+            {[
+              "Admission",
+              "Registrar",
+              "Guidance",
+              "Health Service",
+              "Library",
+              "Canteen (Food Service)",
+              "Student Publication",
+              "Scholarship Programs",
+              "Student Organization Sport and Cultural Services",
+            ].map((office, index) => (
               <label key={index} className="flex items-center justify-between">
-                <span className='font-bold '>{office}</span>
+                <span className="font-bold ">{office}</span>
                 <input
                   type="checkbox"
                   name={office}
@@ -152,7 +185,7 @@ const SurveyForm: React.FC = () => {
           </div>
         </>
       ) : (
-        <SurveyContents selectedOffice={selectedOffice}/>
+        <SurveyContents selectedOffice={selectedOffice} />
       )}
     </div>
   );

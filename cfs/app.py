@@ -264,7 +264,7 @@ def showQuestions():
     print(selected_offices)
     question_data = server.questionnaire_collection.find()
     question_list = [q for q in question_data]
-    questions = [q["title"] for q in question_list if q["department"] in selected_offices["department"]]
+    questions = [q["questions"] for q in question_list if q["office"] in selected_offices["office"]]
     return questions
 
 @app.route('/submit_answer', methods=["POST"])
@@ -310,7 +310,15 @@ def get_questions():
     questions = [q["questions"] for q in question_list if q["_id"] == ObjectId(qid_data["qid"])]
     return jsonify(questions[0])
 
-
+@app.route("/edit-question", methods=['POST'])
+def edit_questions():
+    questionData = request.get_json()
+    server.questionnaire_collection.update_one(
+               {'_id': ObjectId(questionData['qid'])},
+               {'$set': {'questions.$[elem].question': questionData['question']}},
+               array_filters=[{'elem.q_id': questionData['q_id']}]
+           )
+    return "Questionnaire Edited Successfully.", 200
 
 if __name__ == '__main__':
     app.run(port="8082")

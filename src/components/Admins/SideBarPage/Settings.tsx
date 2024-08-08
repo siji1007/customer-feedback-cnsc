@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaEdit, FaSave, FaTimes, FaPlus } from "react-icons/fa";
 import axios from "axios";
 import Modal from "react-modal";
@@ -22,13 +22,19 @@ interface Office {
   name: string;
 }
 
+interface Question {
+  qid: string;
+  question: string;
+}
+
 const Settings: React.FC = () => {
   const [offices, setOffices] = useState<Office[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Department");
   const [questionnaires, setQuestionnaires] = useState<string[]>([]);
   const [questionnaireIds, setQuestionnaireIds] = useState<string[]>([]);
-  const [questions, setQuestions] = useState<string[]>([] || null);
+  const [activeQuestionnaire, setActiveQuestionnaire] = useState<string>("");
+  const [questions, setQuestions] = useState<Question[]>([] || null);
   const [deptData, setDeptData] = useState<DepartmentData>({
     department: "",
   });
@@ -42,9 +48,9 @@ const Settings: React.FC = () => {
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState<
     number | null
   >(null);
-
   const [newQuestionnaireName, setNewQuestionnaireName] = useState("");
-
+  const [questionText, setQuestionText] = useState("");
+  const questionAreaRef = useRef<HTMLTextAreaElement>(null);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
   const handleOpenModal = async (index: number) => {
@@ -58,6 +64,16 @@ const Settings: React.FC = () => {
     setSelectedQuestionnaire(index);
     getQuestions(index);
     setModalIsOpen(true);
+  };
+
+  const handleEditQuestion = (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    const updatedQuestion = {
+      ...editQuestion,
+      [event.target.name]: event.target.value,
+    };
+    setEditQuestion(updatedQuestion);
   };
 
   const handleCloseModal = () => {
@@ -185,28 +201,34 @@ const Settings: React.FC = () => {
         qid: questionnaireIds[index],
       });
       setQuestions(response.data);
+      setActiveQuestionnaire(questionnaireIds[index]);
     } catch (error) {
       console.log("Error fetching questions: ", error);
     }
   };
 
-  useEffect(() => {
-    fetchOffices();
-    fetchDepartments();
-    fetchFeedbackState();
-    fetchReminderState();
-  }, []);
-
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [editQuestion, setEditQuestion] = useState<string>("");
+  const [editQuestion, setEditQuestion] = useState<Question>({
+    qid: "",
+    question: "",
+  });
 
   const handleEditClick = (index: number, question: string) => {
     setEditIndex(index);
-    setEditQuestion(question);
+    setEditQuestion({ ...editQuestion, question: question });
   };
 
-  const handleSaveClick = () => {
-    if (selectedQuestionnaire === null || selectedOffice === null) return;
+  const handleSaveClick = async (questionnaireId, index, question) => {
+    try {
+      const response = await axios.post(serverUrl + "edit-question", {
+        qid: questionnaireId,
+        q_id: questions[index]["q_id"],
+        question: question,
+      });
+      getQuestions(index);
+    } catch (error) {
+      console.log(error);
+    }
 
     setEditIndex(null);
   };
@@ -247,10 +269,23 @@ const Settings: React.FC = () => {
         qid: questionnaireIds[selectedQuestionnaire],
         question: question,
       });
+      getQuestions(selectedQuestionnaire);
+      setQuestionText("");
+      if (questionAreaRef.current) {
+        questionAreaRef.current.selectionStart = 0;
+        questionAreaRef.current.selectionEnd = 0;
+      }
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    fetchOffices();
+    fetchDepartments();
+    fetchFeedbackState();
+    fetchReminderState();
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -471,40 +506,60 @@ const Settings: React.FC = () => {
                 >
                   Add/Edit Questions
                 </h2>
-
-                <ul className="space-y-2 max-h-64 overflow-y-auto">
-                  {questions.map((question, index) => (
-                    <li
-                      className="p-2 bg-white border border-black rounded-lg flex flex-col "
-                      key={index}
-                    >
-                      <textarea
-                        value={editQuestion}
-                        onChange={(e) => setEditQuestion(e.target.value)}
-                        className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800 resize-none"
-                        rows={3} // Adjust rows as needed
-                      />
-                      <div className="flex space-x-2 mt-2">
-                        <FaSave
-                          className="cursor-pointer w-6 h-6"
-                          onClick={handleSaveClick}
-                        />
-                        <FaTimes
-                          className="cursor-pointer w-6 h-6"
-                          onClick={handleCancelClick}
-                        />
-                      </div>
-
-                      <span className="break-words">{question.question}</span>
-                      <FaEdit
-                        className="cursor-pointer mt-2 w-6 h-6"
-                        onClick={() => handleEditClick(index, question)}
-                      />
-                    </li>
-                  ))}
-
-                  <li className="p-2">
+                {questions.length != 0 && (
+                  <ul className="space-y-2 max-h-64 overflow-y-auto">
+                    {questions.map((question, index) => (
+                      <li
+                        key={index}
+                        className="p-2 bg-white border border-black rounded-lg flex flex-col "
+                      >
+                        {editIndex === index ? (
+                          <>
+                            <textarea
+                              name="question"
+                              value={editQuestion.question}
+                              onChange={handleEditQuestion}
+                              className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800 resize-none"
+                              rows={3} // Adjust rows as needed
+                            />
+                            <div className="flex space-x-2 mt-2">
+                              <FaSave
+                                className="cursor-pointer w-6 h-6"
+                                onClick={() =>
+                                  handleSaveClick(
+                                    activeQuestionnaire,
+                                    index,
+                                    editQuestion.question,
+                                  )
+                                }
+                              />
+                              <FaTimes
+                                className="cursor-pointer w-6 h-6"
+                                onClick={handleCancelClick}
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <span className="break-words">
+                              {question.question}
+                            </span>
+                            <FaEdit
+                              className="cursor-pointer mt-2 w-6 h-6"
+                              onClick={() =>
+                                handleEditClick(index, question.question)
+                              }
+                            />
+                          </>
+                        )}
+                      </li>
+                    ))}
                     <textarea
+                      ref={questionAreaRef}
+                      value={questionText}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                        setQuestionText(e.target.value)
+                      }
                       placeholder="Add a new question"
                       className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800 resize-none"
                       onKeyDown={(e) => {
@@ -515,8 +570,8 @@ const Settings: React.FC = () => {
                       }}
                       rows={3} // Adjust rows as needed
                     />
-                  </li>
-                </ul>
+                  </ul>
+                )}
 
                 <button
                   className="mt-4 w-full bg-red-800 text-white py-1 rounded-lg"
