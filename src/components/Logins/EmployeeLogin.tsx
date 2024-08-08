@@ -21,6 +21,8 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
   const [showLoginForm, setShowLoginForm] = useState(true);
   const [showSignUpForm, setShowSignUpForm] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [showPassword,setShowPassword] = useState(false);
+
   const [signInData, setSignInData] = useState<SignInData>({
     employee_id: "",
     employee_pass: "",
@@ -32,6 +34,11 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
     employee_cpass: "",
   });
   const [departments, setDepartments] = useState<string[]>([]);
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
 
   const handleLoginClick = () => {
     setShowLoginForm(true); // Show only login form fields
@@ -160,15 +167,27 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
               >
                 Password
               </label>
+              <div className="w-2/3 relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
-                className="w-2/3 rounded-full border"
+                className="w-full rounded-lg border pr-10"
                 name="employee_pass"
                 value={signUpData.employee_pass}
                 onChange={handleSignUpChange}
                 required
               />
+
+                <button
+                  className="absolute inset-y-0 right-0 px-3 py-1 text-sm font-medium text-gray-600"
+                  type="button"
+                  onClick={handleTogglePassword}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+
+              </div>
+
             </section>
             <section className="flex justify-between items-center mb-4">
               <label
@@ -223,15 +242,25 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
               >
                 Password
               </label>
-              <input
-                type="password"
-                id="password"
-                className={`w-2/3 rounded-full border ${hasError ? "border-red-500" : ""}`}
-                name="employee_pass"
-                onChange={handleLoginChange}
-                value={signInData.employee_pass}
-                required
-              />
+              <div className="w-2/3 relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  className={`${"w-full rounded-lg border pr-10"} ${hasError ? "border-red-500" : ""}`}
+                  name="employee_pass"
+                  onChange={handleLoginChange}
+                  value={signInData.employee_pass}
+                  required
+                />
+
+                <button className="absolute inset-y-0 right-0 px-3 py-1 text-sm font-medium text-gray-600"
+                  type="button"
+                  onClick={handleTogglePassword}
+                >
+                    {showPassword ? "Hide" : "Show"}
+                </button>
+
+              </div>
             </section>
             <h4
               className={`text-sm text-center text-red-500 ${hasError ? "" : "hidden"}`}
