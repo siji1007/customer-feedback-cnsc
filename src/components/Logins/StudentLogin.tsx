@@ -20,6 +20,7 @@ interface SignUpData {
 const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   const [showLoginForm, setShowLoginForm] = useState(true);
   const [showSignUpForm, setShowSignUpForm] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     student_id: "",
     password: "",
@@ -53,6 +54,10 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   const handleSignUpClick = () => {
     setShowLoginForm(false);
     setShowSignUpForm(true);
+  };
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
   };
 
 
@@ -109,7 +114,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
 
   return (
     <div className="flex flex-col items-center">
-      <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-4">
+      <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-4 font-bold">
         {showLoginForm ? "Login" : "Sign-Up"}
       </h2>
       {showSignUpForm && (
@@ -163,15 +168,24 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
               >
                 Password
               </label>
-              <input
-                type="password"
-                name="student_pass"
-                id="password"
-                className="w-2/3 rounded-lg border"
-                value={signUpData.student_pass}
-                onChange={handleSignUpChange}
-                required
-              />
+              <div className="w-2/3 relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="student_pass"
+                  id="password"
+                  className="w-full rounded-lg border pr-10"
+                  value={signUpData.student_pass}
+                  onChange={handleSignUpChange}
+                  required
+                />
+                <button
+                  className="absolute inset-y-0 right-0 px-3 py-1 text-sm font-medium text-gray-600"
+                  type="button"
+                  onClick={handleTogglePassword}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
             </section>
             <section className="flex justify-between items-center mb-4">
               <label
@@ -212,7 +226,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
               <input
                 type="text"
                 id="studentId"
-                className={`${"w-2/3 rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
+                className={`${"w-2/3 rounded-lg border pr-10"} ${hasError ? "border-red-500" : ""}`}
                 name="student_id"
                 value={formData.student_id}
                 onChange={handleChange}
@@ -226,15 +240,24 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
               >
                 Password
               </label>
-              <input
-                type="password"
-                id="password"
-                className={`${"w-2/3 rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+              <div className="w-2/3 relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  className={`${"w-full rounded-lg border pr-10"} ${hasError ? "border-red-500" : ""}`}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <button
+                  className="absolute inset-y-0 right-0 px-3 py-1 text-sm font-medium text-gray-600"
+                  type="button"
+                  onClick={handleTogglePassword}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
             </section>
             <h4
               className={`${"text-sm text-center text-red-500"} ${hasError ? "" : "hidden"}`}
@@ -260,17 +283,23 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
       {!showLoginForm && (
         <>
           <label>___________or__________</label>
-          <button onClick={handleLoginClick}>Already a customer? Login</button>
+          <button className="flex p-2" onClick={handleLoginClick}>
+            Already a customer? Login
+          </button>
         </>
       )}
       {showLoginForm && (
         <>
-             <label>___________or__________</label>
-             <button onClick={handleSignUpClick}>Create accout? Signup</button>
+          <label>___________or__________</label>
+          <button className="flex p-2" onClick={handleSignUpClick}>
+            Create account? Signup
+          </button>
         </>
       )}
     </div>
   );
+  
+  
 };
 
 export default StudentLogin;
