@@ -62,7 +62,11 @@ const Dashboard: React.FC = () => {
     "Exceeds Expectations",
     "Outstanding",
   ]; //add here the data scale connection for leftside chart
-  const dataChartLeft = [10, 81, 80, 25, 15]; // add here the data number leftside chart
+  const [dataChartLeft, setDataChartLeft] = useState<number[]>([0, 0, 0, 0, 0]); // add here the data number leftside chart
+  const fetchChartLeft = async () => {
+    const response = await axios.get(serverUrl + "response_data");
+    setDataChartLeft(response.data);
+  };
   const chart1Data = {
     BarChart: {
       labels: chartLabelsLeft,
@@ -115,7 +119,15 @@ const Dashboard: React.FC = () => {
   };
 
   const chartLabelsRight = ["Students", "Employee", "Others"];
-  const chartDataRight = [30, 40, 30];
+  const [chartDataRight, setChartDataRight] = useState<number[]>([0, 0, 0]);
+  const fetchDataRight = async () => {
+    try {
+      const response = await axios.get(serverUrl + "respondent_data");
+      setChartDataRight(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const chart2Data = {
     BarChart: {
       labels: chartLabelsRight,
@@ -170,27 +182,29 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const fetchOffices = async () => {
+    try {
+      const response = await axios.get<{ offices: Office[] }>(
+        serverUrl + "office",
+      );
+      setOffices(response.data.offices);
+    } catch (error) {
+      console.error("Error fetching departments: ", error);
+    }
+  };
+
+  const fetchAcadYears = async () => {
+    try {
+      const response = await axios.get(serverUrl + "get_acad_years");
+      setAcadYears(response.data);
+    } catch (error) {
+      console.error("Error fetching semesters: ", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchOffices = async () => {
-      try {
-        const response = await axios.get<{ offices: Office[] }>(
-          serverUrl + "office",
-        );
-        setOffices(response.data.offices);
-      } catch (error) {
-        console.error("Error fetching departments: ", error);
-      }
-    };
-
-    const fetchAcadYears = async () => {
-      try {
-        const response = await axios.get(serverUrl + "get_acad_years");
-        setAcadYears(response.data);
-      } catch (error) {
-        console.error("Error fetching semesters: ", error);
-      }
-    };
-
+    fetchDataRight();
+    fetchChartLeft();
     fetchAcadYears();
     fetchOffices();
   }, []);

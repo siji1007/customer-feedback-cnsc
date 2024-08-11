@@ -13,6 +13,7 @@ from flask_cors import CORS
 import server, json
 import os, time, random
 from hashlib import sha256
+from collections import Counter
 
 app = Flask(__name__)
 CORS(app)
@@ -318,6 +319,23 @@ def edit_questions():
                array_filters=[{'elem.q_id': questionData['q_id']}]
            )
     return "Questionnaire Edited Successfully.", 200
+
+@app.route("/response_data", methods=['GET'])
+def fetchResponseData():
+    response_data = server.answer_collection.find()
+    response_list = [r for r in response_data]
+    responses = [r["answer"] for r in response_list]
+    result = [sum(d.get(str(i), 0) for d in responses) for i in range(max(max(map(int, d.keys())) for d in responses) + 1)]
+    return result
+
+@app.route("/respondent_data", methods=['GET'])
+def fetchRespondentData():
+    response_data = server.answer_collection.find()
+    response_list = [r for r in response_data]
+    respondents = [r["type"] for r in response_list]
+    type_count = Counter(respondents)
+    result = list(type_count.values())
+    return result
 
 if __name__ == '__main__':
     app.run(port="8082")
