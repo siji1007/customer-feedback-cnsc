@@ -21,6 +21,7 @@ const AdminLogins: React.FC = () => {
   const formType = queryParams.get("form") || localStorage.getItem('formType');
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   const [isFooterVisible, setIsFooterVisible] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const toggleFooter = () => {
     setIsFooterVisible(prev => !prev);
@@ -54,6 +55,11 @@ const AdminLogins: React.FC = () => {
       setShowLoginForm(true);
     }
   };
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
 
   const handleSignInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAdminCredentials({
@@ -191,15 +197,27 @@ const AdminLogins: React.FC = () => {
                 >
                   Password
                 </label>
-                <input
-                  type="password"
-                  name="admin_password"
-                  id="password"
-                  className={`${"w-2/3 rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
-                  value={adminCredentials.admin_password}
-                  onChange={handleSignInChange}
-                  required
-                />
+                <div className="w-2/3 relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="admin_password"
+                    id="password"
+                    className={`${"w-full rounded-lg border pr-10"} ${hasError ? "border-red-500" : ""}`}
+                    value={adminCredentials.admin_password}
+                    onChange={handleSignInChange}
+                    required
+                  />
+                  <button
+                    className="absolute inset-y-0 right-0 px-3 py-1 text-sm font-medium text-gray-600"
+                    type="button"
+                    onClick={handleTogglePassword}
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+
+                </div>
+
+                
               </section>
               <h4
                 className={`${"text-sm text-center text-red-500"} ${hasError ? "" : "hidden"}`}
@@ -265,15 +283,23 @@ const AdminLogins: React.FC = () => {
                 >
                   Password
                 </label>
-                <input
-                  type="password"
-                  id="password"
-                  className={`${"w-2/3 rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
-                  name="officeHead_password"
-                  value={officeHeadCredentials.officeHead_password}
-                  onChange={handleOHSignInChange}
-                  required
-                />
+                <div className="w-2/3 relative">
+                  <input
+                    type={showPassword ? "text":"password"}
+                    id="password"
+                    className={`${"w-full rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
+                    name="officeHead_password"
+                    value={officeHeadCredentials.officeHead_password}
+                    onChange={handleOHSignInChange}
+                    required
+                  />
+                  <button className="absolute inset-y-0 right-0 px-3 py-1 text-sm font-medium text-gray-600"
+                    type="button"
+                    onClick={handleTogglePassword}
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
               </section>
               <h4
                 className={`${"text-sm text-center text-red-500"} ${hasError ? "" : "hidden"}`}
