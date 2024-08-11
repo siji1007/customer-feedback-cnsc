@@ -228,7 +228,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
               <input
                 type="text"
                 id="employeeId"
-                className={`w-2/3 rounded-full border ${hasError ? "border-red-500" : ""}`}
+                className={`w-2/3 rounded-lg border ${hasError ? "border-red-500" : ""}`}
                 name="employee_id"
                 onChange={handleLoginChange}
                 value={signInData.employee_id}

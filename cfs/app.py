@@ -13,6 +13,7 @@ from flask_cors import CORS
 import server, json
 import os, time, random
 from hashlib import sha256
+from collections import Counter
 
 app = Flask(__name__)
 CORS(app)
@@ -261,11 +262,10 @@ def setReminderConf():
 @app.route('/show_questions', methods=['POST'])
 def showQuestions():
     selected_offices = request.get_json()
-    print(selected_offices)
     question_data = server.questionnaire_collection.find()
     question_list = [q for q in question_data]
-    questions = [q["title"] for q in question_list if q["department"] in selected_offices["department"]]
-    return questions
+    questions = [q["questions"] for q in question_list if q["office"] in selected_offices["office"]]
+    return questions[0]
 
 @app.route('/submit_answer', methods=["POST"])
 def surveySuccess():
@@ -310,7 +310,32 @@ def get_questions():
     questions = [q["questions"] for q in question_list if q["_id"] == ObjectId(qid_data["qid"])]
     return jsonify(questions[0])
 
+@app.route("/edit-question", methods=['POST'])
+def edit_questions():
+    questionData = request.get_json()
+    server.questionnaire_collection.update_one(
+               {'_id': ObjectId(questionData['qid'])},
+               {'$set': {'questions.$[elem].question': questionData['question']}},
+               array_filters=[{'elem.q_id': questionData['q_id']}]
+           )
+    return "Questionnaire Edited Successfully.", 200
 
+@app.route("/response_data", methods=['GET'])
+def fetchResponseData():
+    response_data = server.answer_collection.find()
+    response_list = [r for r in response_data]
+    responses = [r["answer"] for r in response_list]
+    result = [sum(d.get(str(i), 0) for d in responses) for i in range(max(max(map(int, d.keys())) for d in responses) + 1)]
+    return result
+
+@app.route("/respondent_data", methods=['GET'])
+def fetchRespondentData():
+    response_data = server.answer_collection.find()
+    response_list = [r for r in response_data]
+    respondents = [r["type"] for r in response_list]
+    type_count = Counter(respondents)
+    result = list(type_count.values())
+    return result
 
 if __name__ == '__main__':
     app.run(port="8082")
