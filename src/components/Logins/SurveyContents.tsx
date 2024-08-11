@@ -12,11 +12,11 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
   selectedOffice,
 }) => {
   const [positions, setPositions] = useState<{ [key: number]: number }>({
+    0: 0,
     1: 0,
     2: 0,
     3: 0,
     4: 0,
-    5: 0,
   });
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [poppingEmoji, setPoppingEmoji] = useState<number | null>(null);
@@ -25,6 +25,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   const questionRefs = useRef<Array<HTMLFormElement | null>>([]);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const [comment, setComment] = useState("");
 
   const fetchQuestions = async () => {
     try {
@@ -130,6 +131,8 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
       await axios.post(serverUrl + "submit_answer", {
         student_id: globalThis.activeId,
         answer: positions,
+        department: selectedOffice,
+        comment: comment,
       });
       setIsSuccessModalOpen(true);
     } catch (error) {
@@ -198,6 +201,9 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
             can further improve our services
           </p>
           <textarea
+            name="comment"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
             placeholder="Your comments here..."
             className="w-full h-32 border rounded-md p-2"
           ></textarea>

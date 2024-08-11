@@ -1,10 +1,19 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState, useEffect } from "react";
 import SurveyContents from "./SurveyContents"; // Import SurveyContents component
+import axios from "axios";
+
+interface Offices {
+  office_id: string;
+  name: string;
+}
 
 const SurveyForm: React.FC = () => {
   const [content, setContent] = useState("Instruction");
   const [selectedOffice, setSelectedOffice] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState<boolean>(false);
+  const [allOffices, setAllOffices] = useState<Offices[]>([]);
+  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const [isCheckAll, setIsCheckAll] = useState(false);
 
   const handleNextClick = () => {
     if (content === "Instruction") {
@@ -28,25 +37,28 @@ const SurveyForm: React.FC = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectAll) {
+    setIsCheckAll(!isCheckAll);
+    if (!isCheckAll) {
+      setSelectedOffice(allOffices.map((office) => office.name)); // Use 'office_name'
+      setSelectAll(true);
+    } else {
       setSelectedOffice([]);
       setSelectAll(false);
-    } else {
-      const allOffices = [
-        "Admission Office",
-        "Registrar Office",
-        "Guidance Office",
-        "Health Service Office",
-        "Library",
-        "Canteen (Food Service)",
-        "Student Publication",
-        "Scholarship Programs",
-        "Student Organization Sport and Cultural Services",
-      ];
-      setSelectedOffice(allOffices);
-      setSelectAll(true);
     }
   };
+
+  const getAllOffices = async () => {
+    try {
+      const response = await axios.get(serverUrl + "office");
+      setAllOffices(response.data.offices);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getAllOffices();
+  });
 
   return (
     <div className="m-4 md:m-10 lg:m-20">
@@ -145,24 +157,14 @@ const SurveyForm: React.FC = () => {
           </div>
           <div className="flex flex-col space-y-2 m-2">
             {/* List of offices */}
-            {[
-              "Admission",
-              "Registrar",
-              "Guidance",
-              "Health Service",
-              "Library",
-              "Canteen (Food Service)",
-              "Student Publication",
-              "Scholarship Programs",
-              "Student Organization Sport and Cultural Services",
-            ].map((office, index) => (
+            {allOffices.map((office, index) => (
               <label key={index} className="flex items-center justify-between">
-                <span className="font-bold ">{office}</span>
+                <span className="font-bold ">{office.name}</span>
                 <input
                   type="checkbox"
-                  name={office}
-                  value={office}
-                  checked={selectedOffice.includes(office)}
+                  name={office.name}
+                  value={office.name}
+                  checked={selectedOffice.includes(office.name)}
                   onChange={handleCheckboxChange}
                   className="ml-2"
                 />
