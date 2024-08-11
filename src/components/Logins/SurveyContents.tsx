@@ -3,6 +3,11 @@ import { CheckIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import SurveyDashboard from "./ClientDashboard";
 
+interface Question {
+  q_id: string;
+  question: string;
+}
+
 const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
   selectedOffice,
 }) => {
@@ -15,13 +20,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
   });
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [poppingEmoji, setPoppingEmoji] = useState<number | null>(null);
-  const [questions, setQuestions] = useState<string[]>([
-    "Question 1: __________________________________________________",
-    "Question 2:",
-    "Question 3",
-    "Question 4",
-    "Question 5",
-  ]);
+  const [questions, setQuestions] = useState<Question[]>([] || null);
   const [view, setView] = useState<"survey" | "dashboard">("survey"); // State to manage view
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   const questionRefs = useRef<Array<HTMLFormElement | null>>([]);
@@ -145,7 +144,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
 
   const renderQuestions = () => {
     return questions.map((question, index) => {
-      const questionIndex = index + 1;
+      const questionIndex = index;
       const isAnswered = positions[questionIndex] > 0; // Check if the question is answered
       return (
         <form
@@ -154,7 +153,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
           className={`bg-gray-100 p-4 rounded-md border-b-2 border-red-800 mb-4 ${isAnswered ? "bg-green-200" : ""}`}
         >
           <p className="text-xs md:text-xs lg:text-2xl mb-4 shadow-lg">
-            {question}
+            {question.question}
           </p>
           <div className="flex justify-between">
             {[1, 2, 3, 4, 5].map((value) => (

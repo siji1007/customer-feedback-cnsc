@@ -261,11 +261,10 @@ def setReminderConf():
 @app.route('/show_questions', methods=['POST'])
 def showQuestions():
     selected_offices = request.get_json()
-    print(selected_offices)
     question_data = server.questionnaire_collection.find()
     question_list = [q for q in question_data]
     questions = [q["questions"] for q in question_list if q["office"] in selected_offices["office"]]
-    return questions
+    return questions[0]
 
 @app.route('/submit_answer', methods=["POST"])
 def surveySuccess():
