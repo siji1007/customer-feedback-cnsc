@@ -253,7 +253,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
                   required
                 />
 
-                <button className="absolute inset-y-0 right-0 px-3 py-1 text-sm font-medium text-gray-600"
+                <button className="absolute inset-y-0 right-0 px-3 py-1 text-sm font-bold text-red-800"
                   type="button"
                   onClick={handleTogglePassword}
                 >
