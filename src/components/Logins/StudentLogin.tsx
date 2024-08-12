@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 interface FormData {
-  student_id: string;
+  account_id: string;
   password: string;
 }
 
@@ -11,7 +11,7 @@ interface StudentLoginProps {
 }
 
 interface SignUpData {
-  student_id: string;
+  account_id: string;
   student_dept: string;
   student_pass: string;
   student_cpass: string;
@@ -22,12 +22,12 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   const [showSignUpForm, setShowSignUpForm] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<FormData>({
-    student_id: "",
+    account_id: "",
     password: "",
   });
   const [departments, setDepartments] = useState<string[]>([]);
   const [signUpData, setSignUpData] = useState<SignUpData>({
-    student_id: "",
+    account_id: "",
     student_dept: "",
     student_pass: "",
     student_cpass: "",
@@ -73,7 +73,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
         formData,
       );
       setHasError(false);
-      globalThis.activeId = formData["student_id"]
+      globalThis.activeId = formData["account_id"]
       onLoginSuccess();
     } catch (error) {
       setHasError(true);
@@ -129,10 +129,10 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
               </label>
               <input
                 type="text"
-                name="student_id"
+                name="account_id"
                 id="studentId"
                 className="w-2/3 rounded-lg border"
-                value={signUpData.student_id}
+                value={signUpData.account_id}
                 onChange={handleSignUpChange}
                 required
               />
@@ -227,8 +227,8 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
                 type="text"
                 id="studentId"
                 className={`${"w-2/3 rounded-lg border pr-10"} ${hasError ? "border-red-500" : ""}`}
-                name="student_id"
-                value={formData.student_id}
+                name="account_id"
+                value={formData.account_id}
                 onChange={handleChange}
                 required
               />
