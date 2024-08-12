@@ -133,12 +133,12 @@ def verify_oh():
 @app.route('/add-student', methods=['POST'])
 def add_student():
     signUpData = request.get_json()
-    sid = signUpData['student_id']
+    sid = signUpData['account_id']
     dept = signUpData['student_dept']
     spass = signUpData['student_pass']
     cspass = signUpData['student_cpass']
     if spass == cspass:
-        student = {'student_id': sid, 'department': dept, 'password': encryptPass(spass), 'type': 'student'}
+        student = {'account_id': sid, 'department': dept, 'password': encryptPass(spass), 'type': 'student'}
         server.user_collection.insert_one(student)
         return "Credentials Accepted"
     else:
@@ -147,9 +147,9 @@ def add_student():
 @app.route('/student-login', methods=['POST'])
 def student_login():
     data = request.get_json()
-    sid = data['student_id']
+    sid = data['account_id']
     spass = data['password']
-    user = server.user_collection.find_one({'student_id': sid, 'password': verifyPass(spass), 'type': 'student'})
+    user = server.user_collection.find_one({'account_id': sid, 'password': verifyPass(spass), 'type': 'student'})
     if user:
         return "Access Granted"
     else:
@@ -159,12 +159,12 @@ def student_login():
 @app.route('/add-employee', methods=['POST'])
 def add_employee():
     employee_creds = request.get_json()
-    eid = employee_creds['employee_id']
+    eid = employee_creds['account_id']
     dept = employee_creds['employee_dept']
     epass = employee_creds['employee_pass']
     cepass = employee_creds['employee_cpass']
     if epass == cepass:
-        employee = {'employee_id':eid, 'department':dept, 'password':encryptPass(epass), 'type':'employee'}
+        employee = {'account_id':eid, 'department':dept, 'password':encryptPass(epass), 'type':'employee'}
         server.user_collection.insert_one(employee)
         return "Credentials Accepted"
     else:
@@ -173,9 +173,9 @@ def add_employee():
 @app.route('/employee-login', methods=['POST'])
 def employee_login():
     employee_data = request.get_json()
-    eid = employee_data['employee_id']
+    eid = employee_data['account_id']
     epass = employee_data['employee_pass']
-    user = server.user_collection.find_one({'employee_id':eid, 'password':verifyPass(epass), 'type':'employee'})
+    user = server.user_collection.find_one({'account_id':eid, 'password':verifyPass(epass), 'type':'employee'})
     if user:
         return "Access Granted"
     else:
@@ -325,17 +325,15 @@ def fetchResponseData():
     response_data = server.answer_collection.find()
     response_list = [r for r in response_data]
     responses = [r["answer"] for r in response_list]
-    result = [sum(d.get(str(i), 0) for d in responses) for i in range(max(max(map(int, d.keys())) for d in responses) + 1)]
+    values = [value for r in responses for value in r.values()]
+    value_count = Counter(values)
+    result = []
+    for value, count in value_count.items():
+        result.append(count)
+    result.reverse()
     return result
 
-@app.route("/respondent_data", methods=['GET'])
-def fetchRespondentData():
-    response_data = server.answer_collection.find()
-    response_list = [r for r in response_data]
-    respondents = [r["type"] for r in response_list]
-    type_count = Counter(respondents)
-    result = list(type_count.values())
-    return result
+
 
 if __name__ == '__main__':
     app.run(port="8082")

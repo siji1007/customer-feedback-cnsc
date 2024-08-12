@@ -129,7 +129,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
     try {
       setIsSuccessModalOpen(true);
       await axios.post(serverUrl + "submit_answer", {
-        student_id: globalThis.activeId,
+        account_id: globalThis.activeId,
         answer: positions,
         department: selectedOffice,
         comment: comment,

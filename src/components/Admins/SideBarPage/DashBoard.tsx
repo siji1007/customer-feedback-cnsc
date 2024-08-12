@@ -203,7 +203,7 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchDataRight();
+    //fetchDataRight();
     fetchChartLeft();
     fetchAcadYears();
     fetchOffices();
@@ -264,43 +264,42 @@ const Dashboard: React.FC = () => {
               </div>
 
               <div className="ml-10 flex flex-col space-y-4">
-  <div className="flex items-center">
-    <label
-      htmlFor="semesterSelect"
-      className="text-sm text-white font-bold mr-2"
-    >
-      Semester
-    </label>
-    <select
-      id="semesterSelect"
-      className="bg-white-100 text-black border border-gray-600 flex-grow"
-    >
-      <option value=""></option>
-      <option value="first">First Semester</option>
-      <option value="second">Second Semester</option>
-    </select>
-  </div>
-  <div className="flex items-center">
-    <label
-      htmlFor="academicYearSelect"
-      className="text-sm text-white font-bold mr-2"
-    >
-      Academic Year
-    </label>
-    <select
-      id="academicYearSelect"
-      className="bg-white-100 text-black border border-gray-600 flex-grow"
-    >
-      <option value=""></option>
-      {acadYears.map((acadYear) => (
-        <option key={acadYear} value={acadYear}>
-          {acadYear}
-        </option>
-      ))}
-    </select>
-  </div>
-</div>
-
+                <div className="flex items-center">
+                  <label
+                    htmlFor="semesterSelect"
+                    className="text-sm text-white font-bold mr-2"
+                  >
+                    Semester
+                  </label>
+                  <select
+                    id="semesterSelect"
+                    className="bg-white-100 text-black border border-gray-600 flex-grow"
+                  >
+                    <option value=""></option>
+                    <option value="first">First Semester</option>
+                    <option value="second">Second Semester</option>
+                  </select>
+                </div>
+                <div className="flex items-center">
+                  <label
+                    htmlFor="academicYearSelect"
+                    className="text-sm text-white font-bold mr-2"
+                  >
+                    Academic Year
+                  </label>
+                  <select
+                    id="academicYearSelect"
+                    className="bg-white-100 text-black border border-gray-600 flex-grow"
+                  >
+                    <option value=""></option>
+                    {acadYears.map((acadYear) => (
+                      <option key={acadYear} value={acadYear}>
+                        {acadYear}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </header>
 
             <div className="flex justify-between items-center mb-4">

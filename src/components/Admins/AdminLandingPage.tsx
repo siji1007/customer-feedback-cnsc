@@ -208,7 +208,7 @@ const AdminLogins: React.FC = () => {
                     required
                   />
                   <button
-                    className="absolute inset-y-0 right-0 px-3 py-1 text-sm font-medium text-gray-600"
+                    className="absolute inset-y-0 right-0 px-3 py-1 text-sm font-bold text-red-800"
                     type="button"
                     onClick={handleTogglePassword}
                   >
@@ -227,7 +227,7 @@ const AdminLogins: React.FC = () => {
             </div>
             <button
               type="submit"
-              className="mt-4 px-4 py-2 bg-red-900 text-white rounded-lg w-full"
+              className="mt-4 px-4 py-2 bg-red-900 text-white rounded-lg w-full font-bold"
             >
               PROCEED
             </button>
@@ -293,7 +293,7 @@ const AdminLogins: React.FC = () => {
                     onChange={handleOHSignInChange}
                     required
                   />
-                  <button className="absolute inset-y-0 right-0 px-3 py-1 text-sm font-medium text-gray-600"
+                  <button className="absolute  inset-y-0 right-0 px-3 py-1 text-sm font-bold text-red-800 "
                     type="button"
                     onClick={handleTogglePassword}
                   >

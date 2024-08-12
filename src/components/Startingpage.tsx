@@ -35,7 +35,7 @@ const StartingPage: React.FC = () => {
               <img src="src/assets/customer_feedback.png" alt="logo" />
               </div> 
             <button
-              className="w-40 text-black bg-gray-300  hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full shadow-maroon "
+              className="w-40 text-black bg-gray-300  hover:bg-gray-100 hover:text-gray-800 font-bold py-2 px-4 rounded-full shadow-maroon "
               onClick={handleStartClick}
             >
               Start
@@ -44,12 +44,12 @@ const StartingPage: React.FC = () => {
         ) : showSecondSetOfButtons ? (
           <div className="flex flex-col items-center">
             <Link to="/admin?form=administrator">
-              <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
+              <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-lg m-2">
                 VPRE
               </button>
             </Link>
             <Link to="/admin?form=officehead">
-              <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-full m-2">
+              <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-lg m-2">
                 Office Head
               </button>
             </Link>
