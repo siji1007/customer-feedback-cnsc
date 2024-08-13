@@ -265,6 +265,10 @@ def showQuestions():
     question_data = server.questionnaire_collection.find()
     question_list = [q for q in question_data]
     questions = [q["questions"] for q in question_list if q["office"] in selected_offices["office"]]
+    q_queue = []
+    for q in questions:
+        q_queue.append(q)
+
     return questions[0]
 
 @app.route('/submit_answer', methods=["POST"])
@@ -333,7 +337,23 @@ def fetchResponseData():
     result.reverse()
     return result
 
-
+@app.route("/respondent_data", methods=['GET'])
+def fetchRespondents():
+    answer_data = server.answer_collection.find()
+    answer_list = [al for al in answer_data]
+    account_data = server.user_collection.find({"account_id": {"$exists": True}})
+    account_list = [a for a in account_data]
+    account_dict = {a["account_id"]: a["type"] for a in account_list}
+    type_counter = Counter()
+    other_counter = Counter()
+    for al in answer_list:
+        account_id = al.get("account_id")
+        if account_id:
+            account_type = account_dict.get(account_id, "Unknown")
+            type_counter[account_type] += 1
+    type_counts = list(type_counter.values())
+    type_counts.append(0)
+    return jsonify(type_counts)
 
 if __name__ == '__main__':
     app.run(port="8082")

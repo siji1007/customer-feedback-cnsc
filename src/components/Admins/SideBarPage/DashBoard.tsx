@@ -203,7 +203,7 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    //fetchDataRight();
+    fetchDataRight();
     fetchChartLeft();
     fetchAcadYears();
     fetchOffices();

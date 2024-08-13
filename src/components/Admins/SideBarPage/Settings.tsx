@@ -554,25 +554,24 @@ const Settings: React.FC = () => {
                         )}
                       </li>
                     ))}
-                    <textarea
-                      ref={questionAreaRef}
-                      value={questionText}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        setQuestionText(e.target.value)
-                      }
-                      placeholder="Add a new question"
-                      className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800 resize-none"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                          handleAddQuestion(e.currentTarget.value);
-                          e.currentTarget.value = "";
-                        }
-                      }}
-                      rows={3} // Adjust rows as needed
-                    />
                   </ul>
                 )}
-
+                <textarea
+                  ref={questionAreaRef}
+                  value={questionText}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setQuestionText(e.target.value)
+                  }
+                  placeholder="Add a new question"
+                  className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800 resize-none"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                      handleAddQuestion(e.currentTarget.value);
+                      e.currentTarget.value = "";
+                    }
+                  }}
+                  rows={3} // Adjust rows as needed
+                />
                 <button
                   className="mt-4 w-full bg-red-800 text-white py-1 rounded-lg"
                   onClick={handleCloseModal}
