@@ -127,17 +127,30 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
 
   const handleSubmit = async () => {
     try {
-      setIsSuccessModalOpen(true);
       await axios.post(serverUrl + "submit_answer", {
         account_id: globalThis.activeId,
         answer: positions,
-        department: selectedOffice,
+        department: selectedOffice[0],
         comment: comment,
       });
-      setIsSuccessModalOpen(true);
+      selectedOffice.shift();
+      if (selectedOffice.length === 0) {
+        setIsSuccessModalOpen(true);
+      } else {
+        fetchQuestions();
+        renderQuestions();
+      }
     } catch (error) {
       console.log(error);
     }
+    setPoppingEmoji(null);
+    setPositions({
+      0: 0,
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+    });
   };
 
   const handleModalClose = () => {

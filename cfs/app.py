@@ -265,9 +265,6 @@ def showQuestions():
     question_data = server.questionnaire_collection.find()
     question_list = [q for q in question_data]
     questions = [q["questions"] for q in question_list if q["office"] in selected_offices["office"]]
-    q_queue = []
-    for q in questions:
-        q_queue.append(q)
 
     return questions[0]
 
@@ -331,11 +328,9 @@ def fetchResponseData():
     responses = [r["answer"] for r in response_list]
     values = [value for r in responses for value in r.values()]
     value_count = Counter(values)
-    result = []
-    for value, count in value_count.items():
-        result.append(count)
-    result.reverse()
-    return result
+    sorted_keys = sorted(value_count.keys())
+    sorted_counts = [value_count[key] for key in sorted_keys]
+    return sorted_counts
 
 @app.route("/respondent_data", methods=['GET'])
 def fetchRespondents():
