@@ -332,6 +332,18 @@ def fetchResponseData():
     sorted_counts = [value_count[key] for key in sorted_keys]
     return sorted_counts
 
+@app.route("/fetch_specific_dept", methods=['POST'])
+def fetchSpecificResponseData():
+    res_data = request.get_json()
+    response_data = server.answer_collection.find()
+    response_list = [r for r in response_data]
+    responses = [r["answer"] for r in response_list if r["department"] == res_data["selectedOffice"]]
+    values = [value for r in responses for value in r.values()]
+    value_count = Counter(values)
+    sorted_keys = sorted(value_count.keys())
+    sorted_counts = [value_count[key] for key in sorted_keys]
+    return sorted_counts
+
 @app.route("/respondent_data", methods=['GET'])
 def fetchRespondents():
     answer_data = server.answer_collection.find()

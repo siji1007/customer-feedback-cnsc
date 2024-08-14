@@ -53,6 +53,24 @@ const Dashboard: React.FC = () => {
   >("PieChart");
 
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const [selectedOffice, setSelectedOffice] = useState("");
+  const handleOfficeSelection = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setSelectedOffice(event.target.value);
+    fetchSpecificOffice();
+  };
+
+  const fetchSpecificOffice = async () => {
+    try {
+      const response = await axios.post(serverUrl + "fetch_specific_dept", {
+        selectedOffice: selectedOffice,
+      });
+      setDataChartLeft(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // Fixed data for the charts
   const chartLabelsLeft = [
@@ -253,6 +271,8 @@ const Dashboard: React.FC = () => {
                 <select
                   id="officeSelect"
                   className="bg-white-100 text-black border border-gray-600 rounded-md py-1 px-2"
+                  value={selectedOffice}
+                  onChange={handleOfficeSelection}
                 >
                   <option value=""></option>
                   {offices.map((office) => (
