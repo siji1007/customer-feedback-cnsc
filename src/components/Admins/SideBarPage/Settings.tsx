@@ -263,6 +263,11 @@ const Settings: React.FC = () => {
     }
   };
 
+
+  const handleDeleteOffice = (index: number) => {
+    //add here the function to delete.
+  };
+
   const handleAddQuestion = async (question: string) => {
     try {
       const response = await axios.post(serverUrl + "add-question", {
@@ -334,9 +339,15 @@ const Settings: React.FC = () => {
                 {departments.map((department, index) => (
                   <li
                     key={index}
-                    className="mb-5 bg-gray-300 p-2 rounded-lg border border-black"
+                    className="mb-5 bg-gray-300 flex items-center justify-between p-2 rounded-lg border border-black"
                   >
                     {department}
+
+                    <button className="text-red-800">
+
+                      <FaTimes/>
+
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -388,12 +399,23 @@ const Settings: React.FC = () => {
                 {offices.map((office) => (
                   <li
                     key={office.id}
-                    className="mb-5 bg-gray-300 p-2 rounded-lg border border-black"
+                    className="mb-5 bg-gray-300 p-2 flex items-center justify-between rounded-lg border border-black"
                   >
-                    {office.name}
+                    <span>{office.name}</span>
+                    <button className="text-red-800"
+                    
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteOffice(index);
+                    }}
+                    
+                    >
+                      <FaTimes />
+                    </button>
                   </li>
                 ))}
               </ul>
+
             </section>
           </div>
         );
@@ -633,42 +655,42 @@ const Settings: React.FC = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Settings</h1>
-      <div className="flex items-center mb-4 rounded-lg p-2 bg-red-800">
+      <div className="flex items-center mb-4 rounded-lg p-2 bg-red-800 ">
         <button
-          className={`px-4 py-2 rounded-lg ${
+          className={`px-4 py-2 rounded-lg sm:w-40 md:w-32 lg:w-28 mr-1 ${
             activeTab === "Department"
-              ? "bg-white text-black font-bold"
-              : "bg-transparent text-white hover:bg-white hover:text-red-800"
+              ? "border-b-4 border-white text-white font-bold text-center"
+              : "bg-transparent text-white text-center hover:border-b-4 border-white hover:text-white"
           }`}
           onClick={() => setActiveTab("Department")}
         >
           Department
         </button>
         <button
-          className={`px-4 py-2 rounded-lg ${
+          className={`px-4 py-2 rounded-lg  sm:w-40 md:w-32 lg:w-28 mr-1 ${
             activeTab === "Office"
-              ? "bg-white text-black font-bold"
-              : "bg-transparent text-white hover:bg-white hover:text-red-800"
+              ? "border-b-4 border-white text-white font-bold text-center"
+              : "bg-transparent text-white text-center hover:border-b-4 border-white hover:text-white"
           }`}
           onClick={() => setActiveTab("Office")}
         >
           Office
         </button>
         <button
-          className={`px-4 py-2 rounded-lg ${
+          className={`px-4 py-2 rounded-lg sm:w-40 md:w-32 lg:w-28 mr-1 ${
             activeTab === "Questions"
-              ? "bg-white text-black font-bold"
-              : "bg-transparent text-white hover:bg-white hover:text-red-800"
+          ? "border-b-4 border-white text-white font-bold text-center"
+              : "bg-transparent text-white text-center hover:border-b-4 border-white hover:text-white"
           }`}
           onClick={() => setActiveTab("Questions")}
         >
           Questions
         </button>
         <button
-          className={`px-4 py-2 rounded-lg ${
+          className={`px-4 py-2 rounded-lg text-center sm:w-40 md:w-32 lg:w-28 ${
             activeTab === "Notification"
-              ? "bg-white text-black font-bold"
-              : "bg-transparent text-white hover:bg-white hover:text-red-800"
+              ? "border-b-4 border-white text-white font-bold text-center"
+              : "bg-transparent text-white text-center hover:border-b-4 border-white hover:text-white"
           }`}
           onClick={() => setActiveTab("Notification")}
         >
@@ -677,6 +699,7 @@ const Settings: React.FC = () => {
       </div>
 
       <div>{renderContent()}</div>
+      
     </div>
   );
 };
