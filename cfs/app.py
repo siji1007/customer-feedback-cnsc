@@ -362,5 +362,35 @@ def fetchRespondents():
     type_counts.append(0)
     return jsonify(type_counts)
 
+@app.route("/specific_respondent_data", methods=['POST'])
+def fetchSpecificRespondents():
+    client_type = request.get_json()
+    answer_data = server.answer_collection.find()
+    answer_list = [al for al in answer_data if al["department"] == client_type["office"]]
+    account_data = server.user_collection.find({"account_id": {"$exists": True}})
+    account_list = [a for a in account_data]
+    account_dict = {a["account_id"]: a["type"] for a in account_list}
+    type_counter = Counter()
+    other_counter = Counter()
+    for al in answer_list:
+        account_id = al.get("account_id")
+        if account_id:
+            account_type = account_dict.get(account_id, "Unknown")
+            type_counter[account_type] += 1
+    type_counts = list(type_counter.values())
+    type_counts.append(0)
+    return jsonify(type_counts)
+
+@app.route("/get_feedback_count", methods=["GET"])
+def fetchFeedbackCount():
+    count = server.answer_collection.count_documents({})
+    return jsonify(count)
+
+@app.route("/fetchSpecificOffice", methods=["POST"])
+def fetchSpecificFeedbackCount():
+    specific_office = request.get_json()
+    count = server.answer_collection.count_documents({"department": specific_office["office"]})
+    return jsonify(count)
+
 if __name__ == '__main__':
     app.run(port="8082")

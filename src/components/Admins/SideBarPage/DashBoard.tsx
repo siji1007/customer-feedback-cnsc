@@ -42,6 +42,7 @@ interface Office {
 
 const Dashboard: React.FC = () => {
   const [offices, setOffices] = useState<Office[]>([]);
+  const [totalFeedback, setTotalFeedback] = useState(0);
   const [acadYears, setAcadYears] = useState<string[]>([]);
   const [showDetailedView, setShowDetailedView] = useState(false);
   const [content, setContent] = useState("");
@@ -53,20 +54,59 @@ const Dashboard: React.FC = () => {
   >("PieChart");
 
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
-  const [selectedOffice, setSelectedOffice] = useState("");
-  const handleOfficeSelection = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setSelectedOffice(event.target.value);
-    fetchSpecificOffice();
-  };
 
-  const fetchSpecificOffice = async () => {
+  const [activeOffice, setActiveOffice] = useState("");
+  const fetchSpecificOffice = async (selectedOffice) => {
     try {
       const response = await axios.post(serverUrl + "fetch_specific_dept", {
         selectedOffice: selectedOffice,
       });
       setDataChartLeft(response.data);
+      fetchSpecificType(selectedOffice);
+      setActiveOffice(selectedOffice);
+      fetchSpecificTotal(selectedOffice);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchAllOffice = (state) => {
+    if (state === "on") {
+      fetchChartLeft();
+      fetchDataRight();
+    } else {
+      fetchSpecificOffice(activeOffice);
+      fetchSpecificType(activeOffice);
+    }
+  };
+
+  const fetchSpecificType = async (office) => {
+    try {
+      const response = await axios.post(
+        serverUrl + "specific_respondent_data",
+        { office: office },
+      );
+      setChartDataRight(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchTotalFeedback = async () => {
+    try {
+      const response = await axios.get(serverUrl + "get_feedback_count");
+      setTotalFeedback(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchSpecificTotal = async (office) => {
+    try {
+      const response = await axios.post(serverUrl + "fetchSpecificOffice", {
+        office: office,
+      });
+      setTotalFeedback(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -225,6 +265,7 @@ const Dashboard: React.FC = () => {
     fetchChartLeft();
     fetchAcadYears();
     fetchOffices();
+    fetchTotalFeedback();
   }, []);
 
   const getChart1Data = () => chart1Data[chart1Type];
@@ -252,6 +293,9 @@ const Dashboard: React.FC = () => {
                   type="checkbox"
                   id="selectAll"
                   className="mr-2 h-5 w-5"
+                  onChange={(e) =>
+                    fetchAllOffice(e.target.checked ? "on" : "off")
+                  }
                 />
                 <label
                   htmlFor="selectAll"
@@ -271,8 +315,8 @@ const Dashboard: React.FC = () => {
                 <select
                   id="officeSelect"
                   className="bg-white-100 text-black border border-gray-600 rounded-md py-1 px-2"
-                  value={selectedOffice}
-                  onChange={handleOfficeSelection}
+                  value={event?.target.value}
+                  onChange={(e) => fetchSpecificOffice(e.target.value)}
                 >
                   <option value=""></option>
                   {offices.map((office) => (
@@ -332,7 +376,7 @@ const Dashboard: React.FC = () => {
                   </p>
                 </section>
                 <p className="text-center text-xs sm:text-xs md:text-xs lg:text-xm">
-                  100
+                  {totalFeedback}
                 </p>
               </div>
             </div>
