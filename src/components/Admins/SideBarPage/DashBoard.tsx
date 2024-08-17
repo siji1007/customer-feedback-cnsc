@@ -46,6 +46,7 @@ const Dashboard: React.FC = () => {
   const [acadYears, setAcadYears] = useState<string[]>([]);
   const [showDetailedView, setShowDetailedView] = useState(false);
   const [content, setContent] = useState("");
+  const [insights, setInsights] = useState<string[]>([]);
   const [chart1Type, setChart1Type] = useState<
     "BarChart" | "PieChart" | "LineChart"
   >("BarChart");
@@ -107,6 +108,15 @@ const Dashboard: React.FC = () => {
         office: office,
       });
       setTotalFeedback(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchInsights = async () => {
+    try {
+      const response = await axios.get(serverUrl + "fetchCommentSummary");
+      setInsights(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -266,6 +276,7 @@ const Dashboard: React.FC = () => {
     fetchAcadYears();
     fetchOffices();
     fetchTotalFeedback();
+    fetchInsights();
   }, []);
 
   const getChart1Data = () => chart1Data[chart1Type];
@@ -382,7 +393,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-[50px] w-[200px] mx-auto rounded-lg font-bold">
-              Insights
+              {insights}
             </section>
 
             <div className="flex flex-col lg:flex-row w-full overflow-x-auto mb-4 items-center justify-center">

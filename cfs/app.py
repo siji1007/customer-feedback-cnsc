@@ -416,7 +416,7 @@ def summarizeComments():
     for topic_idx, topic in enumerate(lda_model.components_):
         result += " ".join([feature_names[i] for i in topic.argsort()[:-11:-1]]) + "\n"
 
-    return remove_repeated_words(result)
+    return jsonify(remove_repeated_words(result))
 
 if __name__ == '__main__':
     app.run(port="8082")
