@@ -11,9 +11,13 @@ from flask import Flask, render_template, request, flash, redirect, jsonify
 from bson.objectid import ObjectId
 from flask_cors import CORS
 import server, json
-import os, time, random
+import os, time, random, re
 from hashlib import sha256
 from collections import Counter
+from bertopic import BERTopic
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+import numpy as np
 
 app = Flask(__name__)
 CORS(app)
@@ -41,6 +45,11 @@ def encryptPass(password):
 def verifyPass(pword):
     hash = sha256(pword.encode('utf-8')).hexdigest()
     return hash
+
+def remove_repeated_words(text):
+    words = text.split()
+    unique_words = list(dict.fromkeys(words))
+    return ' '.join(unique_words)
 
 #Routing Functions
 @app.route('/')
@@ -391,6 +400,23 @@ def fetchSpecificFeedbackCount():
     specific_office = request.get_json()
     count = server.answer_collection.count_documents({"department": specific_office["office"]})
     return jsonify(count)
+
+@app.route("/fetchCommentSummary", methods=["GET"])
+def summarizeComments():
+    result = ""
+    comment_data = server.answer_collection.find()
+    comment_list = [cl for cl in comment_data]
+    comments = [c["comment"] for c in comment_list]
+    vectorizer = CountVectorizer(stop_words='english', max_features=1000)
+    X = vectorizer.fit_transform(comments)
+    lda_model = LatentDirichletAllocation(n_components=min(len(comments), 5), random_state=42)
+    lda_model.fit(X)
+    feature_names = vectorizer.get_feature_names_out()
+    result += "Insights: \n"
+    for topic_idx, topic in enumerate(lda_model.components_):
+        result += " ".join([feature_names[i] for i in topic.argsort()[:-11:-1]]) + "\n"
+
+    return remove_repeated_words(result)
 
 if __name__ == '__main__':
     app.run(port="8082")
