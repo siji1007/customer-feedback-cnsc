@@ -142,9 +142,9 @@ const AdminLogins: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="w-full  bg-red-900 flex justify-between items-center px-4">
-        <div className="flex items-center m-2">
-        <img src="src/assets/cnsc_logo.png" alt="Logo" className="h-16 w-16 object-contain" />
+      <header className="w-full  bg-red-900 flex justify-between items-center px-4 h-auto">
+        <div className="flex items-center">
+        <img  src="src/assets/cnsc_logo.png" alt="Logo" className="h-16 w-16 object-contain p-2" />
           <div className="ml-4 flex flex-col justify-center">
           <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold "
           style={{ borderBottom: '2px solid gold' }}>
