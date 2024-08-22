@@ -392,7 +392,7 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
 
-            <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-[50px] w-[200px] mx-auto rounded-lg font-bold">
+            <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-fit w-[200px] p-2 mx-auto rounded-lg font-bold">
               {insights}
             </section>
 

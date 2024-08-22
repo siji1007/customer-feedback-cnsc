@@ -11,16 +11,29 @@ from flask import Flask, render_template, request, flash, redirect, jsonify
 from bson.objectid import ObjectId
 from flask_cors import CORS
 import server, json
-import os, time, random, re
+import os, time, random, re, nltk
 from hashlib import sha256
 from collections import Counter
 from bertopic import BERTopic
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 import numpy as np
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
 app = Flask(__name__)
 CORS(app)
+
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('punkt_tab')
+
+english_stopwords = set(stopwords.words('english'))
+tagalog_stopwords = set([
+    'ang', 'sa', 'ng', 'at', 'para', 'na', 'ito', 'ay', 'mga', 'kaysa', 'upang', 'na', 'dahil', 'kapag'
+])
+
+combined_stopwords = english_stopwords.union(tagalog_stopwords)
 
 # Non Routing Functions
 def showDepts():
@@ -50,6 +63,11 @@ def remove_repeated_words(text):
     words = text.split()
     unique_words = list(dict.fromkeys(words))
     return ' '.join(unique_words)
+
+def remove_stopwords(text, stopwords):
+    tokens = word_tokenize(text.lower())
+    filtered_tokens = [word for word in tokens if word not in stopwords]
+    return ' '.join(filtered_tokens)
 
 #Routing Functions
 @app.route('/')
@@ -403,7 +421,7 @@ def fetchSpecificFeedbackCount():
 
 @app.route("/fetchCommentSummary", methods=["GET"])
 def summarizeComments():
-    result = ""
+    result = []
     comment_data = server.answer_collection.find()
     comment_list = [cl for cl in comment_data]
     comments = [c["comment"] for c in comment_list]
@@ -412,11 +430,16 @@ def summarizeComments():
     lda_model = LatentDirichletAllocation(n_components=min(len(comments), 5), random_state=42)
     lda_model.fit(X)
     feature_names = vectorizer.get_feature_names_out()
-    result += "Insights: \n"
     for topic_idx, topic in enumerate(lda_model.components_):
-        result += " ".join([feature_names[i] for i in topic.argsort()[:-11:-1]]) + "\n"
+        result = [feature_names[i] for i in topic.argsort()[:-11:-1]]
 
-    return jsonify(remove_repeated_words(result))
+    filtered_result = [remove_stopwords(doc, combined_stopwords) for doc in list(set(result))]
+
+    final_result = ""
+    for fs in filtered_result:
+        final_result += fs + " "
+
+    return jsonify(final_result)
 
 if __name__ == '__main__':
     app.run(port="8082")
