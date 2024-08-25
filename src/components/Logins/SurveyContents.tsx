@@ -130,7 +130,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
       await axios.post(serverUrl + "submit_answer", {
         account_id: globalThis.activeId,
         answer: positions,
-        department: selectedOffice[0],
+        office: selectedOffice[0],
         comment: comment,
       });
       selectedOffice.shift();

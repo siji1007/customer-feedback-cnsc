@@ -364,7 +364,7 @@ def fetchSpecificResponseData():
     res_data = request.get_json()
     response_data = server.answer_collection.find()
     response_list = [r for r in response_data]
-    responses = [r["answer"] for r in response_list if r["department"] == res_data["selectedOffice"]]
+    responses = [r["answer"] for r in response_list if r["office"] == res_data["selectedOffice"]]
     values = [value for r in responses for value in r.values()]
     value_count = Counter(values)
     sorted_keys = sorted(value_count.keys())
@@ -393,7 +393,7 @@ def fetchRespondents():
 def fetchSpecificRespondents():
     client_type = request.get_json()
     answer_data = server.answer_collection.find()
-    answer_list = [al for al in answer_data if al["department"] == client_type["office"]]
+    answer_list = [al for al in answer_data if al["office"] == client_type["office"]]
     account_data = server.user_collection.find({"account_id": {"$exists": True}})
     account_list = [a for a in account_data]
     account_dict = {a["account_id"]: a["type"] for a in account_list}
@@ -416,15 +416,19 @@ def fetchFeedbackCount():
 @app.route("/fetchSpecificOffice", methods=["POST"])
 def fetchSpecificFeedbackCount():
     specific_office = request.get_json()
-    count = server.answer_collection.count_documents({"department": specific_office["office"]})
+    count = server.answer_collection.count_documents({"office": specific_office["office"]})
     return jsonify(count)
 
-@app.route("/fetchCommentSummary", methods=["GET"])
+@app.route("/fetchCommentSummary", methods=["GET", "POST"])
 def summarizeComments():
     result = []
     comment_data = server.answer_collection.find()
     comment_list = [cl for cl in comment_data]
-    comments = [c["comment"] for c in comment_list]
+    if request.method == "POST":
+        request_data = request.get_json()
+        comments = [c["comment"] for c in comment_list if c["office"] == request_data["office"]]
+    else:
+        comments = [c["comment"] for c in comment_list]
     vectorizer = CountVectorizer(stop_words='english', max_features=1000)
     X = vectorizer.fit_transform(comments)
     lda_model = LatentDirichletAllocation(n_components=min(len(comments), 5), random_state=42)
