@@ -354,7 +354,11 @@ def fetchResponseData():
     response_list = [r for r in response_data]
     responses = [r["answer"] for r in response_list]
     values = [value for r in responses for value in r.values()]
+    all_possible_values = set(range(1, 6))
     value_count = Counter(values)
+    for value in all_possible_values:
+        if value not in value_count:
+            value_count[value] = 0
     sorted_keys = sorted(value_count.keys())
     sorted_counts = [value_count[key] for key in sorted_keys]
     return sorted_counts
@@ -366,7 +370,12 @@ def fetchSpecificResponseData():
     response_list = [r for r in response_data]
     responses = [r["answer"] for r in response_list if r["office"] == res_data["selectedOffice"]]
     values = [value for r in responses for value in r.values()]
+    all_possible_values = set(range(1, 6))
     value_count = Counter(values)
+    for value in all_possible_values:
+        if value not in value_count:
+            value_count[value] = 0
+
     sorted_keys = sorted(value_count.keys())
     sorted_counts = [value_count[key] for key in sorted_keys]
     return sorted_counts
@@ -378,16 +387,21 @@ def fetchRespondents():
     account_data = server.user_collection.find({"account_id": {"$exists": True}})
     account_list = [a for a in account_data]
     account_dict = {a["account_id"]: a["type"] for a in account_list}
+    all_possible_types = {"student", "employee", "other"}
     type_counter = Counter()
-    other_counter = Counter()
     for al in answer_list:
         account_id = al.get("account_id")
         if account_id:
             account_type = account_dict.get(account_id, "Unknown")
             type_counter[account_type] += 1
-    type_counts = list(type_counter.values())
-    type_counts.append(0)
-    return jsonify(type_counts)
+
+    for user_type in all_possible_types:
+        if user_type not in type_counter:
+            type_counter[user_type] = 0
+
+    sorted_counts = [type_counter[user_type] for user_type in all_possible_types]
+
+    return jsonify(sorted_counts)
 
 @app.route("/specific_respondent_data", methods=['POST'])
 def fetchSpecificRespondents():
@@ -398,15 +412,20 @@ def fetchSpecificRespondents():
     account_list = [a for a in account_data]
     account_dict = {a["account_id"]: a["type"] for a in account_list}
     type_counter = Counter()
-    other_counter = Counter()
+    all_possible_types = {"student", "employee", "other"}
     for al in answer_list:
         account_id = al.get("account_id")
         if account_id:
             account_type = account_dict.get(account_id, "Unknown")
             type_counter[account_type] += 1
-    type_counts = list(type_counter.values())
-    type_counts.append(0)
-    return jsonify(type_counts)
+
+    for user_type in all_possible_types:
+        if user_type not in type_counter:
+            type_counter[user_type] = 0
+
+    sorted_counts = [type_counter[user_type] for user_type in all_possible_types]
+
+    return jsonify(sorted_counts)
 
 @app.route("/get_feedback_count", methods=["GET"])
 def fetchFeedbackCount():

@@ -66,6 +66,7 @@ const Dashboard: React.FC = () => {
       fetchSpecificType(selectedOffice);
       setActiveOffice(selectedOffice);
       fetchSpecificTotal(selectedOffice);
+      fetchSpecificInsights(selectedOffice);
     } catch (error) {
       console.log(error);
     }
@@ -116,6 +117,17 @@ const Dashboard: React.FC = () => {
   const fetchInsights = async () => {
     try {
       const response = await axios.get(serverUrl + "fetchCommentSummary");
+      setInsights(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchSpecificInsights = async (office) => {
+    try {
+      const response = await axios.post(serverUrl + "fetchCommentSummary", {
+        office: office,
+      });
       setInsights(response.data);
     } catch (error) {
       console.log(error);
@@ -191,6 +203,7 @@ const Dashboard: React.FC = () => {
   const fetchDataRight = async () => {
     try {
       const response = await axios.get(serverUrl + "respondent_data");
+      console.log(response.data);
       setChartDataRight(response.data);
     } catch (error) {
       console.log(error);
