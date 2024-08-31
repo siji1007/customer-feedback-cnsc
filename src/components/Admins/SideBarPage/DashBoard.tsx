@@ -47,6 +47,7 @@ const Dashboard: React.FC = () => {
   const [showDetailedView, setShowDetailedView] = useState(false);
   const [content, setContent] = useState("");
   const [insights, setInsights] = useState<string[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [chart1Type, setChart1Type] = useState<
     "BarChart" | "PieChart" | "LineChart"
   >("BarChart");
@@ -70,6 +71,14 @@ const Dashboard: React.FC = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleSectionClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   const fetchAllOffice = (state) => {
@@ -403,15 +412,28 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
 
-
-
-
-
-
-            <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-fit w-[200px] p-1 mb-2 mx-auto rounded-lg font-bold">
+            <section
+              className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-fit w-[70vh] p-1 mb-2 mx-auto rounded-lg font-bold cursor-pointer"
+              onClick={handleSectionClick}
+            >
               {insights}
             </section>
 
+            {/* Display here the top 10 bert Topic list */}
+            {isModalOpen && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm w-full">
+                  <h2 className="text-xl font-bold mb-4">Top 10 List Insight</h2>
+                  <p>Display here.</p>
+                  <button
+                    className="mt-4 px-4 py-2 bg-red-800 text-white rounded"
+                    onClick={handleCloseModal}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="flex flex-col lg:flex-row w-full overflow-x-auto mb-4 items-center justify-center">
               <div className="w-full lg:w-1/2 border p-2 flex flex-col items-center">
                 <div className="flex items-center mb-2">
