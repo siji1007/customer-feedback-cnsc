@@ -311,7 +311,7 @@ const Dashboard: React.FC = () => {
       <main className="px-4">
         {!showDetailedView ? (
           <>
-            <header className="w-full border-b pb-4 mb-2 flex items-center justify-between bg-red-900 p-2 rounded-lg">
+            <header className="w-full border-b flex items-center justify-between bg-red-900 p-2 rounded-lg">
               <div className="flex items-center">
                 <input
                   type="checkbox"
@@ -321,20 +321,20 @@ const Dashboard: React.FC = () => {
                 />
                 <label
                   htmlFor="selectAll"
-                  className="text-lg text-white font-bold mr-4"
+                  className="text-sm text-white font-bold mr-4"
                 >
                   All
                 </label>
 
                 <label
                   htmlFor="officeSelect"
-                  className="text-lg text-white font-bold mr-2"
+                  className="text-sm text-white font-bold mr-2"
                 >
                   Select Office
                 </label>
                 <select
                   id="officeSelect"
-                  className="bg-white-100 text-black border border-gray-600  py-1 px-2"
+                  className="bg-white-100 text-black  text-sm border border-gray-600  py-1 px-2"
                   value={event?.target.value}
                   onChange={(e) => fetchSpecificOffice(e.target.value)}
                 >
@@ -346,7 +346,7 @@ const Dashboard: React.FC = () => {
                   ))}
                 </select>
               </div>
-              <div className="ml-10 flex flex-col space-y-4">
+              <div className="ml-10 flex flex-col ">
                 <div className="flex items-center">
                   <label
                     htmlFor="semesterSelect"
@@ -385,22 +385,30 @@ const Dashboard: React.FC = () => {
               </div>
             </header>
 
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-1">
               <h1 className="text-lg font-bold m-2">Overview Of Result</h1>
-              <div className="bg-gray-300 rounded-lg flex items-center">
-                <section className="flex items-center justify-center p-2">
-                  <FaThumbsUp className="text-xl mr-2" />
+
+              <div className="p-1 grid grid-cols-2 items-center ">
+                <div className="flex justify-center items-center">
+                  <FaThumbsUp className="text-3xl text-black-500" />
+                </div>
+                <div className="flex flex-col justify-center">
                   <p className="text-xs sm:text-xs md:text-xs lg:text-xm font-bold">
                     Total Feedback
                   </p>
-                </section>
-                <p className="text-center text-xs sm:text-xs md:text-xs lg:text-xm">
-                  {totalFeedback}
-                </p>
+                  <p className="text-xl sm:text-xl md:text-xl lg:text-xl text-center">
+                    {totalFeedback}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-fit w-[200px] p-2 mx-auto rounded-lg font-bold">
+
+
+
+
+
+            <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-fit w-[200px] p-1 mb-2 mx-auto rounded-lg font-bold">
               {insights}
             </section>
 
