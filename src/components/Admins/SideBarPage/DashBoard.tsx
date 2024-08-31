@@ -317,19 +317,15 @@ const Dashboard: React.FC = () => {
                   type="checkbox"
                   id="selectAll"
                   className="mr-2 h-5 w-5"
-                  onChange={(e) =>
-                    fetchAllOffice(e.target.checked ? "on" : "off")
-                  }
+                  onChange={(e) => fetchAllOffice(e.target.checked ? "on" : "off")}
                 />
                 <label
                   htmlFor="selectAll"
-                  className="text-lg text-white font-bold"
+                  className="text-lg text-white font-bold mr-4"
                 >
                   All
                 </label>
-              </div>
 
-              <div className="ml-auto relative">
                 <label
                   htmlFor="officeSelect"
                   className="text-lg text-white font-bold mr-2"
@@ -338,7 +334,7 @@ const Dashboard: React.FC = () => {
                 </label>
                 <select
                   id="officeSelect"
-                  className="bg-white-100 text-black border border-gray-600 rounded-md py-1 px-2"
+                  className="bg-white-100 text-black border border-gray-600  py-1 px-2"
                   value={event?.target.value}
                   onChange={(e) => fetchSpecificOffice(e.target.value)}
                 >
@@ -350,7 +346,6 @@ const Dashboard: React.FC = () => {
                   ))}
                 </select>
               </div>
-
               <div className="ml-10 flex flex-col space-y-4">
                 <div className="flex items-center">
                   <label
@@ -361,7 +356,7 @@ const Dashboard: React.FC = () => {
                   </label>
                   <select
                     id="semesterSelect"
-                    className="bg-white-100 text-black border border-gray-600 flex-grow"
+                    className="bg-white-100 text-black border border-gray-600 flex-grow w-full"
                   >
                     <option value=""></option>
                     <option value="first">First Semester</option>
@@ -377,7 +372,7 @@ const Dashboard: React.FC = () => {
                   </label>
                   <select
                     id="academicYearSelect"
-                    className="bg-white-100 text-black border border-gray-600 flex-grow"
+                    className="bg-white-100 text-black border border-gray-600 flex-grow w-full"
                   >
                     <option value=""></option>
                     {acadYears.map((acadYear) => (
