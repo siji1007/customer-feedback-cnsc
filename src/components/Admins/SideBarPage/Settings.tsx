@@ -86,6 +86,7 @@ const Settings: React.FC = () => {
     setSelectedOffice(office);
     setSelectedQuestionnaire(null);
     getQuestionnaires(office.name);
+
   };
 
   const handleAddDept = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -287,11 +288,22 @@ const Settings: React.FC = () => {
   };
 
   useEffect(() => {
+
     fetchOffices();
     fetchDepartments();
     fetchFeedbackState();
     fetchReminderState();
   }, []);
+
+  useEffect(() => {
+    if (offices.length > 0) {
+      const firstOffice = offices[0];
+      setSelectedOffice(firstOffice);
+      getQuestionnaires(firstOffice.name); // Assuming `name` is the identifier for the office in your API
+    }
+  }, [offices]);
+
+ 
 
   const renderContent = () => {
     switch (activeTab) {
@@ -426,7 +438,7 @@ const Settings: React.FC = () => {
             {/* Office Selection */}
             <div
               className="md:w-1/4 w-full border-b md:border-b-0 md:border-r rounded-lg"
-              style={{ height: "40vh", background: "#c3c3c3" }}
+              style={{ height: "50vh", background: "#c3c3c3" }}
             >
               <h2
                 className="font-bold mb-4 text-center b-border text-black border-b-2 border-white"
@@ -435,7 +447,7 @@ const Settings: React.FC = () => {
                 Select Office to Edit Questions
               </h2>
               <ul
-                className="space-y-2  overflow-y-auto text-black rounded-lg p-2"
+                className="space-y-2 overflow-y-auto text-black rounded-lg p-2"
                 style={{
                   maxHeight: "calc(100% - 1rem)",
                   background: "#c3c3c3",
@@ -451,62 +463,63 @@ const Settings: React.FC = () => {
                   </li>
                 ))}
               </ul>
+
             </div>
 
             {/* Questionnaire List */}
             <div
-              className="w-full border-b md:border-b-0 md:border-r rounded-lg p-4 ml-2"
-              style={{ height: "40vh", background: "#c3c3c3" }}
-            >
-              <h2
-                className="font-bold mb-4 text-center b-border text-black border-b-2 border-white"
-                style={{ color: "maroon" }}
+                className="w-full border-b md:border-b-0 md:border-r rounded-lg p-4 ml-2"
+                style={{ height: "50vh", background: "#c3c3c3", display: 'flex', flexDirection: 'column' }}
               >
-                Questionnaires for {selectedOffice?.name || "Select an Office"}
-              </h2>
-              <ul className="space-y-2 text-black rounded-lg p-2">
-                {questionnaires.length != 0 && (
+                <h2
+                  className="font-bold mb-4 text-center b-border text-black border-b-2 border-white"
+                  style={{ color: "maroon" }}
+                >
+                  Questionnaires for {selectedOffice?.name || "Select an Office"}
+                </h2>
+                <div className="flex-1 overflow-y-auto">
                   <ul className="space-y-2 text-black rounded-lg p-2">
-                    {questionnaires.map((questionnaire, index) => (
-                     <li
-                     key={index}
-                     className={`flex items-center justify-between p-2 border border-white rounded-lg ${selectedQuestionnaire === index ? "bg-white text-red-800 font-bold" : "hover:bg-gray-100"}`}
-                     onClick={() => handleOpenModal(index)}
-                   >
-                     <span>{questionnaire}</span>
-                     <div className="flex items-center">
-                      <button
-                        className="text-red-800 mr-2"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Implement a function here bro for active questionnaire
-                        }}
-                      >
-                        {index === 0 ? <FaEye /> : <FaEyeSlash />}
-                      </button>
-                       <button
-                         className="text-red-800"
-                         onClick={(e) => {
-                           e.stopPropagation();
-                           handleDeleteQuestionnaire(index);
-                         }}
-                       >
-                         <FaTimes />
-                       </button>
-                     </div>
-                   </li>
-                   
-                    ))}
+                    {questionnaires.length != 0 && (
+                      <ul className="space-y-2 text-black rounded-lg p-2">
+                        {questionnaires.map((questionnaire, index) => (
+                          <li
+                            key={index}
+                            className={`flex items-center justify-between p-2 border border-white rounded-lg ${selectedQuestionnaire === index ? "bg-white text-red-800 font-bold" : "hover:bg-gray-100"}`}
+                            onClick={() => handleOpenModal(index)}
+                          >
+                            <span>{questionnaire}</span>
+                            <div className="flex items-center">
+                              <button
+                                className="text-red-800 mr-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Implement a function here for active questionnaire
+                                }}
+                              >
+                                {index === 0 ? <FaEye /> : <FaEyeSlash />}
+                              </button>
+                              <button
+                                className="text-red-800"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteQuestionnaire(index);
+                                }}
+                              >
+                                <FaTimes />
+                              </button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {questionnaires.length == 0 && (
+                      <li className="p-2 text-gray-600">
+                        No questionnaires found.
+                      </li>
+                    )}
                   </ul>
-                )}
-
-                {questionnaires.length == 0 && (
-                  <li className="p-2 text-gray-600">
-                    No questionnaires found.
-                  </li>
-                )}
-
-                <li className="p-2">
+                </div>
+                <div className="mt-4">
                   <div className="flex flex-col items-center">
                     <input
                       type="text"
@@ -522,9 +535,9 @@ const Settings: React.FC = () => {
                       Add Questionnaire
                     </button>
                   </div>
-                </li>
-              </ul>
-            </div>
+                </div>
+              </div>
+
 
             {/* Modal for Editing Questions */}
             <Modal
@@ -541,12 +554,12 @@ const Settings: React.FC = () => {
                 >
                   Add/Edit Questions
                 </h2>
-                {questions.length != 0 && (
+                {questions.length !== 0 && (
                   <ul className="space-y-2 max-h-64 overflow-y-auto">
                     {questions.map((question, index) => (
                       <li
                         key={index}
-                        className="p-2 bg-white border border-black rounded-lg flex flex-col "
+                        className="p-2 bg-white border border-black rounded-lg flex flex-col"
                       >
                         {editIndex === index ? (
                           <>
@@ -597,15 +610,20 @@ const Settings: React.FC = () => {
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                     setQuestionText(e.target.value)
                   }
-                  placeholder="Add a new question"
-                  className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800 resize-none"
+                  placeholder={
+                    questions.length >= 5
+                      ? "Maximum limit reached. You can't add more questions."
+                      : "Type a new question and press Enter to add it."
+                  }
+                  className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800 resize-none mt-2"
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                    if (e.key === "Enter" && e.currentTarget.value.trim() && questions.length < 5) {
                       handleAddQuestion(e.currentTarget.value);
                       e.currentTarget.value = "";
                     }
                   }}
-                  rows={3} // Adjust rows as needed
+                  rows={3} 
+                  disabled={questions.length >= 5} 
                 />
                 <button
                   className="mt-4 w-full bg-red-800 text-white py-1 rounded-lg"
