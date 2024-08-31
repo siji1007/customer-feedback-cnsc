@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaEdit, FaSave, FaTimes, FaPlus } from "react-icons/fa";
+import { FaEdit, FaSave, FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import Modal from "react-modal";
 
@@ -65,6 +65,7 @@ const Settings: React.FC = () => {
     getQuestions(index);
     setModalIsOpen(true);
   };
+  
 
   const handleEditQuestion = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
@@ -319,7 +320,7 @@ const Settings: React.FC = () => {
                   <input
                     type="text"
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-                    placeholder="No label input"
+                    placeholder="Add description here."
                   />
                 </div>
                 <div className="flex justify-center">
@@ -379,7 +380,7 @@ const Settings: React.FC = () => {
                   <input
                     type="text"
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-                    placeholder="No label input"
+                    placeholder="Add description here."
                   />
                 </div>
                 <div className="flex justify-center">
@@ -467,22 +468,34 @@ const Settings: React.FC = () => {
                 {questionnaires.length != 0 && (
                   <ul className="space-y-2 text-black rounded-lg p-2">
                     {questionnaires.map((questionnaire, index) => (
-                      <li
-                        key={index}
-                        className={`flex items-center justify-between p-2 border border-white rounded-lg ${selectedQuestionnaire === index ? "bg-red-800 text-white" : "hover:bg-gray-100"}`}
-                        onClick={() => handleOpenModal(index)}
+                     <li
+                     key={index}
+                     className={`flex items-center justify-between p-2 border border-white rounded-lg ${selectedQuestionnaire === index ? "bg-white text-red-800 font-bold" : "hover:bg-gray-100"}`}
+                     onClick={() => handleOpenModal(index)}
+                   >
+                     <span>{questionnaire}</span>
+                     <div className="flex items-center">
+                      <button
+                        className="text-red-800 mr-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Implement a function here bro for active questionnaire
+                        }}
                       >
-                        <span>{questionnaire}</span>
-                        <button
-                          className="text-red-600"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteQuestionnaire(index);
-                          }}
-                        >
-                          <FaTimes />
-                        </button>
-                      </li>
+                        {index === 0 ? <FaEye /> : <FaEyeSlash />}
+                      </button>
+                       <button
+                         className="text-red-800"
+                         onClick={(e) => {
+                           e.stopPropagation();
+                           handleDeleteQuestionnaire(index);
+                         }}
+                       >
+                         <FaTimes />
+                       </button>
+                     </div>
+                   </li>
+                   
                     ))}
                   </ul>
                 )}
@@ -674,7 +687,7 @@ const Settings: React.FC = () => {
           }`}
           onClick={() => setActiveTab("Office")}
         >
-          Office
+          Offices
         </button>
         <button
           className={`px-4 py-2 rounded-lg sm:w-40 md:w-32 lg:w-28 mr-1 ${
