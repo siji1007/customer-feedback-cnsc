@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import SurveyDashboard from "./ClientDashboard";
+import PageDots from "./PageDots";
 
 interface Question {
   q_id: string;
@@ -26,6 +27,9 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
   const questionRefs = useRef<Array<HTMLFormElement | null>>([]);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const [comment, setComment] = useState("");
+
+  // Retrieve selectedOffice from localStorage
+  const savedSelectedOffice = JSON.parse(localStorage.getItem('selectedOffice') || '[]');
 
   const fetchQuestions = async () => {
     try {
@@ -218,33 +222,38 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Your comments here..."
-            className="w-full h-32 border rounded-md p-2"
+            className="w-full h-20 border rounded-md p-2"
           ></textarea>
         </form>
       </div>
-      <div className="flex flex-col items-center mt-4">
-        <button
+      {/* PageDots placed above the submit button */}
+      <div className="flex flex-col items-center mt-2">
+        <PageDots totalDots={selectedOffice.length} />
+          <button
           onClick={handleSubmit}
           style={{ backgroundColor: "#800000", color: "white" }}
-          className="p-2 rounded-md text-white text-xs md:text-sm lg:text-base font-bold"
+          className="p-2 rounded-md text-white text-xs md:text-sm lg:text-base font-bold mt-2"
         >
           Submit
         </button>
       </div>
       {isSuccessModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-8 rounded-md shadow-md text-center">
-            <CheckIcon className="h-16 w-16 text-green-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold mb-4">Success!</h2>
-            <p className="mb-4">
-              Your answers have been submitted successfully.
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 md:p-8 rounded-md shadow-lg max-w-md mx-auto relative">
+            <div className="flex items-center justify-center mb-4">
+              <CheckIcon className="text-green-500 w-12 h-12 animate-bounce" />
+            </div>
+            <h2 className="text-center font-semibold text-lg mb-2">
+              Submission Successful!
+            </h2>
+            <p className="text-center text-sm">
+              Thank you for your feedback. Your responses have been submitted.
             </p>
             <button
               onClick={handleModalClose}
-              style={{ backgroundColor: "#800000", color: "white" }}
-              className="px-4 py-2 rounded-md text-white text-xs md:text-sm lg:text-base"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 block mx-auto"
             >
-              Go to Dashboard
+              OK
             </button>
           </div>
         </div>
