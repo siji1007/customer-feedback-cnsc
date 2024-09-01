@@ -19,6 +19,7 @@ const SurveyForm: React.FC = () => {
     if (content === "Instruction") {
       setContent("Select Offices");
     } else if (content === "Select Offices") {
+      localStorage.setItem("selectedOfficeCount", selectedOffice.length.toString());
       setContent("Survey Contents");
     }
   };
@@ -61,7 +62,7 @@ const SurveyForm: React.FC = () => {
   });
 
   return (
-    <div className="m-4 md:m-10 lg:m-20">
+    <div className=" md:m-10 lg:m-20">
       {content === "Instruction" ? (
         <>
           <h1 className="text-lg md:text-xl lg:text-2xl font-bold mb-4">
