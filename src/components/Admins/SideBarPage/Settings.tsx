@@ -52,6 +52,7 @@ const Settings: React.FC = () => {
   const [questionText, setQuestionText] = useState("");
   const questionAreaRef = useRef<HTMLTextAreaElement>(null);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const [qStatus, setQStatus] = useState([]);
 
   const handleOpenModal = async (index: number) => {
     //console.log("Opening modal for questionnaire index:", index); // Debugging line
@@ -65,7 +66,6 @@ const Settings: React.FC = () => {
     getQuestions(index);
     setModalIsOpen(true);
   };
-  
 
   const handleEditQuestion = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
@@ -86,7 +86,7 @@ const Settings: React.FC = () => {
     setSelectedOffice(office);
     setSelectedQuestionnaire(null);
     getQuestionnaires(office.name);
-
+    fetchQuestionnaireStatus(office.name);
   };
 
   const handleAddDept = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -245,6 +245,7 @@ const Settings: React.FC = () => {
         name: newQuestionnaireName,
         questions: [],
         office: selectedOffice["name"],
+        status: "active",
       };
       setNewQuestionnaireName(""); // Clear the input field
       try {
@@ -264,7 +265,6 @@ const Settings: React.FC = () => {
       setSelectedQuestionnaire(null);
     }
   };
-
 
   const handleDeleteOffice = (index: number) => {
     //add here the function to delete.
@@ -287,8 +287,42 @@ const Settings: React.FC = () => {
     }
   };
 
-  useEffect(() => {
+  const fetchQuestionnaireStatus = async (office) => {
+    try {
+      const response = await axios.post(
+        serverUrl + "fetchQuestionnaireStatus",
+        {
+          office: office,
+        },
+      );
+      setQStatus(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  const updateQStatus = async (qid, newStatus) => {
+    try {
+      const response = await axios.post(serverUrl + "updateQStatus", {
+        qid: qid,
+        status: newStatus,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const toggleQVisibility = (index) => {
+    setQStatus((prevState) => {
+      const newStatus = [...prevState];
+      newStatus[index] = newStatus[index] === "active" ? "hidden" : "active";
+      updateQStatus(questionnaireIds[selectedQuestionnaire], newStatus[index]);
+      return newStatus;
+    });
+  };
+
+  useEffect(() => {
     fetchOffices();
     fetchDepartments();
     fetchFeedbackState();
@@ -302,8 +336,6 @@ const Settings: React.FC = () => {
       getQuestionnaires(firstOffice.name); // Assuming `name` is the identifier for the office in your API
     }
   }, [offices]);
-
- 
 
   const renderContent = () => {
     switch (activeTab) {
@@ -357,9 +389,7 @@ const Settings: React.FC = () => {
                     {department}
 
                     <button className="text-red-800">
-
-                      <FaTimes/>
-
+                      <FaTimes />
                     </button>
                   </li>
                 ))}
@@ -415,20 +445,18 @@ const Settings: React.FC = () => {
                     className="mb-5 bg-gray-300 p-2 flex items-center justify-between rounded-lg border border-black"
                   >
                     <span>{office.name}</span>
-                    <button className="text-red-800"
-                    
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteOffice(index);
-                    }}
-                    
+                    <button
+                      className="text-red-800"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteOffice(index);
+                      }}
                     >
                       <FaTimes />
                     </button>
                   </li>
                 ))}
               </ul>
-
             </section>
           </div>
         );
@@ -463,81 +491,87 @@ const Settings: React.FC = () => {
                   </li>
                 ))}
               </ul>
-
             </div>
 
             {/* Questionnaire List */}
             <div
-                className="w-full border-b md:border-b-0 md:border-r rounded-lg p-4 ml-2"
-                style={{ height: "50vh", background: "#c3c3c3", display: 'flex', flexDirection: 'column' }}
+              className="w-full border-b md:border-b-0 md:border-r rounded-lg p-4 ml-2"
+              style={{
+                height: "50vh",
+                background: "#c3c3c3",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <h2
+                className="font-bold mb-4 text-center b-border text-black border-b-2 border-white"
+                style={{ color: "maroon" }}
               >
-                <h2
-                  className="font-bold mb-4 text-center b-border text-black border-b-2 border-white"
-                  style={{ color: "maroon" }}
-                >
-                  Questionnaires for {selectedOffice?.name || "Select an Office"}
-                </h2>
-                <div className="flex-1 overflow-y-auto">
-                  <ul className="space-y-2 text-black rounded-lg p-2">
-                    {questionnaires.length != 0 && (
-                      <ul className="space-y-2 text-black rounded-lg p-2">
-                        {questionnaires.map((questionnaire, index) => (
-                          <li
-                            key={index}
-                            className={`flex items-center justify-between p-2 border border-white rounded-lg ${selectedQuestionnaire === index ? "bg-white text-red-800 font-bold" : "hover:bg-gray-100"}`}
-                            onClick={() => handleOpenModal(index)}
-                          >
-                            <span>{questionnaire}</span>
-                            <div className="flex items-center">
-                              <button
-                                className="text-red-800 mr-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // Implement a function here for active questionnaire
-                                }}
-                              >
-                                {index === 0 ? <FaEye /> : <FaEyeSlash />}
-                              </button>
-                              <button
-                                className="text-red-800"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteQuestionnaire(index);
-                                }}
-                              >
-                                <FaTimes />
-                              </button>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {questionnaires.length == 0 && (
-                      <li className="p-2 text-gray-600">
-                        No questionnaires found.
-                      </li>
-                    )}
-                  </ul>
-                </div>
-                <div className="mt-4">
-                  <div className="flex flex-col items-center">
-                    <input
-                      type="text"
-                      value={newQuestionnaireName}
-                      onChange={(e) => setNewQuestionnaireName(e.target.value)}
-                      placeholder="New Questionnaire Name"
-                      className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800"
-                    />
-                    <button
-                      className="mt-2 bg-red-800 text-white py-1 px-4 rounded-lg"
-                      onClick={handleAddQuestionnaire}
-                    >
-                      Add Questionnaire
-                    </button>
-                  </div>
+                Questionnaires for {selectedOffice?.name || "Select an Office"}
+              </h2>
+              <div className="flex-1 overflow-y-auto">
+                <ul className="space-y-2 text-black rounded-lg p-2">
+                  {questionnaires.length != 0 && (
+                    <ul className="space-y-2 text-black rounded-lg p-2">
+                      {questionnaires.map((questionnaire, index) => (
+                        <li
+                          key={index}
+                          className={`flex items-center justify-between p-2 border border-white rounded-lg ${selectedQuestionnaire === index ? "bg-white text-red-800 font-bold" : "hover:bg-gray-100"}`}
+                          onClick={() => handleOpenModal(index)}
+                        >
+                          <span>{questionnaire}</span>
+                          <div className="flex items-center">
+                            <button
+                              className="text-red-800 mr-2"
+                              onClick={() => {
+                                toggleQVisibility(index);
+                              }}
+                            >
+                              {qStatus[index] === "active" ? (
+                                <FaEye />
+                              ) : (
+                                <FaEyeSlash />
+                              )}
+                            </button>
+                            <button
+                              className="text-red-800"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteQuestionnaire(index);
+                              }}
+                            >
+                              <FaTimes />
+                            </button>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {questionnaires.length == 0 && (
+                    <li className="p-2 text-gray-600">
+                      No questionnaires found.
+                    </li>
+                  )}
+                </ul>
+              </div>
+              <div className="mt-4">
+                <div className="flex flex-col items-center">
+                  <input
+                    type="text"
+                    value={newQuestionnaireName}
+                    onChange={(e) => setNewQuestionnaireName(e.target.value)}
+                    placeholder="New Questionnaire Name"
+                    className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800"
+                  />
+                  <button
+                    className="mt-2 bg-red-800 text-white py-1 px-4 rounded-lg"
+                    onClick={handleAddQuestionnaire}
+                  >
+                    Add Questionnaire
+                  </button>
                 </div>
               </div>
-
+            </div>
 
             {/* Modal for Editing Questions */}
             <Modal
@@ -617,13 +651,17 @@ const Settings: React.FC = () => {
                   }
                   className="w-full px-2 py-1 rounded-lg border border-gray-300 focus:outline-none focus:border-red-800 resize-none mt-2"
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && e.currentTarget.value.trim() && questions.length < 5) {
+                    if (
+                      e.key === "Enter" &&
+                      e.currentTarget.value.trim() &&
+                      questions.length < 5
+                    ) {
                       handleAddQuestion(e.currentTarget.value);
                       e.currentTarget.value = "";
                     }
                   }}
-                  rows={3} 
-                  disabled={questions.length >= 5} 
+                  rows={3}
+                  disabled={questions.length >= 5}
                 />
                 <button
                   className="mt-4 w-full bg-red-800 text-white py-1 rounded-lg"
@@ -710,7 +748,7 @@ const Settings: React.FC = () => {
         <button
           className={`px-4 py-2 rounded-lg sm:w-40 md:w-32 lg:w-28 mr-1 ${
             activeTab === "Questions"
-          ? "border-b-4 border-white text-white font-bold text-center"
+              ? "border-b-4 border-white text-white font-bold text-center"
               : "bg-transparent text-white text-center hover:border-b-4 border-white hover:text-white"
           }`}
           onClick={() => setActiveTab("Questions")}
@@ -730,7 +768,6 @@ const Settings: React.FC = () => {
       </div>
 
       <div>{renderContent()}</div>
-      
     </div>
   );
 };
