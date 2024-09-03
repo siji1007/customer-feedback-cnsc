@@ -62,7 +62,7 @@ const SurveyForm: React.FC = () => {
   });
 
   return (
-    <div className=" md:m-10 lg:m-20">
+    <div className="p-4 md:m-10 lg:m-20">
       {content === "Instruction" ? (
         <>
           <h1 className="text-lg md:text-xl lg:text-2xl font-bold mb-4">
