@@ -9,8 +9,8 @@ interface Question {
   question: string;
 }
 
-const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
-  selectedOffice,
+const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
+  selectedOffice = [],
 }) => {
   const [positions, setPositions] = useState<{ [key: number]: number }>({
     0: 0,
@@ -21,22 +21,20 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
   });
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [poppingEmoji, setPoppingEmoji] = useState<number | null>(null);
-  const [questions, setQuestions] = useState<Question[]>([] || null);
-  const [view, setView] = useState<"survey" | "dashboard">("survey"); // State to manage view
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [view, setView] = useState<"survey" | "dashboard">("survey");
+  const [initialTotalDots, setInitialTotalDots] = useState<number>(0);
+  const [completedDots, setCompletedDots] = useState<number>(0);
+  const [currentOfficeIndex, setCurrentOfficeIndex] = useState<number>(0); // State for current office index
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   const questionRefs = useRef<Array<HTMLFormElement | null>>([]);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const [comment, setComment] = useState("");
 
-  // Retrieve selectedOffice from localStorage
-  const savedSelectedOffice = JSON.parse(
-    localStorage.getItem("selectedOffice") || "[]",
-  );
-
   const fetchQuestions = async () => {
     try {
       const response = await axios.post(serverUrl + "show_questions", {
-        office: selectedOffice,
+        office: selectedOffice[currentOfficeIndex], // Use currentOfficeIndex
       });
       setQuestions(response.data);
     } catch (error) {
@@ -45,8 +43,9 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
   };
 
   useEffect(() => {
+    setInitialTotalDots(selectedOffice.length);
     fetchQuestions();
-  }, [selectedOffice]);
+  }, [selectedOffice, currentOfficeIndex]); // Include currentOfficeIndex in dependencies
 
   const handleEmojiClick = (questionIndex: number, value: number) => {
     setPositions((prevPositions) => ({
@@ -55,7 +54,6 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
     }));
     setPoppingEmoji(questionIndex);
 
-    // Scroll to the next question if available
     const nextQuestionIndex = questionIndex + 1;
     if (nextQuestionIndex <= questions.length) {
       questionRefs.current[nextQuestionIndex - 1]?.scrollIntoView({
@@ -64,13 +62,10 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
       });
     }
   };
-
   const getEmojiClass = (questionIndex: number, value: number) => {
     const isSelected = positions[questionIndex] === value;
     return `cursor-pointer text-2xl ${isSelected ? "scale-150 text-blue-500" : ""} ${
-      poppingEmoji === questionIndex && !isSelected
-        ? "text-yellow-500 animate-pop"
-        : "text-customGray"
+      poppingEmoji === questionIndex && !isSelected ? "text-yellow-500 animate-pop" : "text-customGray"
     }`;
   };
 
@@ -139,26 +134,28 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
         office: selectedOffice[0],
         comment: comment,
       });
+      setCompletedDots((prev) => prev + 1); // Increment the completed dots
       selectedOffice.shift();
       if (selectedOffice.length === 0) {
         setIsSuccessModalOpen(true);
       } else {
         fetchQuestions();
         renderQuestions();
-        setComment("");
       }
+      setPoppingEmoji(null);
+      setPositions({
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+      });
+      setComment(''); // Clear the textarea
     } catch (error) {
       console.log(error);
     }
-    setPoppingEmoji(null);
-    setPositions({
-      0: 0,
-      1: 0,
-      2: 0,
-      3: 0,
-      4: 0,
-    });
   };
+  
 
   const handleModalClose = () => {
     setIsSuccessModalOpen(false);
@@ -206,7 +203,13 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 mx-auto max-w-screen-md relative">
+    <div className="pt-2 md:p-6 lg:p-8 mx-auto max-w-screen-md relative">
+        <div className="flex flex-col items-center mb-2">
+        {/* Title showing current office */}
+          <div className="title text-lg font-semibold">{selectedOffice[currentOfficeIndex]}</div>
+          {/* PageDots showing progress */}
+          <PageDots totalDots={initialTotalDots} completedDots={completedDots} />
+        </div>
       <div className="flex flex-col space-y-4">
         <div
           className="overflow-y-auto relative max-h-[30vh] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent"
@@ -231,8 +234,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
       </div>
       {/* PageDots placed above the submit button */}
       <div className="flex flex-col items-center mt-2">
-        <PageDots totalDots={selectedOffice.length} />
-        <button
+          <button
           onClick={handleSubmit}
           style={{ backgroundColor: "#800000", color: "white" }}
           className="p-2 rounded-md text-white text-xs md:text-sm lg:text-base font-bold mt-2"
