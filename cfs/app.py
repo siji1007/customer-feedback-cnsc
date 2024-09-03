@@ -474,7 +474,7 @@ def fetchQStats():
 @app.route("/updateQStatus", methods=["POST"])
 def updateQStats():
     request_data = request.get_json()
-    target_data = server.questionnaire_collection.update_one({'_id': ObjectId(request_data["qid"])}, {'$set': {'status': request_data["status"]}});
+    target_data = server.questionnaire_collection.update_one({'_id': ObjectId(request_data["qid"])}, {'$set': {'status': request_data["status"]}})
     return "Question Status Updated Successfully", 200
 
 @app.route("/getArchive", methods=["POST"])
@@ -485,6 +485,12 @@ def getArchives():
     archive_id = [str(al["_id"]) for al in archive_list if al["office"] == request_data["office"] and al["status"] == "archive"]
     archive_name = [str(al["name"]) for al in archive_list if al["office"] == request_data["office"] and al["status"] == "archive"]
     return {"aid": archive_id, "aname": archive_name}
+
+@app.route("/recoverArchive", methods=["POST"])
+def recoverQuestionnaire():
+    request_data = request.get_json()
+    target_data = server.questionnaire_collection.update_one({'_id': ObjectId(request_data["selectedId"])}, {'$set': {'status': "hidden"}})
+    return "Question had been restored successfully", 200
 
 if __name__ == '__main__':
     app.run(port="8082")

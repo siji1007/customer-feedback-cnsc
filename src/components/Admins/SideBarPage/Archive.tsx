@@ -4,14 +4,24 @@ import axios from "axios";
 
 const Archive: React.FC = () => {
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
-  const [questionnaires, setQuestionnaires] = useState<string[]>([]);
+  //const [questionnaires, setQuestionnaires] = useState<string[]>([]);
   const [archivedQuestionnaires, setArchivedQuestionnaires] = useState<
     string[]
   >([]);
+  const [aqIds, setAqIds] = useState<string[]>([]);
 
   const [selectedOffice, setSelectedOffice] = useState<string>(null);
 
-  const handleRestoreQuestionnaire = (officeName: string, index: number) => {};
+  const handleRestoreQuestionnaire = async (index: number) => {
+    try {
+      const response = await axios.post(serverUrl + "recoverArchive", {
+        selectedId: aqIds[index],
+      });
+      handleQuestionnaire(selectedOffice);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleQuestionnaire = async (office) => {
     try {
@@ -20,7 +30,7 @@ const Archive: React.FC = () => {
         office: office,
       });
       setArchivedQuestionnaires(response.data.aname);
-      console.log(archivedQuestionnaires);
+      setAqIds(response.data.aid);
     } catch (error) {
       console.log(error);
     }
@@ -67,9 +77,7 @@ const Archive: React.FC = () => {
               <span className="font-bold text-center">{questionnaire}</span>
               <button
                 className="bg-green-600 text-white py-1 px-4 rounded-lg mt-2 flex items-center justify-center"
-                onClick={() =>
-                  handleRestoreQuestionnaire(selectedOffice, index)
-                }
+                onClick={() => handleRestoreQuestionnaire(index)}
               >
                 <FaUndo className="mr-2" />
                 Restore
