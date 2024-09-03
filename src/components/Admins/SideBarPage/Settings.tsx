@@ -297,7 +297,6 @@ const Settings: React.FC = () => {
         },
       );
       setQStatus(response.data);
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }

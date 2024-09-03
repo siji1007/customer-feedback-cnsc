@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaRegQuestionCircle, FaUndo } from "react-icons/fa";
 import axios from "axios";
+
+interface Office {
+  id: number;
+  name: string;
+}
 
 const Archive: React.FC = () => {
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
@@ -9,8 +14,20 @@ const Archive: React.FC = () => {
     string[]
   >([]);
   const [aqIds, setAqIds] = useState<string[]>([]);
+  const [offices, setOffices] = useState<Office[]>([]);
 
   const [selectedOffice, setSelectedOffice] = useState<string>(null);
+
+  const fetchOffices = async () => {
+    try {
+      const response = await axios.get<{ offices: Office[] }>(
+        serverUrl + "office",
+      );
+      setOffices(response.data.offices);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleRestoreQuestionnaire = async (index: number) => {
     try {
@@ -22,6 +39,10 @@ const Archive: React.FC = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    fetchOffices();
+  }, []);
 
   const handleQuestionnaire = async (office) => {
     try {
@@ -43,9 +64,10 @@ const Archive: React.FC = () => {
         onChange={(e) => handleQuestionnaire(e.target.value)}
         className="absolute right-0 top-0 mt-2 p-1 text-sm border border-gray-300 m-4 w-24"
       >
-        <option value="OSSD">OSSD</option>
-        <option value="Registrar">Registrar</option>
-        <option value="Admission">Admission</option>
+        <option value="">Select Department</option>
+        {offices.map((office) => (
+          <option value={office.name}>{office.name}</option>
+        ))}
       </select>
 
       <div className="relative mb-4">
