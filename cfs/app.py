@@ -6,7 +6,6 @@
     4. Computation
 '''
 
-
 from flask import Flask, render_template, request, flash, redirect, jsonify
 from bson.objectid import ObjectId
 from flask_cors import CORS
@@ -475,9 +474,17 @@ def fetchQStats():
 @app.route("/updateQStatus", methods=["POST"])
 def updateQStats():
     request_data = request.get_json()
-    print(request_data)
     target_data = server.questionnaire_collection.update_one({'_id': ObjectId(request_data["qid"])}, {'$set': {'status': request_data["status"]}});
     return "Question Status Updated Successfully", 200
+
+@app.route("/getArchive", methods=["POST"])
+def getArchives():
+    request_data = request.get_json()
+    archive_data = server.questionnaire_collection.find({"status": {"$exists": True}})
+    archive_list = [ad for ad in archive_data]
+    archive_id = [str(al["_id"]) for al in archive_list if al["office"] == request_data["office"] and al["status"] == "archive"]
+    archive_name = [str(al["name"]) for al in archive_list if al["office"] == request_data["office"] and al["status"] == "archive"]
+    return {"aid": archive_id, "aname": archive_name}
 
 if __name__ == '__main__':
     app.run(port="8082")

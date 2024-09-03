@@ -11,12 +11,6 @@ interface OfficeData {
   office: string;
 }
 
-interface Questionnaire {
-  name: string;
-  questions: string[];
-  office: string;
-}
-
 interface Office {
   id: number;
   name: string;
@@ -53,6 +47,7 @@ const Settings: React.FC = () => {
   const questionAreaRef = useRef<HTMLTextAreaElement>(null);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   const [qStatus, setQStatus] = useState([]);
+  const [qidList, setQidList] = useState([]);
 
   const handleOpenModal = async (index: number) => {
     //console.log("Opening modal for questionnaire index:", index); // Debugging line
@@ -260,9 +255,15 @@ const Settings: React.FC = () => {
     }
   };
 
-  const handleDeleteQuestionnaire = (index: number) => {
-    if (selectedOffice) {
-      setSelectedQuestionnaire(null);
+  const handleArchiving = async (index: number) => {
+    try {
+      const response = await axios.post(serverUrl + "/updateQStatus", {
+        qid: questionnaireIds[index],
+        status: "archive",
+      });
+      getQuestionnaires(selectedOffice?.name);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -317,7 +318,7 @@ const Settings: React.FC = () => {
     setQStatus((prevState) => {
       const newStatus = [...prevState];
       newStatus[index] = newStatus[index] === "active" ? "hidden" : "active";
-      updateQStatus(questionnaireIds[selectedQuestionnaire], newStatus[index]);
+      updateQStatus(questionnaireIds[index], newStatus[index]);
       return newStatus;
     });
   };
@@ -537,7 +538,7 @@ const Settings: React.FC = () => {
                               className="text-red-800"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDeleteQuestionnaire(index);
+                                handleArchiving(index);
                               }}
                             >
                               <FaTimes />
