@@ -6,7 +6,6 @@
     4. Computation
 '''
 
-
 from flask import Flask, render_template, request, flash, redirect, jsonify
 from bson.objectid import ObjectId
 from flask_cors import CORS
@@ -289,9 +288,9 @@ def setReminderConf():
 @app.route('/show_questions', methods=['POST'])
 def showQuestions():
     selected_offices = request.get_json()
-    question_data = server.questionnaire_collection.find()
+    question_data = server.questionnaire_collection.find({"status":{"$exists": True}})
     question_list = [q for q in question_data]
-    questions = [q["questions"] for q in question_list if q["office"] in selected_offices["office"]]
+    questions = [q["questions"] for q in question_list if q["office"] in selected_offices["office"] and q["status"] == "active"]
 
     return questions[0]
 
@@ -311,11 +310,11 @@ def add_questionnaire():
 def showQuestionnaires():
     questionnaire_data_ = request.get_json()
     print(questionnaire_data_)
-    questionnaire_data = server.questionnaire_collection.find()
+    questionnaire_data = server.questionnaire_collection.find({"status":{"$exists": True}})
     questionnaire_list = [q for q in questionnaire_data]
-    questionnaires = [str(q["name"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office']]
-    questionnaire_id = [str(q["_id"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office']]
-    questionnaire_office = [str(q["office"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office']]
+    questionnaires = [str(q["name"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office'] and q["status"] != "archive"]
+    questionnaire_id = [str(q["_id"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office'] and q["status"] != "archive"]
+    questionnaire_office = [str(q["office"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office'] and q["status"] != "archive"]
     return {"qid":questionnaire_id,"name": questionnaires, "office": questionnaire_office}
 
 @app.route("/add-question", methods=['POST'])
@@ -463,6 +462,35 @@ def summarizeComments():
         final_result += fs + " "
 
     return jsonify(final_result)
+
+@app.route("/fetchQuestionnaireStatus", methods=["POST"])
+def fetchQStats():
+    request_data = request.get_json()
+    questionnaire_data = server.questionnaire_collection.find({"status": {"$exists": True}})
+    questionnaire_list = [qd for qd in questionnaire_data]
+    status = [ql["status"] for ql in questionnaire_list if ql["office"] == request_data["office"]]
+    return jsonify(status)
+
+@app.route("/updateQStatus", methods=["POST"])
+def updateQStats():
+    request_data = request.get_json()
+    target_data = server.questionnaire_collection.update_one({'_id': ObjectId(request_data["qid"])}, {'$set': {'status': request_data["status"]}})
+    return "Question Status Updated Successfully", 200
+
+@app.route("/getArchive", methods=["POST"])
+def getArchives():
+    request_data = request.get_json()
+    archive_data = server.questionnaire_collection.find({"status": {"$exists": True}})
+    archive_list = [ad for ad in archive_data]
+    archive_id = [str(al["_id"]) for al in archive_list if al["office"] == request_data["office"] and al["status"] == "archive"]
+    archive_name = [str(al["name"]) for al in archive_list if al["office"] == request_data["office"] and al["status"] == "archive"]
+    return {"aid": archive_id, "aname": archive_name}
+
+@app.route("/recoverArchive", methods=["POST"])
+def recoverQuestionnaire():
+    request_data = request.get_json()
+    target_data = server.questionnaire_collection.update_one({'_id': ObjectId(request_data["selectedId"])}, {'$set': {'status': "hidden"}})
+    return "Question had been restored successfully", 200
 
 if __name__ == '__main__':
     app.run(port="8082")

@@ -29,7 +29,9 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
   const [comment, setComment] = useState("");
 
   // Retrieve selectedOffice from localStorage
-  const savedSelectedOffice = JSON.parse(localStorage.getItem('selectedOffice') || '[]');
+  const savedSelectedOffice = JSON.parse(
+    localStorage.getItem("selectedOffice") || "[]",
+  );
 
   const fetchQuestions = async () => {
     try {
@@ -143,6 +145,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
       } else {
         fetchQuestions();
         renderQuestions();
+        setComment("");
       }
     } catch (error) {
       console.log(error);
@@ -229,7 +232,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string }> = ({
       {/* PageDots placed above the submit button */}
       <div className="flex flex-col items-center mt-2">
         <PageDots totalDots={selectedOffice.length} />
-          <button
+        <button
           onClick={handleSubmit}
           style={{ backgroundColor: "#800000", color: "white" }}
           className="p-2 rounded-md text-white text-xs md:text-sm lg:text-base font-bold mt-2"
