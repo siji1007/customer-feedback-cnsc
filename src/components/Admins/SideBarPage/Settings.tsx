@@ -47,7 +47,7 @@ const Settings: React.FC = () => {
   const questionAreaRef = useRef<HTMLTextAreaElement>(null);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   const [qStatus, setQStatus] = useState([]);
-  const [qidList, setQidList] = useState([]);
+  const [acadYears, setAcadYears] = useState([]);
 
   const handleOpenModal = async (index: number) => {
     //console.log("Opening modal for questionnaire index:", index); // Debugging line
@@ -322,11 +322,21 @@ const Settings: React.FC = () => {
     });
   };
 
+  const getAcadYear = async() =>{
+    try{
+      const response = await axios.get(serverUrl + "get_acad_years")
+      setAcadYears(response.data)
+    }catch(error){
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     fetchOffices();
     fetchDepartments();
     fetchFeedbackState();
     fetchReminderState();
+    getAcadYear();
   }, []);
 
   useEffect(() => {
@@ -716,6 +726,41 @@ const Settings: React.FC = () => {
             </section>
           </div>
         );
+      case "Validity":
+        return (
+          <div className="mt-4 space-y-4">
+            <section className="relative bg-gray-300 p-4 rounded-lg border border-black">
+              <h1 className="text-xl font-semibold">Academic Year</h1>
+              <p>
+                Use this to set the academic year range of the survey.
+              </p>
+              <div className="top-0 right-0 mt-2 mr-2 font-bold">
+                <select>
+                  {acadYears.map((acads) =>(
+                    <option key={acads} value={acads}>
+                      {acads}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </section>
+
+            <section className="relative bg-gray-300 p-4 rounded-lg border border-black">
+              <h1 className="text-xl font-semibold">Semester</h1>
+              <p>
+                Use this to set the current semester of the survey.
+              </p>
+              <div className="top-0 right-0 mt-2 mr-2 font-bold">
+                <select>
+                  <option>First Semester</option>
+                  <option>Second Semester</option>
+                  <option>Mid Year</option>
+                </select>
+              </div>
+            </section>
+          </div>
+          
+        );
       default:
         return null;
     }
@@ -764,6 +809,16 @@ const Settings: React.FC = () => {
           onClick={() => setActiveTab("Notification")}
         >
           Notification
+        </button>
+        <button
+          className={`px-4 py-2 rounded-lg text-center sm:w-40 md:w-32 lg:w-28 ${
+            activeTab === "Validity"
+              ? "border-b-4 border-white text-white font-bold text-center"
+              : "bg-transparent text-white text-center hover:border-b-4 border-white hover:text-white"
+          }`}
+          onClick={() => setActiveTab("Validity")}
+        >
+          Validity
         </button>
       </div>
 
