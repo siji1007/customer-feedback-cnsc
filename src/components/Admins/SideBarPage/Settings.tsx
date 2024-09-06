@@ -48,6 +48,9 @@ const Settings: React.FC = () => {
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   const [qStatus, setQStatus] = useState([]);
   const [acadYears, setAcadYears] = useState([]);
+  const [currentAY, setCurrentAY] = useState("");
+  const [currentSem, setCurrentSem] = useState("");
+  const semesterList = ["First Semester", "Second Semester", "Mid Year"]
 
   const handleOpenModal = async (index: number) => {
     //console.log("Opening modal for questionnaire index:", index); // Debugging line
@@ -331,12 +334,41 @@ const Settings: React.FC = () => {
     }
   }
 
+  const updateAY = async(selectedAY) => {
+    try{
+      setCurrentAY(selectedAY)
+      const response = await axios.post(serverUrl + "update_acad_year", {uay: selectedAY})
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+  const updateSem = async(selectedSem) => {
+    try{
+      setCurrentSem(selectedSem)
+      const response = await axios.post(serverUrl + "update_semester", {semester: selectedSem})
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+  const fetchValidity = async() => {
+    try{
+      const response = await axios.get(serverUrl + "get_validity")
+      setCurrentAY(response.data.acadYear)
+      setCurrentSem(response.data.semester)
+    }catch(error){
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     fetchOffices();
     fetchDepartments();
     fetchFeedbackState();
     fetchReminderState();
     getAcadYear();
+    fetchValidity();
   }, []);
 
   useEffect(() => {
@@ -735,12 +767,20 @@ const Settings: React.FC = () => {
                 Use this to set the academic year range of the survey.
               </p>
               <div className="top-0 right-0 mt-2 mr-2 font-bold">
-                <select>
-                  {acadYears.map((acads) =>(
-                    <option key={acads} value={acads}>
-                      {acads}
-                    </option>
-                  ))}
+                <select 
+                value={event?.target.value} 
+                onChange={(e)=>updateAY(e.target.value)}>
+                  <option value={currentAY}>{currentAY}</option>
+                  {acadYears.map((acads) =>{
+                    if(acads !== currentAY){
+                      return(
+                        <option key={acads} value={acads}>
+                        {acads}
+                      </option>
+                      );
+                    }
+                    return null;
+                  })}
                 </select>
               </div>
             </section>
@@ -751,10 +791,19 @@ const Settings: React.FC = () => {
                 Use this to set the current semester of the survey.
               </p>
               <div className="top-0 right-0 mt-2 mr-2 font-bold">
-                <select>
-                  <option>First Semester</option>
-                  <option>Second Semester</option>
-                  <option>Mid Year</option>
+                <select
+                value={event?.target.value}
+                onChange={(e)=>updateSem(e.target.value)}
+                >
+                  <option value={currentSem}>{currentSem}</option>
+                  {semesterList.map((sems) => {
+                    if(sems !== currentSem){
+                      return(
+                        <option key={sems} value={sems}>{sems}</option>
+                      );
+                    }
+                  })}
+                
                 </select>
               </div>
             </section>

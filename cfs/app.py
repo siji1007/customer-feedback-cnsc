@@ -492,5 +492,26 @@ def recoverQuestionnaire():
     target_data = server.questionnaire_collection.update_one({'_id': ObjectId(request_data["selectedId"])}, {'$set': {'status': "hidden"}})
     return "Question had been restored successfully", 200
 
+@app.route("/update_acad_year", methods=["POST"])
+def updateAcadYear():
+    config_data = request.get_json()
+    server.settings_collection.update_one({'_id': ObjectId('669ebc9fbe9cfcf910ab30c1')}, {'$set': {'current_acadYear': config_data["uay"]}})
+    return "Academic Year had been updated successfully", 200
+
+@app.route("/update_semester", methods=["POST"])
+def updateSem():
+    config_data = request.get_json()
+    server.settings_collection.update_one({'_id': ObjectId('669ebc9fbe9cfcf910ab30c1')}, {'$set': {'current_semester': config_data["semester"]}})
+    return "Semester had been updated successfully", 200
+
+@app.route("/get_validity")
+def fetchValidity():
+    config_data = server.settings_collection.find()   
+    data_list = [config for config in config_data]
+    cay = [config["current_acadYear"] for config in data_list]
+    cs = [config["current_semester"] for config in data_list]
+    return jsonify({'acadYear': cay, 'semester': cs})
+ 
+
 if __name__ == '__main__':
     app.run(port="8082")
