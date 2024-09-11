@@ -386,7 +386,7 @@ def fetchRespondents():
     account_data = server.user_collection.find({"account_id": {"$exists": True}})
     account_list = [a for a in account_data]
     account_dict = {a["account_id"]: a["type"] for a in account_list}
-    all_possible_types = {"student", "employee", "other"}
+    all_possible_types = {"student", "employee", "client_research"}
     type_counter = Counter()
     for al in answer_list:
         account_id = al.get("account_id")
@@ -411,7 +411,7 @@ def fetchSpecificRespondents():
     account_list = [a for a in account_data]
     account_dict = {a["account_id"]: a["type"] for a in account_list}
     type_counter = Counter()
-    all_possible_types = {"student", "employee", "other"}
+    all_possible_types = {"student", "employee", "client_research"}
     for al in answer_list:
         account_id = al.get("account_id")
         if account_id:

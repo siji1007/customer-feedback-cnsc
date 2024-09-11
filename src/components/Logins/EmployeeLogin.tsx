@@ -99,7 +99,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
     const fetchDepartments = async () => {
       try {
         const response = await axios.get(
-          import.meta.env.REACT_APP_SERVERHOST + "service_department",
+          import.meta.env.REACT_APP_SERVERHOST + "office",
         );
         setDepartments(response.data.departments || []);
       } catch (error) {

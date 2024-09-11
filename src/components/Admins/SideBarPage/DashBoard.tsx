@@ -207,7 +207,7 @@ const Dashboard: React.FC = () => {
     },
   };
 
-  const chartLabelsRight = ["Students", "Employee", "Others"];
+  const chartLabelsRight = ["Employee", "Students","Others"];
   const [chartDataRight, setChartDataRight] = useState<number[]>([0, 0, 0]);
   const fetchDataRight = async () => {
     try {
@@ -236,7 +236,7 @@ const Dashboard: React.FC = () => {
       datasets: [
         {
           data: chartDataRight,
-          backgroundColor: ["#4A90E2", "#50E3C2", "#F5A623"],
+          backgroundColor: ["#50E3C2", "#4A90E2","#F5A623"],
           borderColor: "#fff",
           borderWidth: 2,
         },

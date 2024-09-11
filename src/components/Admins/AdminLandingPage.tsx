@@ -14,6 +14,11 @@ interface OfficeHeadCredentials {
   officeHead_password: string;
 }
 
+interface Office {
+  id: string;
+  name: string;
+}
+
 const AdminLogins: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -40,7 +45,7 @@ const AdminLogins: React.FC = () => {
     });
   const [hasError, setHasError] = useState(false);
 
-  const [departments, setDepartments] = useState<string[]>([]);
+  const [offices, setOffices] = useState<Office[]>([]);
 
   const handleBackClick = () => {
     navigate("/?showSecondSetOfButtons=true");
@@ -121,8 +126,8 @@ const AdminLogins: React.FC = () => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get(serverUrl + "service_department");
-        setDepartments(response.data.departments);
+        const response = await axios.get(serverUrl + "office");
+        setOffices(response.data.offices);
       } catch (error) {
         console.error("Error fetching departments: ", error);
       }
@@ -264,15 +269,13 @@ const AdminLogins: React.FC = () => {
                 >
                   <option value="">Select Department</option>
 
-                  {departments.map((department) => (
-                    <option key={department} value={department}>
-                       {department}
+                  {offices.map((department) => (
+                    <option key={department.id} value={department.name}>
+                       {department.name}
                    </option>
                    
     
                   ))} 
-                   <option value="IVS">IVS</option>
-                   <option value="asd Department">asd Department</option>
                    
                 </select>
               </section>
