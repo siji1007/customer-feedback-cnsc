@@ -269,9 +269,9 @@ const AdminLogins: React.FC = () => {
                 >
                   <option value="">Select Department</option>
 
-                  {offices.map((department) => (
-                    <option key={department.id} value={department.name}>
-                       {department.name}
+                  {offices.map((office) => (
+                    <option key={office.id} value={office.name}>
+                       {office.name}
                    </option>
                    
     
