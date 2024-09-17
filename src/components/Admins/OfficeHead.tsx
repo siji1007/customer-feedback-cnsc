@@ -2,188 +2,473 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import BarChart from './SideBarPage/BarChart';
 import PieChart from './SideBarPage/PieChart';
+import LineChart from './SideBarPage/LineChart';
 import { FaThumbsUp } from 'react-icons/fa';
 
+
 const OfficeHead: React.FC = () => {
-  // Define arrays for departments and academic years
-  const [departments, setDepartments] = useState<string[]>([]);
+  const [offices, setOffices] = useState<Office[]>([]);
+  const [totalFeedback, setTotalFeedback] = useState(0);
   const [acadYears, setAcadYears] = useState<string[]>([]);
+  const [showDetailedView, setShowDetailedView] = useState(false);
+  const [content, setContent] = useState("");
+  const [insights, setInsights] = useState<string[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [chart1Type, setChart1Type] = useState<
+    "BarChart" | "PieChart" | "LineChart"
+  >("BarChart");
+  const [chart2Type, setChart2Type] = useState<
+    "BarChart" | "PieChart" | "LineChart"
+  >("PieChart");
+
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
-  const [feedbackData, setFeedbackData] = useState([10, 81, 80, 25, 15]); // Dummy feedback data for categories
-  const fetchDepartments = async () => {
+  const [activeOffice, setActiveOffice] = useState("");
+  const fetchSpecificOffice = async (selectedOffice) => {
     try {
-      const response = await axios.get(serverUrl + "service_department");
-      setDepartments(response.data.departments);
+      const response = await axios.post(serverUrl + "fetch_specific_dept", {
+        selectedOffice: selectedOffice,
+      });
+      setDataChartLeft(response.data);
+      fetchSpecificType(selectedOffice);
+      setActiveOffice(selectedOffice);
+      fetchSpecificTotal(selectedOffice);
+      fetchSpecificInsights(selectedOffice);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const fetchAcademicYear = async () => {
+  const handleSectionClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const fetchAllOffice = (state) => {
+    if (state === "on") {
+      fetchChartLeft();
+      fetchDataRight();
+    } else {
+      fetchSpecificOffice(activeOffice);
+      fetchSpecificType(activeOffice);
+    }
+  };
+
+  const fetchSpecificType = async (office) => {
+    try {
+      const response = await axios.post(
+        serverUrl + "specific_respondent_data",
+        { office: office },
+      );
+      setChartDataRight(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchTotalFeedback = async () => {
+    try {
+      const response = await axios.get(serverUrl + "get_feedback_count");
+      setTotalFeedback(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchSpecificTotal = async (office) => {
+    try {
+      const response = await axios.post(serverUrl + "fetchSpecificOffice", {
+        office: office,
+      });
+      setTotalFeedback(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchInsights = async () => {
+    try {
+      const response = await axios.get(serverUrl + "fetchCommentSummary");
+      setInsights(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchSpecificInsights = async (office) => {
+    try {
+      const response = await axios.post(serverUrl + "fetchCommentSummary", {
+        office: office,
+      });
+      setInsights(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Fixed data for the charts
+  const chartLabelsLeft = [
+    "Needs Improvement",
+    "Failed to Meet Expectations",
+    "Meet Expectations",
+    "Exceeds Expectations",
+    "Outstanding",
+  ]; //add here the data scale connection for leftside chart
+  const [dataChartLeft, setDataChartLeft] = useState<number[]>([0, 0, 0, 0, 0]); // add here the data number leftside chart
+  const fetchChartLeft = async () => {
+    const response = await axios.get(serverUrl + "response_data");
+    setDataChartLeft(response.data);
+  };
+  const chart1Data = {
+    BarChart: {
+      labels: chartLabelsLeft,
+      datasets: [
+        {
+          label: "Feedback",
+          data: dataChartLeft,
+          backgroundColor: [
+            "#7F0000",
+            "#ff0000",
+            "#ffff00",
+            "#00ff00",
+            "#004C00",
+          ],
+          borderColor: ["#7F0000", "#ff0000", "#ffff00", "#00ff00", "#004C00"],
+          borderWidth: 1,
+        },
+      ],
+    },
+    PieChart: {
+      labels: chartLabelsLeft,
+      datasets: [
+        {
+          data: dataChartLeft,
+          backgroundColor: [
+            "#7F0000",
+            "#ff0000",
+            "#ffff00",
+            "#00ff00",
+            "#004C00",
+          ],
+          borderColor: "#fff",
+          borderWidth: 2,
+        },
+      ],
+    },
+    LineChart: {
+      labels: chartLabelsLeft,
+      datasets: [
+        {
+          label: "Feedback",
+          data: dataChartLeft,
+          backgroundColor: "rgba(75,192,192,0.4)",
+          borderColor: "rgba(75,192,192,1)",
+          borderWidth: 1,
+          fill: true,
+        },
+      ],
+    },
+  };
+
+  const chartLabelsRight = ["Students","Employee","Others"];
+  const [chartDataRight, setChartDataRight] = useState<number[]>([0, 0, 0]);
+  const fetchDataRight = async () => {
+    try {
+      const response = await axios.get(serverUrl + "respondent_data");
+      console.log(response.data);
+      setChartDataRight(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const chart2Data = {
+    BarChart: {
+      labels: chartLabelsRight,
+      datasets: [
+        {
+          label: "Feedback",
+          data: chartDataRight,
+          backgroundColor: ["#4A90E2", "#50E3C2", "#F5A623"],
+          borderColor: ["#4A90E2", "#50E3C2", "#F5A623"],
+          borderWidth: 1,
+        },
+      ],
+    },
+    PieChart: {
+      labels: chartLabelsRight,
+      datasets: [
+        {
+          data: chartDataRight,
+          backgroundColor: ["#4A90E2","#50E3C2", "#F5A623"],
+          borderColor: "#fff",
+          borderWidth: 2,
+        },
+      ],
+    },
+    LineChart: {
+      labels: chartLabelsRight,
+      datasets: [
+        {
+          label: "Feedback",
+          data: chartDataRight,
+          backgroundColor: "rgba(75,192,192,0.4)",
+          borderColor: "rgba(75,192,192,1)",
+          borderWidth: 1,
+          fill: true,
+        },
+      ],
+    },
+  };
+
+
+
+  const fetchOffices = async () => {
+    try {
+      const response = await axios.get<{ offices: Office[] }>(
+        serverUrl + "office",
+      );
+      setOffices(response.data.offices);
+    } catch (error) {
+      console.error("Error fetching departments: ", error);
+    }
+  };
+
+  const fetchAcadYears = async () => {
     try {
       const response = await axios.get(serverUrl + "get_acad_years");
       setAcadYears(response.data);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching semesters: ", error);
     }
   };
 
   useEffect(() => {
-    fetchDepartments();
-    fetchAcademicYear();
-  });
-  const getBarChartData = () => {
-    const labels = ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'];
-    const backgroundColors = ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'];
+    fetchDataRight();
+    fetchChartLeft();
+    fetchAcadYears();
+    fetchOffices();
+    fetchTotalFeedback();
+    fetchInsights();
+  }, []);
 
-    const sortedData = feedbackData
-      .map((value, index) => ({ value, label: labels[index], color: backgroundColors[index] }))
-      .sort((a, b) => b.value - a.value); // Sort descending by value
-
-    const sortedLabels = sortedData.map(data => data.label);
-    const sortedValues = sortedData.map(data => data.value);
-    const sortedColors = sortedData.map(data => data.color);
-
-    return {
-      labels: sortedLabels,
-      datasets: [
-        {
-          label: 'Feedback',
-          data: sortedValues,
-          backgroundColor: sortedColors,
-          borderColor: sortedColors, // Border color same as background color for consistency
-          borderWidth: 1, // Optional: Adjust the border width if needed
-        },
-      ],
-    };
-  };
+  const getChart1Data = () => chart1Data[chart1Type];
+  const getChart2Data = () => chart2Data[chart2Type];
 
   const getPieChartOptions = () => ({
     plugins: {
       legend: {
-        position: 'left', // Position legend to the left
+        position: "left",
         labels: {
-          usePointStyle: true, // Optional: Use point style for labels
+          usePointStyle: true,
         },
       },
     },
   });
-  
-  const getPieChartData = () => {
-    const pieLabels = ['Students', 'Employee', 'Others'];
-    const pieData = [35, 45, 20]; // Dummy data for pie chart, replace with actual values
-    const pieColors = ['#4A90E2', '#50E3C2', '#F5A623'];
-  
-    return {
-      label: 'Feedback',
-      labels: pieLabels,
-      datasets: [
-        {
-          data: pieData,
-          backgroundColor: pieColors,
-          borderColor: '#fff', // Optional: Set border color for pie segments
-          borderWidth: 2, // Optional: Adjust the border width if needed
-        },
-      ],
-    };
-  };
+
 
 
   return (
     <main className="w-full m-4">
-      <header className="w-full border-b pb-4 mb-4 flex items-center justify-between bg-red-900 p-4 rounded-lg">
-        <div className="flex items-center">
-          <input type="checkbox" id="selectAll" className="mr-2 h-5 w-5" />
-          <label htmlFor="selectAll" className="text-lg text-white font-bold">
-            All
-          </label>
-        </div>
+      <header className="w-full border-b flex items-center justify-between bg-red-900 p-2 rounded-lg">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="selectAll"
+                  className="mr-2 h-5 w-5"
+                  onChange={(e) => fetchAllOffice(e.target.checked ? "on" : "off")}
+                />
+                <label
+                  htmlFor="selectAll"
+                  className="text-sm text-white font-bold mr-4"
+                >
+                  All
+                </label>
 
-        <div className="ml-auto relative">
-          <label
-            htmlFor="officeSelect"
-            className="text-lg text-white font-bold mr-2"
-          >
-            Select Office
-          </label>
-          <select
-            id="officeSelect"
-            className="bg-white text-black border border-gray-600 rounded-md py-1 px-2"
-          >
-            <option value=""></option>
-            {departments.map((department) => (
-              <option key={department} value={department}>
-                {department} Office
-              </option>
-            ))}
-          </select>
-        </div>
+                <label
+                  htmlFor="officeSelect"
+                  className="text-sm text-white font-bold mr-2"
+                >
+                  Select Office
+                </label>
+                <select
+                  id="officeSelect"
+                  className="bg-white-100 text-black  text-sm border border-gray-600  py-1 px-2"
+                  value={event?.target.value}
+                  onChange={(e) => fetchSpecificOffice(e.target.value)}
+                >
+                  <option value=""></option>
+                  {offices.map((office) => (
+                    <option key={office.id} value={office.name}>
+                      {office.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="ml-10 flex flex-col ">
+                <div className="flex items-center">
+                  <label
+                    htmlFor="semesterSelect"
+                    className="text-sm text-white font-bold mr-2"
+                  >
+                    Semester
+                  </label>
+                  <select
+                    id="semesterSelect"
+                    className="bg-white-100 text-black border border-gray-600 flex-grow w-full"
+                  >
+                    <option value=""></option>
+                    <option value="first">First Semester</option>
+                    <option value="second">Second Semester</option>
+                  </select>
+                </div>
+                <div className="flex items-center">
+                  <label
+                    htmlFor="academicYearSelect"
+                    className="text-sm text-white font-bold mr-2"
+                  >
+                    Academic Year
+                  </label>
+                  <select
+                    id="academicYearSelect"
+                    className="bg-white-100 text-black border border-gray-600 flex-grow w-full"
+                  >
+                    <option value=""></option>
+                    {acadYears.map((acadYear) => (
+                      <option key={acadYear} value={acadYear}>
+                        {acadYear}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </header>
 
-        <div className="ml-10 flex flex-col">
-          <div>
-            <label
-              htmlFor="semesterSelect"
-              className="text-sm text-white font-bold mr-2"
-            >
-              Semester
-            </label>
-            <select
-              id="semesterSelect"
-              className="bg-white text-black border border-gray-600"
-            >
-              <option value=""></option>
-              <option value="first">First Semester</option>
-              <option value="second">Second Semester</option>
-            </select>
-          </div>
-          <div className="mt-2">
-            <label
-              htmlFor="academicYearSelect"
-              className="text-sm text-white font-bold mr-2"
-            >
-              Academic Year
-            </label>
-            <select
-              id="academicYearSelect"
-              className="bg-white text-black border border-gray-600 text-sm"
-            >
-              <option value=""></option>
-              {acadYears.map((acadYear) => (
-                <option key={acadYear} value={acadYear}>
-                  {acadYear}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </header>
-
-      <div className="flex justify-between ">
+            <div className="flex justify-between items-center mb-1">
               <h1 className="text-lg font-bold m-2">Overview Of Result</h1>
-              <div className="bg-gray-300 rounded-lg">
-                <section className="flex items-center justify-center p-2">
-                  <FaThumbsUp className="text-xl mr-2" />
-                  <p className="text-xs sm:text-xs md:text-xs lg:text-xm font-bold">Total Feedback</p>
-                </section>
-                <p className="text-center text-xs sm:text-xs md:text-xs lg:text-xm">100</p>
-              </div>
-            </div>
 
-            <section className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-[50px] w-[200px] mx-auto rounded-lg font-bold">
-              Insights
-            </section>
-            <div className="flex w-full overflow-x-auto mb-4  items-center justify-center">
-              <div className="w-full sm:w-1/3 border p-2 flex justify-center items-center">
-                <BarChart data={getBarChartData()} />
-              </div>
-              <div className="w-full sm:w-1/2 border p-2 flex justify-center items-center">
-                <div className="sm:w-1/3 ">
-                  <PieChart data={getPieChartData()} options={getPieChartOptions()} />
+              <div className="p-1 grid grid-cols-2 items-center ">
+                <div className="flex justify-center items-center">
+                  <FaThumbsUp className="text-3xl text-black-500" />
+                </div>
+                <div className="flex flex-col justify-center">
+                  <p className="text-xs sm:text-xs md:text-xs lg:text-xm font-bold">
+                    Total Feedback
+                  </p>
+                  <p className="text-xl sm:text-xl md:text-xl lg:text-xl text-center">
+                    {totalFeedback}
+                  </p>
                 </div>
               </div>
             </div>
 
+            <section
+              className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-fit w-[70vh] p-1 mb-2 mx-auto rounded-lg font-bold cursor-pointer"
+              onClick={handleSectionClick}
+            >
+              {insights}
+            </section>
+
+            {/* Display here the top 10 bert Topic list */}
+            {isModalOpen && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm w-full">
+                  <h2 className="text-xl font-bold mb-4">Top 10 List Insight</h2>
+                  <p>Display here.</p>
+                  <button
+                    className="mt-4 px-4 py-2 bg-red-800 text-white rounded"
+                    onClick={handleCloseModal}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className="flex flex-col lg:flex-row w-full overflow-x-auto mb-4 items-center justify-center">
+              <div className="w-full lg:w-1/2 border p-2 flex flex-col items-center">
+                <div className="flex items-center mb-2">
+                  <label
+                    htmlFor="chart1Type"
+                    className="text-sm font-bold mr-2"
+                  >
+                    Choose Visualization Type
+                  </label>
+                  <select
+                    id="chart1Type"
+                    className="bg-white border border-gray-600 rounded-md p-1"
+                    value={chart1Type}
+                    onChange={(e) =>
+                      setChart1Type(
+                        e.target.value as "BarChart" | "PieChart" | "LineChart",
+                      )
+                    }
+                  >
+                    <option value="BarChart">Bar Chart</option>
+                    <option value="PieChart">Pie Chart</option>
+                    <option value="LineChart">Line Chart</option>
+                  </select>
+                </div>
+                <div className="w-full flex justify-center">
+                  {chart1Type === "PieChart" && (
+                    <div className="w-1/2">
+                      <PieChart
+                        data={getChart1Data()}
+                        options={getPieChartOptions()}
+                      />
+                    </div>
+                  )}
+                  {chart1Type === "BarChart" && (
+                    <BarChart data={getChart1Data()} />
+                  )}
+                  {chart1Type === "LineChart" && (
+                    <LineChart data={getChart1Data()} />
+                  )}
+                </div>
+              </div>
+
+              <div className="w-full lg:w-1/2 border p-2 flex flex-col items-center">
+                <div className="flex items-center mb-2">
+                  <label
+                    htmlFor="chart2Type"
+                    className="text-sm font-bold mr-2"
+                  >
+                    Choose Visualization Type
+                  </label>
+                  <select
+                    id="chart2Type"
+                    className="bg-white border border-gray-600 rounded-md p-1"
+                    value={chart2Type}
+                    onChange={(e) =>
+                      setChart2Type(
+                        e.target.value as "BarChart" | "PieChart" | "LineChart",
+                      )
+                    }
+                  >
+                    <option value="BarChart">Bar Chart</option>
+                    <option value="PieChart">Pie Chart</option>
+                    <option value="LineChart">Line Chart</option>
+                  </select>
+                </div>
+                <div className="w-full flex justify-center">
+                  {chart2Type === "PieChart" && (
+                    <div className="w-1/2">
+                      <PieChart
+                        data={getChart2Data()}
+                        options={getPieChartOptions()}
+                      />
+                    </div>
+                  )}
+                  {chart2Type === "BarChart" && (
+                    <BarChart data={getChart2Data()} />
+                  )}
+                  {chart2Type === "LineChart" && (
+                    <LineChart data={getChart2Data()} />
+                  )}
+                </div>
+              </div>
+            </div>
     </main>
   );
 };
