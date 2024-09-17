@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaFacebook, FaTwitter } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import StudentLogin from './Logins/StudentLogin';
@@ -9,6 +9,11 @@ import SurveyForm from './Logins/SurveyForm';
 const LandingPage: React.FC = () => {
   const [selectedLogin, setSelectedLogin] = useState<string>('');
   const [showSurveyForm, setShowSurveyForm] = useState<boolean>(false);
+
+    // Set ShowSurvey to null or none when the page first loads
+  useEffect(() => {
+    localStorage.setItem('ShowSurvey', '');
+  }, []);
 
   const handleLoginSelection = (loginType: string) => {
     setSelectedLogin(loginType);
