@@ -25,6 +25,11 @@ const Settings: React.FC = () => {
   const [offices, setOffices] = useState<Office[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Department");
+  const [activeClient, setActiveClient] = useState("internal");
+  const [externalOffices] = useState([ // Static list for external offices lagay mo nlng dito yung pag fetch or pag show ng list for external client alam ko may selection din yun e
+    { id: 1, name: "Example 1" },
+    { id: 2, name: "Example 2" },
+  ]);
   const [questionnaires, setQuestionnaires] = useState<string[]>([]);
   const [questionnaireIds, setQuestionnaireIds] = useState<string[]>([]);
   const [activeQuestionnaire, setActiveQuestionnaire] = useState<string>("");
@@ -106,6 +111,19 @@ const Settings: React.FC = () => {
     }
   };
 
+
+
+
+  const handleClientSwitch = (client: string) => {
+    setActiveClient(client);
+    setSelectedOffice(null); // Reset selected office when switching clients
+
+    if (client === "external") {
+      // If external is selected, fetch external offices (if needed)
+      // Uncomment the line below if you have a separate API for external offices.
+      // fetchExternalOffices();
+    }
+  };
   const handleAddOfficeClick = async (
     event: React.FormEvent<HTMLFormElement>,
   ) => {
@@ -516,24 +534,51 @@ const Settings: React.FC = () => {
               >
                 Select Office to Edit Questions
               </h2>
-              <ul
-                className="space-y-2 overflow-y-auto text-black rounded-lg p-2"
-                style={{
-                  maxHeight: "calc(100% - 1rem)",
-                  background: "#c3c3c3",
-                }}
-              >
-                {offices.map((office) => (
-                  <li
-                    key={office.id}
-                    className={`cursor-pointer p-2 border border-white rounded-lg ${selectedOffice && selectedOffice.id === office.id ? "bg-red-800 text-white" : "hover:bg-gray-100"}`}
-                    onClick={() => handleClick(office)}
-                  >
-                    {office.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
+
+              <div className="flex justify-between mb-4">
+                <button
+                  className={`w-1/2 mr-2 border border-white rounded-lg ${
+                    activeClient === "internal" ? "bg-red-800 text-white" : ""
+                  }`}
+                  onClick={() => handleClientSwitch("internal")}
+                >
+                  Internal Client
+                </button>
+                <button
+                  className={`w-1/2 ml-2 border border-white rounded-lg ${
+                    activeClient === "external" ? "bg-red-800 text-white" : ""
+                  }`}
+                  onClick={() => handleClientSwitch("external")}
+                >
+                  External Client
+                </button>
+              </div>
+
+                {/* Render Internal or External Offices based on activeClient state */}
+                <ul
+                  className="space-y-2 overflow-y-auto text-black rounded-lg p-2"
+                  style={{
+                    maxHeight: "calc(100% - 1rem)",
+                    background: "#c3c3c3",
+                  }}
+                >
+                  {(activeClient === "internal" ? offices : externalOffices).map(
+                    (office) => (
+                      <li
+                        key={office.id}
+                        className={`cursor-pointer p-2 border border-white rounded-lg ${
+                          selectedOffice && selectedOffice.id === office.id
+                            ? "bg-red-800 text-white"
+                            : "hover:bg-gray-100"
+                        }`}
+                        onClick={() => handleClick(office)}
+                      >
+                        {office.name}
+                      </li>
+                    )
+                  )}
+                </ul>
+              </div>
 
             {/* Questionnaire List */}
             <div
