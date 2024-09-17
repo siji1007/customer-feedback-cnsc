@@ -30,9 +30,23 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   const questionRefs = useRef<Array<HTMLFormElement | null>>([]);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const [comment, setComment] = useState("");
+  const [isExternal, setIsExternal] = useState(false); // State for external questions
 
-  const fetchQuestions = async () => {
+  // Function to fetch external client questions depends on what offices user selected
+  const fetchExternalQuestions = async () => {
     try {
+      alert("This is External questions")
+      const response = await axios.get(serverUrl + "show_external_questions");
+      setQuestions(response.data);
+    } catch (error) {
+      console.error("Error fetching external questions:", error);
+    }
+  };
+
+  // Function to fetch internal client questions
+  const fetchInternalQuestions = async () => {
+    try {
+      alert("This is Internal questions")
       const response = await axios.post(serverUrl + "show_questions", {
         office: selectedOffice[currentOfficeIndex], // Use currentOfficeIndex
       });
@@ -42,10 +56,18 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
     }
   };
 
+  // Determine which questions to load based on localStorage value
   useEffect(() => {
-    setInitialTotalDots(selectedOffice.length);
-    fetchQuestions();
-  }, [selectedOffice, currentOfficeIndex]); // Include currentOfficeIndex in dependencies
+    const showForm = localStorage.getItem("ShowSurvey");
+
+    if (showForm === "external") {
+      setIsExternal(true); // Set flag for external questions
+      fetchExternalQuestions(); // Fetch external client questions
+    } else {
+      setInitialTotalDots(selectedOffice.length);
+      fetchInternalQuestions(); // Fetch internal client questions
+    }
+  }, [selectedOffice, currentOfficeIndex]);
 
   const handleEmojiClick = (questionIndex: number, value: number) => {
     setPositions((prevPositions) => ({
@@ -62,6 +84,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
       });
     }
   };
+
   const getEmojiClass = (questionIndex: number, value: number) => {
     const isSelected = positions[questionIndex] === value;
     return `cursor-pointer text-2xl ${isSelected ? "scale-150 text-blue-500" : ""} ${
@@ -120,7 +143,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
       if (selectedOffice.length === 0) {
         setIsSuccessModalOpen(true);
       } else {
-        fetchQuestions();
+        isExternal ? fetchExternalQuestions() : fetchInternalQuestions();
         renderQuestions();
       }
       setPoppingEmoji(null);
@@ -136,14 +159,13 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
       console.log(error);
     }
   };
-  
 
   const handleModalClose = () => {
     setIsSuccessModalOpen(false);
     setView("dashboard"); // Switch to SurveyDashboard
   };
 
-  const renderQuestions = () => {     
+  const renderQuestions = () => {
     return questions.map((question, index) => {
       const questionIndex = index;
       const isAnswered = positions[questionIndex] > 0; // Check if the question is answered
@@ -185,14 +207,16 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
 
   return (
     <div className="pt-2 md:p-6 lg:p-8 mx-auto max-w-screen-md relative">
-        <div className="flex flex-col items-center mb-2">
-        {/* Title showing current office */}
-          <div className="title text-lg font-semibold">{selectedOffice[currentOfficeIndex]}</div>
-          {/* PageDots showing progress */}
-          <PageDots totalDots={initialTotalDots} completedDots={completedDots} />
+      <div className="flex flex-col items-center mb-2">
+        {/* Title showing current office or 'External Client' */}
+        <div className="title text-lg font-semibold">
+           {selectedOffice[currentOfficeIndex]}
         </div>
+        {/* PageDots showing progress */}
+        <PageDots totalDots={initialTotalDots} completedDots={completedDots} />
+      </div>
       <div className="flex flex-col space-y-4">
-        <div
+      <div
           className="overflow-y-auto relative max-h-[30vh] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent"
           style={{ maxHeight: "30vh" }}
           ref={scrollContainerRef}
@@ -223,23 +247,19 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
           Submit
         </button>
       </div>
+
       {isSuccessModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-4 md:p-8 rounded-md shadow-lg max-w-md mx-auto relative">
-            <div className="flex items-center justify-center mb-4">
-              <CheckIcon className="text-green-500 w-12 h-12 animate-bounce" />
-            </div>
-            <h2 className="text-center font-semibold text-lg mb-2">
-              Submission Successful!
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+            <h2 className="text-2xl font-semibold mb-4">
+              Survey Completed Successfully!
             </h2>
-            <p className="text-center text-sm">
-              Thank you for your feedback. Your responses have been submitted.
-            </p>
+            <p>Thank you for your feedback.</p>
             <button
+              className="mt-6 bg-blue-500 text-white px-4 py-2 rounded-lg"
               onClick={handleModalClose}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 block mx-auto"
             >
-              OK
+              Close
             </button>
           </div>
         </div>
