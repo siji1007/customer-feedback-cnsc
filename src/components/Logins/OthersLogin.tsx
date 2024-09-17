@@ -26,6 +26,11 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
   const handleClientLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
+      // Store "external" in localStorage
+      localStorage.setItem("ShowSurvey", "external"); // store the survey form to show
+      onLoginSuccess();   //State that login success and show now the external content survey
+
+      // Send client data to the server
       const response = await axios.post(
         import.meta.env.VITE_SERVERHOST + "client-login", // Ensure you use VITE_SERVERHOST
         clientData
