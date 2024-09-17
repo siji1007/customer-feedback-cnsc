@@ -72,30 +72,11 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   const getEmoji = (value: number, isSelected: boolean) => {
     const emojiSources = [
       {
-        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.webp",
-        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.gif",
-        alt: "😔",
-      },
-      {
-        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.webp",
-        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.gif",
-        alt: "🙁",
-      },
-      {
-        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.webp",
-        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.gif",
-        alt: "😐",
-      },
-      {
-        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.webp",
-        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.gif",
-        alt: "😊",
-      },
-      {
-        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.webp",
-        src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.gif",
-        alt: "🤩",
-      },
+        srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f614/512.gif", alt: "😔",},
+      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f641/512.gif", alt: "🙁",},
+      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/512.gif", alt: "😐",},
+      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60a/512.gif", alt: "😊",},
+      { srcSet: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.webp", src: "https://fonts.gstatic.com/s/e/notoemoji/latest/1f929/512.gif", alt: "🤩",},
     ];
     const emoji = emojiSources[value - 1];
     const filter = isSelected ? "none" : "grayscale(100%)";
@@ -162,7 +143,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
     setView("dashboard"); // Switch to SurveyDashboard
   };
 
-  const renderQuestions = () => {
+  const renderQuestions = () => {     
     return questions.map((question, index) => {
       const questionIndex = index;
       const isAnswered = positions[questionIndex] > 0; // Check if the question is answered
