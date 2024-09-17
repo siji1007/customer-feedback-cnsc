@@ -14,18 +14,50 @@ const SurveyForm: React.FC = () => {
   const [allOffices, setAllOffices] = useState<Offices[]>([]);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   const [isCheckAll, setIsCheckAll] = useState(false);
+  const [isExternalClient, setIsExternalClient] = useState(false);
+
+  // Check localStorage when component mounts
+  useEffect(() => {
+    const showSurvey = localStorage.getItem("ShowSurvey");
+    if (showSurvey === "external") {
+      setIsExternalClient(true);
+    }
+  }, []);
 
   const handleNextClick = () => {
     if (content === "Instruction") {
-      setContent("Select Offices");
+      const showSurvey = localStorage.getItem("ShowSurvey");
+      if (showSurvey === "external") {
+        setIsExternalClient(true);
+        setContent("Select Offices");
+      } else {
+        setIsExternalClient(false);
+        setContent("Select Offices");
+      }
     } else if (content === "Select Offices") {
       localStorage.setItem("selectedOfficeCount", selectedOffice.length.toString());
+      if (isExternalClient) {
+        setContent("External Client");
+      } else {
+        setContent("Survey Contents");
+      }
+    } else if (content === "Survey Contents" && isExternalClient) {
+      // Transition to External Client if external survey is active
+      setContent("External Client");
+    } else if (content === "External Client") {
+      // If in External Client section, proceed to survey content
       setContent("Survey Contents");
     }
   };
+  
+
 
   const handleBackClick = () => {
-    setContent("Instruction");
+    if (content === "External Client") {
+      setContent("Select Offices");
+    } else {
+      setContent("Instruction");
+    }
   };
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -40,7 +72,7 @@ const SurveyForm: React.FC = () => {
   const handleSelectAll = () => {
     setIsCheckAll(!isCheckAll);
     if (!isCheckAll) {
-      setSelectedOffice(allOffices.map((office) => office.name)); // Use 'office_name'
+      setSelectedOffice(allOffices.map((office) => office.name));
       setSelectAll(true);
     } else {
       setSelectedOffice([]);
@@ -59,7 +91,7 @@ const SurveyForm: React.FC = () => {
 
   useEffect(() => {
     getAllOffices();
-  });
+  }, []);
 
   return (
     <div className="p-4 md:m-10 lg:m-20">
@@ -185,6 +217,24 @@ const SurveyForm: React.FC = () => {
             >
               Next
             </button>
+          </div>
+        </>
+      ) : content === "External Client" ? (
+        <>
+          <h1 className="text-lg md:text-xl lg:text-2xl font-bold mb-4">
+            External Client Section
+          </h1>
+          <p className="bg-gray-100 rounded-lg border p-4 text-sm md:text-base lg:text-lg">
+            Welcome to the external client section. Layout is for .
+          </p>
+          <div className="flex justify-end mt-10">
+            <button
+              className="px-4 py-2 text-black rounded-lg text-sm md:text-base lg:text-lg"
+              onClick={() => setContent("Select Offices")}
+            >
+              Back
+            </button>
+
           </div>
         </>
       ) : (
