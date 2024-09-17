@@ -18,6 +18,7 @@ const Archive: React.FC = () => {
 
   const [selectedOffice, setSelectedOffice] = useState<string>(null);
 
+
   const fetchOffices = async () => {
     try {
       const response = await axios.get<{ offices: Office[] }>(
@@ -62,7 +63,7 @@ const Archive: React.FC = () => {
       <select
         value={selectedOffice}
         onChange={(e) => handleQuestionnaire(e.target.value)}
-        className="absolute right-0 top-0 mt-2 p-1 text-sm border border-gray-300 m-4 w-24"
+        className="absolute right-0 top-0 mt-2 p-1 text-sm border border-gray-300 m-4 w-50"
       >
         <option value="">Select Department</option>
         {offices.map((office) => (
@@ -75,7 +76,7 @@ const Archive: React.FC = () => {
           className="font-bold text-center text-black border-b-2 border-white"
           style={{ color: "maroon" }}
         >
-          Archived Questionnaires
+           {selectedOffice ? `Archived Questionnaires for ${selectedOffice}` : "Archived Questionnaires"}
         </h2>
       </div>
 
