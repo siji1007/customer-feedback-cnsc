@@ -13,12 +13,14 @@ import server, json
 import os, time, random, re, nltk
 from hashlib import sha256
 from collections import Counter
+from collections import defaultdict
 from bertopic import BERTopic
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 import numpy as np
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from sentence_transformers import SentenceTransformer, util
 
 app = Flask(__name__)
 CORS(app)
@@ -33,6 +35,7 @@ tagalog_stopwords = set([
 ])
 
 combined_stopwords = english_stopwords.union(tagalog_stopwords)
+model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
 
 # Non Routing Functions
 def showDepts():
@@ -510,7 +513,29 @@ def fetchValidity():
     cay = [config["current_acadYear"] for config in data_list]
     cs = [config["current_semester"] for config in data_list]
     return jsonify({'acadYear': cay, 'semester': cs})
- 
+
+@app.route("/fetchTopInsights", methods=["GET", "POST"])
+def fetchTopInsights():
+    top10 = []
+    insight_data = server.answer_collection.find()
+    insight_list = [insights for insights in insight_data]
+    if request.method == "POST":
+        request_data = request.get_json()
+        insights = [ins["comment"] for ins in insight_list if ins["office"] == request_data["office"]]
+    else:
+        insights = [ins["comment"] for ins in insight_list]
+
+    embeddings = model.encode(insights, convert_to_tensor=True)
+    repetition_count = defaultdict(int)
+    for i in range(len(insights)):
+        for j in range(i + 1, len(insights)):
+            similarity = util.pytorch_cos_sim(embeddings[i], embeddings[j])
+            if similarity > 0.5:
+                repetition_count[insights[i]] += 1
+                repetition_count[insights[j]] += 1
+        
+    sorted_comments = sorted(repetition_count.items(), key=lambda x: x[1], reverse=True)
+    return jsonify({"sc": sorted_comments})
 
 if __name__ == '__main__':
     app.run(port="8082")

@@ -143,6 +143,20 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const fetchTopInsights = async (office) => {
+    try{
+      if(office != null){
+        const response = await axios.post(serverUrl + "fetchTopInsights", {
+          office: office,
+        });
+      }else{
+        const response = await axios.get(serverUrl + "fetchTopInsights");
+      }
+    } catch(error){
+      console.log(error);
+    }
+  }
+
   // Fixed data for the charts
   const chartLabelsLeft = [
     "Needs Improvement",

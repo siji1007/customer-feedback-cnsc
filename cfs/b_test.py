@@ -1,29 +1,38 @@
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import LatentDirichletAllocation
+from collections import defaultdict
+from sentence_transformers import SentenceTransformer, util
 import numpy as np
 
-def summarizeComments():
-    result = ""
-    documents = [
-        "I love reading about machine learning and artificial intelligence.",
-        "The weather today is very sunny and pleasant.",
-        "Machine learning models are fascinating and powerful.",
-        "Artificial intelligence has many applications in various fields.",
-        "I went for a walk in the park and enjoyed the sunshine.",
-        "Deep learning is a subset of machine learning.",
-        "The technology industry is rapidly evolving.",
-        "Sunshine makes me feel very happy and energetic."
-    ]
+# Sample comments
+comments_data = ['Medyo mabagal ang serbisyo', 'Maganda ang Serbisyo', 'Sheeshables', 'Hell Yeah', 'asd', 'malas']
 
-    vectorizer = CountVectorizer(stop_words='english', max_features=1000)
-    X = vectorizer.fit_transform(documents)
-    lda_model = LatentDirichletAllocation(n_components=min(len(documents), 5), random_state=42)
-    lda_model.fit(X)
-    feature_names = vectorizer.get_feature_names_out()
-    result += "Insights: \n"
-    for topic_idx, topic in enumerate(lda_model.components_):
-        result += " ".join([feature_names[i] for i in topic.argsort()[:-11:-1]]) + "\n"
+# Load a pre-trained model for sentence embeddings
+model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
 
-    return result
+# Function to calculate ratings based on context
+def rate_comments(comments_data):
+    # Encode comments into embeddings
+    embeddings = model.encode(comments_data, convert_to_tensor=True)
+    
+    # Dictionary to count repetitions
+    repetition_count = defaultdict(int)
 
-print(summarizeComments())
+    # Calculate cosine similarities between comments
+    for i in range(len(comments_data)):
+        for j in range(i + 1, len(comments_data)):
+            similarity = util.pytorch_cos_sim(embeddings[i], embeddings[j])
+            if similarity > 0.5:  # Similarity threshold
+                repetition_count[comments_data[i]] += 1
+                repetition_count[comments_data[j]] += 1
+
+    # Sort comments by their repetition count
+    sorted_comments = sorted(repetition_count.items(), key=lambda x: x[1], reverse=True)
+
+    return sorted_comments
+
+# Get the rated comments based on context
+rated_comments = rate_comments(comments_data)
+
+# Display the results
+print("Top Rated Comments by Context:")
+for comment, count in rated_comments:
+    print(f"Comment: '{comment}' - Contextual Repetitions: {count}")
