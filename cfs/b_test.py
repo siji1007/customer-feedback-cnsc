@@ -26,6 +26,7 @@ def rate_comments(comments_data):
 
     # Sort comments by their repetition count
     sorted_comments = sorted(repetition_count.items(), key=lambda x: x[1], reverse=True)
+    print(sorted_comments)
 
     return sorted_comments
 
