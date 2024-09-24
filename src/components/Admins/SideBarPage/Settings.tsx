@@ -26,7 +26,10 @@ const Settings: React.FC = () => {
   const [departments, setDepartments] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Department");
   const [activeClient, setActiveClient] = useState("internal");
-  const [externalOffices, setExternalOffices] = useState<Office[]>([]);
+  const [externalOffices] = useState([ // Static list for external offices lagay mo nlng dito yung pag fetch or pag show ng list for external client alam ko may selection din yun e
+    { id: 1, name: "Example 1" },
+    { id: 2, name: "Example 2" },
+  ]);
   const [questionnaires, setQuestionnaires] = useState<string[]>([]);
   const [questionnaireIds, setQuestionnaireIds] = useState<string[]>([]);
   const [activeQuestionnaire, setActiveQuestionnaire] = useState<string>("");
@@ -114,6 +117,12 @@ const Settings: React.FC = () => {
   const handleClientSwitch = (client: string) => {
     setActiveClient(client);
     setSelectedOffice(null); // Reset selected office when switching clients
+
+    if (client === "external") {
+      // If external is selected, fetch external offices (if needed)
+      // Uncomment the line below if you have a separate API for external offices.
+      // fetchExternalOffices();
+    }
   };
   const handleAddOfficeClick = async (
     event: React.FormEvent<HTMLFormElement>,
@@ -151,18 +160,6 @@ const Settings: React.FC = () => {
       console.error("Error fetching offices: ", error);
     }
   };
-
-  const fetchExternalOffices = async () => {
-    try{
-      const response = await axios.get<{ externalOffice: Office[]}>(
-        serverUrl + "external_office"
-      );
-      setExternalOffices(response.data.externalOffice)
-      console.log(response.data.externalOffice)
-    }catch(error){
-      console.error("Error fetching external offices: ", error)
-    }
-  }
 
   const fetchFeedbackState = async () => {
     try {
@@ -385,7 +382,6 @@ const Settings: React.FC = () => {
 
   useEffect(() => {
     fetchOffices();
-    fetchExternalOffices();
     fetchDepartments();
     fetchFeedbackState();
     fetchReminderState();
