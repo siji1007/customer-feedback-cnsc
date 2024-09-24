@@ -237,8 +237,14 @@ def get_acad_dept():
 @app.route('/office')
 def get_office():
     data = server.office_collection.find()
-    offices = [{'id': str(office['_id']), 'name': office['office']} for office in data]
+    offices = [{'id': str(office['_id']), 'name': office['office']} for office in data if office["type"] == "internal"]
     return jsonify({'offices': offices})
+
+@app.route('/external_office')
+def get_external_office():
+    data = server.office_collection.find()
+    offices = [{'id': str(office['_id']), 'name': office['office']} for office in data if office["type"] == "external"]
+    return jsonify({'externalOffice': offices})
 
 @app.route('/get_acad_years', methods=['POST', 'GET'])
 def get_acad_years():
