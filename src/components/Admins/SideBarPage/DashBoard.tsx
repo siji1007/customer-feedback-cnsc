@@ -48,7 +48,6 @@ const Dashboard: React.FC = () => {
   const [content, setContent] = useState("");
   const [insights, setInsights] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [top10, setTop10] = useState<string[][]>([]);
   const [chart1Type, setChart1Type] = useState<
     "BarChart" | "PieChart" | "LineChart"
   >("BarChart");
@@ -144,16 +143,14 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const fetchTopInsights = async (office = null) => {
+  const fetchTopInsights = async (office) => {
     try{
       if(office != null){
         const response = await axios.post(serverUrl + "fetchTopInsights", {
           office: office,
         });
-        setTop10(response.data.sc)
       }else{
         const response = await axios.get(serverUrl + "fetchTopInsights");
-        setTop10(response.data.sc)
       }
     } catch(error){
       console.log(error);
@@ -316,7 +313,6 @@ const Dashboard: React.FC = () => {
     fetchOffices();
     fetchTotalFeedback();
     fetchInsights();
-    fetchTopInsights();
   }, []);
 
   const getChart1Data = () => chart1Data[chart1Type];
@@ -442,15 +438,7 @@ const Dashboard: React.FC = () => {
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm w-full">
                   <h2 className="text-xl font-bold mb-4">Top 10 List Insight</h2>
-                  <div>
-                    {top10.map((top10Items, index) =>(
-                      <div key={index}>
-                        {top10Items.map((item, subIndex)=>(
-                          <p key={subIndex}>{item}</p>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
+                  <p>Display here.</p>
                   <button
                     className="mt-4 px-4 py-2 bg-red-800 text-white rounded"
                     onClick={handleCloseModal}
