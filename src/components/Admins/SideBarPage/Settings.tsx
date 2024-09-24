@@ -9,6 +9,8 @@ interface DepartmentData {
 
 interface OfficeData {
   office: string;
+  description: string;
+  type: string;
 }
 
 interface Office {
@@ -36,6 +38,8 @@ const Settings: React.FC = () => {
   });
   const [officeData, setOfficeData] = useState<OfficeData>({
     office: "",
+    description: "",
+    type: ""
   });
   const [feedbackChecked, setFeedBackChecked] = useState(false);
   const [remindersChecked, setRemindersChecked] = useState(false);
@@ -113,8 +117,11 @@ const Settings: React.FC = () => {
 
   const handleClientSwitch = (client: string) => {
     setActiveClient(client);
+    fetchExternalOffices()
+    fetchOffices()
     setSelectedOffice(null); // Reset selected office when switching clients
   };
+
   const handleAddOfficeClick = async (
     event: React.FormEvent<HTMLFormElement>,
   ) => {
@@ -122,7 +129,7 @@ const Settings: React.FC = () => {
       event.preventDefault();
       const response = await axios.post(serverUrl + "add-office", officeData);
       fetchOffices();
-      setOfficeData({ ...officeData, office: "" });
+      setOfficeData({ ...officeData, office: "", description: "", type:"" });
     } catch (error) {
       console.log("Error adding office: ", error);
     }
@@ -158,7 +165,6 @@ const Settings: React.FC = () => {
         serverUrl + "external_office"
       );
       setExternalOffices(response.data.externalOffice)
-      console.log(response.data.externalOffice)
     }catch(error){
       console.error("Error fetching external offices: ", error)
     }
@@ -291,8 +297,13 @@ const Settings: React.FC = () => {
     }
   };
 
-  const handleDeleteOffice = (index: number) => {
-    //add here the function to delete.
+  const handleDeleteOffice = async (index: number) => {
+    try{
+      const response = await axios.post(serverUrl + "/deleteOffice", {office: offices[index].name})
+      fetchOffices()
+    }catch(error){
+      console.log(error)
+    }
   };
 
   const handleAddQuestion = async (question: string) => {
@@ -485,9 +496,24 @@ const Settings: React.FC = () => {
                 <div>
                   <input
                     type="text"
+                    name="description"
+                    value={officeData.description}
+                    onChange={handleAddOffice}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
                     placeholder="Add description here."
                   />
+                </div>
+                <div>
+                  <select 
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                    name="type"
+                    value={officeData.type}
+                    onChange={handleAddOffice}
+                  >
+                    <option value="">Select Office Type</option>
+                    <option value="internal">Internal Office</option>
+                    <option value="external">External Office</option>
+                  </select>
                 </div>
                 <div className="flex justify-center">
                   <button
@@ -503,7 +529,7 @@ const Settings: React.FC = () => {
             <section className="w-1/2 p-4 rounded-lg">
               <h2 className="text-xl font-semibold mb-4">Added Offices</h2>
               <ul className="pl-5 max-h-40 overflow-y-auto">
-                {offices.map((office) => (
+                {offices.map((office, index) => (
                   <li
                     key={office.id}
                     className="mb-5 bg-gray-300 p-2 flex items-center justify-between rounded-lg border border-black"
@@ -529,7 +555,7 @@ const Settings: React.FC = () => {
           <div className="flex flex-col md:flex-row h-full overflow-hidden">
             {/* Office Selection */}
             <div
-              className="md:w-1/4 w-full border-b md:border-b-0 md:border-r rounded-lg"
+              className="md:w-1/4 w-full border-b md:border-b-0 md:border-r rounded-lg overflow-auto"
               style={{ height: "50vh", background: "#c3c3c3" }}
             >
               <h2

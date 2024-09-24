@@ -270,7 +270,7 @@ def add_dept():
 @app.route('/add-office', methods=['POST'])
 def add_office():
     office_data = request.get_json()
-    data = {'office': office_data["office"]}
+    data = {'office': office_data["office"], 'description': office_data["description"], 'type': office_data["type"]}
     server.office_collection.insert_one(data)
     return "Office added successfully.", 200
 
@@ -318,7 +318,6 @@ def add_questionnaire():
 @app.route('/flash-questionnaire', methods=['POST'])
 def showQuestionnaires():
     questionnaire_data_ = request.get_json()
-    print(questionnaire_data_)
     questionnaire_data = server.questionnaire_collection.find({"status":{"$exists": True}})
     questionnaire_list = [q for q in questionnaire_data]
     questionnaires = [str(q["name"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office'] and q["status"] != "archive"]
@@ -542,6 +541,12 @@ def fetchTopInsights():
         
     sorted_comments = sorted(repetition_count.items(), key=lambda x: x[1], reverse=True)
     return jsonify({"sc": sorted_comments})
+
+@app.route("/deleteOffice", methods=["POST"])
+def deleteOffice():
+    request_data = request.get_json()
+    server.office_collection.delete_one({'office': request_data["office"]})
+    return "Office had been deleted successfully", 200
 
 if __name__ == '__main__':
     app.run(port="8082")

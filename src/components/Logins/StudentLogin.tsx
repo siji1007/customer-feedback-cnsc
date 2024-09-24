@@ -97,18 +97,18 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        const response = await axios.get(
-          import.meta.env.VITE_APP_SERVERHOST + "academic_department",
-        );
-        setDepartments(response.data.departments);
-      } catch (error) {
-        console.error("Error fetching departments: ", error);
-      }
-    };
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(
+        import.meta.env.VITE_APP_SERVERHOST + "offices",
+      );
+      setDepartments(response.data.departments);
+    } catch (error) {
+      console.error("Error fetching departments: ", error);
+    }
+  };
 
+  useEffect(() => {
     fetchDepartments();
   }, []);
 

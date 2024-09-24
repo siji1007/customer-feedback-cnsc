@@ -229,7 +229,6 @@ const Dashboard: React.FC = () => {
   const fetchDataRight = async () => {
     try {
       const response = await axios.get(serverUrl + "respondent_data");
-      console.log(response.data);
       setChartDataRight(response.data);
     } catch (error) {
       console.log(error);
