@@ -175,7 +175,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
           ref={(el) => (questionRefs.current[questionIndex - 1] = el)}
           className={`bg-gray-100 p-4 rounded-md border-b-2 border-red-800 mb-4 ${isAnswered ? "bg-green-200" : ""}`}
         >
-          <p className="text-xs md:text-xs lg:text-2xl mb-4 shadow-lg">
+          <p className="text-xs md:text-xs lg:text-lg mb-4 shadow-lg">
             {question.question}
           </p>
           <div className="flex justify-between">
@@ -207,7 +207,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
 
   return (
     <div className="pt-2 md:p-6 lg:p-8 mx-auto max-w-screen-md relative">
-      <div className="flex flex-col items-center mb-2">
+      <div className="flex flex-col items-center ">
         {/* Title showing current office or 'External Client' */}
         <div className="title text-lg font-semibold">
            {selectedOffice[currentOfficeIndex]}
@@ -224,7 +224,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
           {renderQuestions()}
         </div>
         <form className="bg-gray-100 p-4 rounded-md shadow-md">
-          <p className="text-sm md:text-xl lg:text-2xl mb-4 shadow-lg">
+          <p className="text-sm md:text-xl lg:text-sm mb-4 shadow-lg">
             Please indicate below your other concerns or suggestions on how we
             can further improve our services
           </p>
