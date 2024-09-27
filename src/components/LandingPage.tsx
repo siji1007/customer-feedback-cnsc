@@ -25,16 +25,16 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="w-full h-20 bg-red-900 flex  justify-between items-center px-4">
+      <header className="w-full h-19 bg-red-900 flex justify-between items-center px-4">
         <div className="flex items-center">
           <img src="src/assets/cnsc_logo.png" alt="Logo" className="h-16 w-16 object-contain" />
           <div className="ml-4 flex flex-col justify-center">
-          <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold "
+          <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold "
           style={{ borderBottom: '2px solid gold' }}>
               Camarines Norte State College
           </h1>
 
-            <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Client Feedback System</h1>
+            <h1 className="text-white text-sm sm:text-sm md:text-xs lg:text-xm font-bold">Client Feedback System</h1>
           </div>
         </div>
       </header>
@@ -67,7 +67,7 @@ const LandingPage: React.FC = () => {
         {showSurveyForm && <SurveyForm />}
       </main>
 
-      <footer className="w-full h-33 bg-red-900 flex  justify-between p-2">
+      <footer className="w-full h-33 bg-red-900 flex flex-none justify-between p-2">
         <div className="flex-1 ">
           <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Contact Information</h1>
           <p className="text-white text-xs sm:text-xxs md:text-xs lg:text-xm">
