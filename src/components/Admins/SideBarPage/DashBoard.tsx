@@ -49,6 +49,8 @@ const Dashboard: React.FC = () => {
   const [insights, setInsights] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [top10, setTop10] = useState<string[][]>([]);
+
+
   const [chart1Type, setChart1Type] = useState<
     "BarChart" | "PieChart" | "LineChart"
   >("BarChart");
@@ -112,6 +114,8 @@ const Dashboard: React.FC = () => {
       console.log(error);
     }
   };
+
+
 
   const fetchSpecificTotal = async (office) => {
     try {
@@ -298,6 +302,9 @@ const Dashboard: React.FC = () => {
       console.error("Error fetching departments: ", error);
     }
   };
+
+
+  
 
   const fetchAcadYears = async () => {
     try {
@@ -542,7 +549,13 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end mt-4 justify-between">
+              
+              <button className="text-center underline">
+                Print Report
+              </button>
+
+
               <button
                 onClick={() => {
                   setShowDetailedView(true);
