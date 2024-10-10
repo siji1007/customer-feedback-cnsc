@@ -31,9 +31,7 @@ const StartingPage: React.FC = () => {
         <p  className="text-center font-bold text-lg mb-10" style={{ fontFamily: 'Copperplate, serif' }}>Customer Feedback System</p>
         {!showTwoButtons ? (
           <>
-            <div className="h-20 w-20  mb-20">
-              <img src="src/assets/customer_feedback.png" alt="logo" />
-              </div> 
+         
             <button
               className="w-40 text-black bg-gray-300  hover:bg-gray-100 hover:text-gray-800 font-bold py-2 px-4 rounded-full shadow-maroon "
               onClick={handleStartClick}
