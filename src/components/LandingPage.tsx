@@ -46,7 +46,7 @@ const LandingPage: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-grow flex flex-col mt-20 items-center overflow-auto m-5">
+      <main className="flex-grow flex flex-col justify-center items-center overflow-auto h-min-screen m-5">
         {!showSurveyForm && selectedLogin === '' && (
           <nav className="flex flex-col space-y-4 p-10 shadow-lg">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center m-3">CLIENTS</h1>
@@ -114,7 +114,7 @@ const LandingPage: React.FC = () => {
         {isFooterVisible && (
           <button
             onClick={toggleFooter}
-            className="text-black text-xl bg-white p-2 rounded-l-lg shadow-md fixed bottom-5 right-2 m-2"
+            className="text-white text-xl p-2 rounded-l-lg shadow-md fixed bottom-5 right-2 m-2"
           >
             <FaArrowDown />
           </button>
