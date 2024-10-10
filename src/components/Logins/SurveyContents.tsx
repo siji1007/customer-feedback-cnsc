@@ -206,7 +206,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   }
 
   return (
-    <div className="pt-2 md:p-6 lg:p-8 mx-auto max-w-screen-md relative">
+    <div className=" md:p-6 lg:p-1 max-w-screen-md relative">
       <div className="flex flex-col items-center ">
         {/* Title showing current office or 'External Client' */}
         <div className="title text-lg font-semibold">
@@ -215,7 +215,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
         {/* PageDots showing progress */}
         <PageDots totalDots={initialTotalDots} completedDots={completedDots} />
       </div>
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-4 mt-2">
       <div
           className="overflow-y-auto relative max-h-[30vh] scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent"
           style={{ maxHeight: "30vh" }}
