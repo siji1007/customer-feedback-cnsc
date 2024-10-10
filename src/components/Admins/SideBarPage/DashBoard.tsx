@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FaThumbsUp } from "react-icons/fa";
 import {
@@ -21,6 +21,7 @@ import StudentDetails from "./ViewDetails/StudentsDetails";
 import EmployeeDetails from "./ViewDetails/EmployeeDetails";
 import OthersDetails from "./ViewDetails/OthersDetails";
 import ResearchDetails from "./ViewDetails/ResearchDetails";
+import html2canvas from "html2canvas";
 
 ChartJS.register(
   CategoryScale,
@@ -339,9 +340,83 @@ const Dashboard: React.FC = () => {
     },
   });
 
+
+  const dashboardRef = useRef<HTMLDivElement>(null);
+
+  const handlePrintReport = async () => {
+    if (dashboardRef.current) {
+      try {
+        // Capture the dashboard as a canvas with a high scale for better resolution
+        const canvas = await html2canvas(dashboardRef.current, {
+          scale: 2, // Higher scale for better resolution
+          useCORS: true, // This ensures images load cross-origin
+          backgroundColor: null, // Handle transparency if necessary
+          logging: true, // Enable logging to debug any issues
+          ignoreElements: (element) => {
+            // Ignore any unnecessary elements
+            return element.classList.contains('ignore-on-print');
+          },
+        });
+  
+        // Convert the canvas to a data URL (image)
+        const imgData = canvas.toDataURL("image/png");
+  
+        // Create a new window to print the dashboard image
+        const printWindow = window.open("", "_blank");
+        if (printWindow) {
+          printWindow.document.write(`
+          <html>
+            <head>
+              <title>Dashboard Report</title>
+              <style>
+                @media print {
+                  * {
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                    color-adjust: exact !important;
+                  }
+                }
+                body {
+                  margin: 0;
+                  padding: 0;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  height: 100vh;
+                }
+                img {
+                  max-width: 100%;
+                  max-height: 100%;
+                }
+              </style>
+            </head>
+            <body>
+              <img src="${imgData}" />
+            </body>
+          </html>
+          `);
+          printWindow.document.close();
+  
+          // Wait for the image to load, then trigger print
+          printWindow.onload = () => {
+            printWindow.focus();
+            printWindow.print();
+            printWindow.onafterprint = () => {
+              printWindow.close();
+            };
+          };
+        }
+      } catch (error) {
+        console.error("Error capturing the dashboard:", error);
+      }
+    } else {
+      console.error("Dashboard reference not found.");
+    }
+  };
+  
   return (
     <div>
-      <main className="px-4">
+      <main ref={dashboardRef} className="px-4">
         {!showDetailedView ? (
           <>
             <header className="w-full border-b flex items-center justify-between bg-red-900 p-2 rounded-lg">
@@ -551,7 +626,7 @@ const Dashboard: React.FC = () => {
             </div>
             <div className="flex justify-end mt-4 justify-between">
               
-              <button className="text-center underline">
+              <button className="text-center underline" onClick={handlePrintReport} >
                 Print Report
               </button>
 
