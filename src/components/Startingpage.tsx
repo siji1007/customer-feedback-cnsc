@@ -26,9 +26,9 @@ const StartingPage: React.FC = () => {
       <div className="left-side flex-1 h-1/2 md:h-full bg-red-800 flex justify-center items-center p-4 md:p-0 md:order-2">
         <img src="src/assets/cnsc_logo.png" alt="CNSC LOGO" className="max-w-full max-h-full" />
       </div>
-      <div className="right-side flex-1 h-1/2 md:h-full bg-zinc-50 flex justify-center items-center flex-col p-4 md:p-0 md:order-1">
-        <p  className="text-center font-bold text-lg" style={{ fontFamily: 'Copperplate, serif' }}>Camarines Norte State College</p>
-        <p  className="text-center font-bold text-lg mb-10" style={{ fontFamily: 'Copperplate, serif' }}>Customer Feedback System</p>
+      <div className="right-side flex-1 h-1/2 md:h-full  flex justify-start md:justify-center items-center flex-col m-10 md:p-0 md:order-1">
+        <p  className="text-center font-bold text-md" style={{ fontFamily: 'Copperplate, serif' }}>Camarines Norte State College</p>
+        <p  className="text-center font-bold text-md mb-10" style={{ fontFamily: 'Copperplate, serif' }}>Customer Feedback System</p>
         {!showTwoButtons ? (
           <>
          
