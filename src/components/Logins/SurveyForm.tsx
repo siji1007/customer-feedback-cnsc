@@ -62,7 +62,7 @@ const SurveyForm: React.FC = () => {
   }, []);
 
   return (
-    <div className="p-2 flex-grow justify-center flex flex-col overflow-auto ">
+    <div className="flex-grow flex justify-center flex-col overflow-auto ">
       {content === "Instruction" ? (
         <>
           <h1 className="text-lg md:text-xl lg:text-2xl font-bold mb-4">
@@ -135,7 +135,7 @@ const SurveyForm: React.FC = () => {
               Needs Improvement
             </span>
           </div>
-          <div className="flex justify-end mt-10">
+          <div className="flex justify-end mt-2">
             <button
               className="px-4 py-2 text-black rounded-lg text-sm md:text-base lg:text-lg"
               onClick={handleNextClick}
