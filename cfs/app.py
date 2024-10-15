@@ -206,7 +206,7 @@ def employee_login():
     epass = employee_data['employee_pass']
     user = server.user_collection.find_one({'account_id':eid, 'password':verifyPass(epass), 'type':'employee'})
     if user:
-        return "Access Granted"
+        return "Access Granted", 200
     else:
         return "Access Denied", 401
 
@@ -215,9 +215,10 @@ def login_client():
     client_data = request.get_json()
     client_name = client_data['client_name']
     client_addr = client_data['client_addr']
+    user_category = "client"
     client_type = client_data['client_type']
-    client = server.user_collection.insert_one({'name': client_name, 'address': client_addr, 'type': client_type})
-    return "Access Granted"
+    client = server.user_collection.insert_one({'name': client_name, 'address': client_addr, 'type': user_category,'subType': client_type})
+    return "Access Granted", 200
 
 @app.route('/all_department')
 def get_all_dept():

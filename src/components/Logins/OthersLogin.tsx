@@ -27,14 +27,15 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
     event.preventDefault();
     try {
       // Store "external" in localStorage
-      localStorage.setItem("ShowSurvey", "external"); // store the survey form to show
-      onLoginSuccess();   //State that login success and show now the external content survey
+      //localStorage.setItem("ShowSurvey", "external"); // store the survey form to show
+      //onLoginSuccess();   //State that login success and show now the external content survey
 
       // Send client data to the server
       const response = await axios.post(
-        import.meta.env.VITE_SERVERHOST + "client-login", // Ensure you use VITE_SERVERHOST
+        import.meta.env.VITE_APP_SERVERHOST + "client-login", 
         clientData
       );
+      localStorage.setItem("client_type", clientData.client_type)
       onLoginSuccess();
     } catch (error) {
       console.error(error);
@@ -73,6 +74,7 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
             name="client_addr"
             value={clientData.client_addr}
             onChange={handleOtherChange}
+            required
           />
         </section>
 
