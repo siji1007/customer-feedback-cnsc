@@ -306,6 +306,15 @@ const Settings: React.FC = () => {
     }
   };
 
+  const handleDeleteDept = async (index: number) => {
+    try{
+      const response = await axios.post(serverUrl + "/deleteDept", {department: departments[index]})
+      fetchDepartments()
+    }catch(error){
+      console.log(error)
+    }
+  }
+
   const handleAddQuestion = async (question: string) => {
     try {
       const response = await axios.post(serverUrl + "add-question", {
@@ -463,7 +472,12 @@ const Settings: React.FC = () => {
                   >
                     {department}
 
-                    <button className="text-red-800">
+                    <button 
+                      className="text-red-800"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteDept(index);
+                      }}>
                       <FaTimes />
                     </button>
                   </li>

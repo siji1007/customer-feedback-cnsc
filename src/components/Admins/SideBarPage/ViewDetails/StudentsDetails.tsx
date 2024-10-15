@@ -6,27 +6,40 @@ import axios from 'axios';
 const StudentDetails: React.FC = () => {
   const [acadYears, setAcadYears] = useState<string[]>([]);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  //const [studentData, setStudentData] = useState<[]>([]);
+  const [pieLabels, setPieLabels] = useState<string[]>([]);
+  const [pieData, setPieData] = useState<[]>([]);
+  
+
+  const fetchAcadYears = async () => {
+    try {
+      const response = await axios.get(serverUrl + "get_acad_years");
+      setAcadYears(response.data);
+    } catch (error) {
+      console.error("Error fetching academic years: ", error);
+    }
+  };
+
+  const fetchPie = async() => {
+    try{
+      const response = await axios.get(serverUrl + "fetch_student");
+      console.log(response.data)
+      setPieLabels(response.data.labels);
+      setPieData(response.data.student_counts);
+    }catch(error){
+      console.error("Error fetching graph data: ", error)
+    }
+  }
 
   useEffect(() => {
-    const fetchAcadYears = async () => {
-      try {
-        const response = await axios.get(serverUrl + "get_acad_years");
-        setAcadYears(response.data);
-      } catch (error) {
-        console.error("Error fetching academic years: ", error);
-      }
-    };
-
     fetchAcadYears();
+    fetchPie();
   }, []);
 
   const getStudentBarChartData = () => {
     const labels = ["Needs Improvement", "Failed to Meet Expectations", "Meet Expectations", "Exceeds Expectations", "Outstanding"];
     const backgroundColors = ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'];
-  
-    // Example data, replace with actual data
     const studentData = [20, 30, 15, 10, 25];
-  
     // Pair each data point with its label and color
     const dataWithLabels = studentData.map((value, index) => ({
       value,
@@ -58,8 +71,7 @@ const StudentDetails: React.FC = () => {
   
 
   const getStudentPieChartData = () => {
-    const pieLabels = ['College of Engineering', 'Institute of Computer Studies', 'College of Business Administration'];
-    const pieData = [35, 45, 20]; // Dummy data for pie chart, replace with actual values
+
     const pieColors = ['#4A90E2', '#50E3C2', '#F5A623'];
   
 

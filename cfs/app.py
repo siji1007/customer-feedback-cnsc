@@ -548,5 +548,41 @@ def deleteOffice():
     server.office_collection.delete_one({'office': request_data["office"]})
     return "Office had been deleted successfully", 200
 
+@app.route("/deleteDept", methods=["POST"])
+def deleteDept():
+    request_data = request.get_json()
+    server.dept_collection.delete_one({'department': request_data["department"]})
+    return "Department had been deleted successfully", 200
+
+@app.route("/fetch_student", methods=["GET", "POST"])
+def fetchStudent():
+    labels = []
+    student_count = []
+    student_data = server.user_collection.find({"account_id": {"$exists": True}, "department": {"$exists": True}})
+    student_list = [sd for sd in student_data]
+    student_count_by_department = {}
+    for student in student_list:
+        if student["type"] == "student":
+            dept = student["department"]
+            if dept not in student_count_by_department:
+                student_count_by_department[dept] = 0
+            student_count_by_department[dept] += 1
+
+    if request.method == "POST":
+        request_data = request.get_json()
+        department_filter = request_data.get("department")
+        student_result = {
+            department_filter: student_count_by_department.get(department_filter, 0)
+        }
+    else:
+        student_result = student_count_by_department
+
+    for keys, values in student_result.items():
+        labels.append(keys)
+        student_count.append(values)
+
+    return jsonify({"labels": labels, "student_counts": student_count})
+
+
 if __name__ == '__main__':
     app.run(port="8082")
