@@ -142,7 +142,7 @@ def login():
     admin_data=request.get_json()
     userName = admin_data['admin_username']
     passWord = admin_data['admin_password']
-    user = server.user_collection.find_one({'Username': userName, 'Password': passWord, 'Type': 'admin'})
+    user = server.user_collection.find_one({'Username': userName, 'Password': passWord, 'type': 'admin'})
     if user:
         return "Access Granted"
     else:
