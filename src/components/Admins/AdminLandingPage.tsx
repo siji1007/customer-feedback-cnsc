@@ -18,8 +18,12 @@ interface Office {
   id: string;
   name: string;
 }
+interface AdminLoginsProps {
+  showLoginForm: boolean;
+  setShowLoginForm: (show: boolean) => void;
+}
 
-const AdminLogins: React.FC = () => {
+const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginForm }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
@@ -32,8 +36,6 @@ const AdminLogins: React.FC = () => {
     setIsFooterVisible(prev => !prev);
   };
 
-  // State to manage which form is shown and which component to display
-  const [showLoginForm, setShowLoginForm] = useState(true);
   const [adminCredentials, setAdminCredentials] = useState<AdminCredentials>({
     admin_username: "",
     admin_password: "",
@@ -154,6 +156,8 @@ const AdminLogins: React.FC = () => {
 
   const isAdminLogin = useMatch("/admin");
   const isOfficeHeadLogin = useMatch("/admin/officehead");
+
+  
 
   return (
     <div className="flex flex-col min-h-screen">

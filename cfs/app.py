@@ -142,7 +142,7 @@ from flask_session import Session
 
 app.config['SECRET_KEY'] = os.urandom(24).hex()  # Replace with your generated secret key
 app.config['SESSION_TYPE'] = 'filesystem'  # Or 'redis', 'memcached', etc.
-app.config['SESSION_PERMANENT'] = False # or 'redis' or any other type you prefer
+app.config['SESSION_PERMANENT'] = True # or 'redis' or any other type you prefer
 CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
 
@@ -163,10 +163,23 @@ def login():
     else:
         return jsonify(message="Invalid Credentials"), 401
     
+@app.route('/check-session', methods=['GET'])
+def check_session():
+    print(f"Current session: {session}")  # Print the current session state
+    if 'admin' in session:
+        return jsonify(message="Session is active", username=session['admin']), 200
+    else:
+        return jsonify(message="No active session", status=401), 401
+
+    
+    
 @app.route('/logout', methods=['POST'])
 def logout():
     session.clear()  # Clear the session
     return jsonify(message="Logged out successfully"), 200
+
+
+
 
 
 
