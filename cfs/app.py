@@ -6,7 +6,7 @@
     4. Computation
 '''
 
-from flask import Flask, render_template, request, flash, redirect, jsonify
+from flask import Flask, render_template, request, flash, redirect, jsonify, session
 from bson.objectid import ObjectId
 from flask_cors import CORS
 import server, json
@@ -137,16 +137,38 @@ def select_department():
 
 # JSON-based
 
+
+from flask_session import Session
+
+app.config['SECRET_KEY'] = os.urandom(24).hex()  # Replace with your generated secret key
+app.config['SESSION_TYPE'] = 'filesystem'  # Or 'redis', 'memcached', etc.
+app.config['SESSION_PERMANENT'] = False # or 'redis' or any other type you prefer
+CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+
+
+
 @app.route('/verify-admin', methods=['POST'])
 def login():
-    admin_data=request.get_json()
+    admin_data = request.get_json()
     userName = admin_data['admin_username']
     passWord = admin_data['admin_password']
     user = server.user_collection.find_one({'Username': userName, 'Password': passWord, 'type': 'admin'})
+    Session(app)
+    
     if user:
-        return "Access Granted"
+        # Create a session cookie
+        session['admin'] = user['Username']  # You can store any user data you need in the session
+        print(f"Session created: {session}") 
+        return jsonify(message="Access Granted"), 200
     else:
-        return "Invalid Credentials", 401
+        return jsonify(message="Invalid Credentials"), 401
+    
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.clear()  # Clear the session
+    return jsonify(message="Logged out successfully"), 200
+
+
 
 @app.route('/verify_oh', methods=['POST'])
 def verify_oh():

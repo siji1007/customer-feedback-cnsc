@@ -53,13 +53,19 @@ const AdminLogins: React.FC = () => {
   };
 
  
-  const handleLogout = () => {
-    const savedFormType = localStorage.getItem('formType');
-    if (savedFormType) {
-      navigate(`/admin?form=${savedFormType}`);
-      setShowLoginForm(true);
+  const handleLogout = async () => {
+    try {
+        // Call the logout endpoint on the server
+        await axios.post(serverUrl + "logout", {}, { withCredentials: true });
+        
+        // Clear local storage and navigate to the login page
+        localStorage.removeItem('formType');
+        navigate(`/admin?form=administrator`);  // Adjust if you have other forms
+        setShowLoginForm(true);
+    } catch (error) {
+        console.error("Logout error:", error);
     }
-  };
+};
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -75,25 +81,29 @@ const AdminLogins: React.FC = () => {
 
   const handleAdminSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
+
     try {
-      setHasError(false);
-      setShowLoginForm(false);
-      localStorage.setItem('formType', 'administrator');
-      navigate("/admin/vpre");
-      const response = await axios.post(
-        serverUrl + "verify-admin",
-        adminCredentials
-      );
-      setHasError(false);
-      setShowLoginForm(false);
-  
-      navigate("/admin/vpre"); // Navigate to the VPREPage
-      
+        setHasError(false);
+        localStorage.setItem('formType', 'administrator');
+        
+        const response = await axios.post(
+            serverUrl + "verify-admin",
+            adminCredentials,
+            { withCredentials: true }  
+        );
+
+        console.log("Response:", response);  
+        console.log("Response status:", response.status);  
+
+        if (response.status === 200) {
+            setShowLoginForm(false);
+            navigate("/admin/vpre"); 
+        }
     } catch (error) {
-      setHasError(true);
+        console.error("Error during sign-in:", error);  
+        setHasError(true);
     }
-  };
+};
 
   const handleOHSignInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setOfficeHeadCredentials({
