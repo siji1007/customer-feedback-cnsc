@@ -146,7 +146,6 @@ app.config['SESSION_PERMANENT'] = True # or 'redis' or any other type you prefer
 CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
 
-
 @app.route('/verify-admin', methods=['POST'])
 def login():
     admin_data = request.get_json()
