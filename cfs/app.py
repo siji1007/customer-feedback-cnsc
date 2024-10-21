@@ -618,6 +618,13 @@ def fetchStudent():
 
     return jsonify({"labels": labels, "student_counts": student_count})
 
+@app.route("/get_event", methods=["POST"])
+def getEvent():
+    request_data = request.get_json()
+    data = server.questionnaire_collection.find()
+    events = [{'id': str(event['_id']), 'name': event['name']} for event in data if event["office"] == request_data["client_type"].capitalize()]
+    return jsonify({'events': events})
+
 
 if __name__ == '__main__':
     app.run(port="8082")

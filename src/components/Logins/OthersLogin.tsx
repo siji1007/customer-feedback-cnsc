@@ -88,7 +88,7 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
           >
             <option value="agency">Agency</option>
             <option value="participant">Participant</option>
-            <option value="client_research">Client (Research)</option>
+            <option value="research">Client (Research)</option>
           </select>
         </section>
 

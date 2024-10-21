@@ -47,7 +47,6 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   // Function to fetch external client questions depends on what offices user selected
   const fetchExternalQuestions = async () => {
     try {
-      alert("This is External questions")
       const response = await axios.get(serverUrl + "show_external_questions");
       setQuestions(response.data);
     } catch (error) {
@@ -58,7 +57,6 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   // Function to fetch internal client questions
   const fetchInternalQuestions = async () => {
     try {
-      alert("This is Internal questions")
       const response = await axios.post(serverUrl + "show_questions", {
         office: selectedOffice[currentOfficeIndex], // Use currentOfficeIndex
       });
