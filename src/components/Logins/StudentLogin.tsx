@@ -115,7 +115,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-4 font-bold">
-        {showLoginForm ? "Login" : "Sign-Up"}
+        {showLoginForm ? "Student Login" : "Sign-Up"}
       </h2>
       {showSignUpForm && (
         <form onSubmit={handleStudentSignUp}>
