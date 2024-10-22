@@ -572,14 +572,16 @@ const Settings: React.FC = () => {
               className="md:w-1/4 w-full border-b md:border-b-0 md:border-r rounded-lg overflow-auto"
               style={{ height: "50vh", background: "#c3c3c3" }}
             >
-              <h2
-                className="font-bold mb-4 text-center b-border text-black border-b-2 border-white"
-                style={{ color: "maroon" }}
-              >
-                Select Office to Edit Questions
-              </h2>
+               <h2
+                  className="font-bold mb-4 text-center b-border text-black border-b-2 border-white"
+                  style={{ color: "maroon" }}
+                >
+                  {activeClient === "internal"
+                    ? "Select Office to Edit Questions"
+                    : "Select the External Client Questions"}
+                </h2>
 
-              <div className="flex justify-between mb-4">
+              <div className="flex justify-between mb-4 m-2">
                 <button
                   className={`w-1/2 mr-2 border border-white rounded-lg ${
                     activeClient === "internal" ? "bg-red-800 text-white" : ""
@@ -776,7 +778,7 @@ const Settings: React.FC = () => {
                     setQuestionText(e.target.value)
                   }
                   placeholder={
-                    questions.length >= 5
+                    activeClient === "internal" && questions.length >= 5
                       ? "Maximum limit reached. You can't add more questions."
                       : "Type a new question and press Enter to add it."
                   }
@@ -785,15 +787,16 @@ const Settings: React.FC = () => {
                     if (
                       e.key === "Enter" &&
                       e.currentTarget.value.trim() &&
-                      questions.length < 5
+                      (activeClient !== "internal" || questions.length < 5)
                     ) {
                       handleAddQuestion(e.currentTarget.value);
                       e.currentTarget.value = "";
                     }
                   }}
                   rows={3}
-                  disabled={questions.length >= 5}
+                  disabled={activeClient === "internal" && questions.length >= 5}
                 />
+
                 <button
                   className="mt-4 w-full bg-red-800 text-white py-1 rounded-lg"
                   onClick={handleCloseModal}
