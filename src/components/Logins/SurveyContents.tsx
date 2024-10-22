@@ -31,11 +31,22 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const [comment, setComment] = useState("");
   const [isExternal, setIsExternal] = useState(false); // State for external questions
+  const [acadYear, setAcadYear] = useState("");
+  const [semester, setSemester] = useState("");
+
+  const fetchValidity = async () => {
+    try{
+      const response = await axios.get(serverUrl + "get_validity")
+      setAcadYear(response.data.acadYear[0]);
+      setSemester(response.data.semester[0]);
+    }catch(error){
+      console.error("Error fetching validity", error);
+    }
+  }
 
   // Function to fetch external client questions depends on what offices user selected
   const fetchExternalQuestions = async () => {
     try {
-      alert("This is External questions")
       const response = await axios.get(serverUrl + "show_external_questions");
       setQuestions(response.data);
     } catch (error) {
@@ -46,7 +57,6 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   // Function to fetch internal client questions
   const fetchInternalQuestions = async () => {
     try {
-      alert("This is Internal questions")
       const response = await axios.post(serverUrl + "show_questions", {
         office: selectedOffice[currentOfficeIndex], // Use currentOfficeIndex
       });
@@ -67,6 +77,8 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
       setInitialTotalDots(selectedOffice.length);
       fetchInternalQuestions(); // Fetch internal client questions
     }
+
+    fetchValidity();
   }, [selectedOffice, currentOfficeIndex]);
 
   const handleEmojiClick = (questionIndex: number, value: number) => {
@@ -116,6 +128,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
         />
       </picture>
     );
+    
   };
 
   const getScaleValue = (questionIndex: number) => {
@@ -137,6 +150,8 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
         answer: positions,
         office: selectedOffice[0],
         comment: comment,
+        academic_year: acadYear,
+        semester: semester
       });
       setCompletedDots((prev) => prev + 1); // Increment the completed dots
       selectedOffice.shift();

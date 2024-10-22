@@ -50,8 +50,14 @@ const SurveyForm: React.FC = () => {
 
   const getAllOffices = async () => {
     try {
-      const response = await axios.get(serverUrl + "office");
-      setAllOffices(response.data.offices);
+      let clientType = localStorage.getItem("client_type")
+      if(clientType === "participant" || clientType == "research"){
+        const response = await axios.post(serverUrl + "get_event",  {client_type: clientType});
+        setAllOffices(response.data.events)
+      }else{
+        const response = await axios.get(serverUrl + "office");
+        setAllOffices(response.data.offices);
+      }
     } catch (error) {
       console.log(error);
     }

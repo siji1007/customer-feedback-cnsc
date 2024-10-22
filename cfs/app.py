@@ -146,7 +146,6 @@ app.config['SESSION_PERMANENT'] = True # or 'redis' or any other type you prefer
 CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
 
-
 @app.route('/verify-admin', methods=['POST'])
 def login():
     admin_data = request.get_json()
@@ -618,6 +617,13 @@ def fetchStudent():
         student_count.append(values)
 
     return jsonify({"labels": labels, "student_counts": student_count})
+
+@app.route("/get_event", methods=["POST"])
+def getEvent():
+    request_data = request.get_json()
+    data = server.questionnaire_collection.find()
+    events = [{'id': str(event['_id']), 'name': event['name']} for event in data if event["office"] == request_data["client_type"].capitalize()]
+    return jsonify({'events': events})
 
 
 if __name__ == '__main__':

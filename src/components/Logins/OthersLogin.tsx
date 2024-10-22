@@ -27,7 +27,7 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
     event.preventDefault();
     try {
       // Store "external" in localStorage
-      //localStorage.setItem("ShowSurvey", "external"); // store the survey form to show
+      localStorage.setItem("ShowSurvey", "external"); // store the survey form to show
       //onLoginSuccess();   //State that login success and show now the external content survey
 
       // Send client data to the server
@@ -88,7 +88,7 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
           >
             <option value="agency">Agency</option>
             <option value="participant">Participant</option>
-            <option value="client_research">Client (Research)</option>
+            <option value="research">Client (Research)</option>
           </select>
         </section>
 
