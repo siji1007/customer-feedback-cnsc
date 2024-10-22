@@ -19,7 +19,7 @@ const StartingPage: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageSources.length);
-    }, 5000); // Change every 5 seconds
+    }, 3000); // Change every 5 seconds
 
     return () => clearInterval(interval); // Cleanup the interval on component unmount
   }, []);
