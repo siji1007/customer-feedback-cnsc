@@ -275,12 +275,6 @@ def get_office():
     offices = [{'id': str(office['_id']), 'name': office['office']} for office in data if office["type"] == "internal"]
     return jsonify({'offices': offices})
 
-@app.route('/external_office')
-def get_external_office():
-    data = server.office_collection.find()
-    offices = [{'id': str(office['_id']), 'name': office['office']} for office in data if office["type"] == "external"]
-    return jsonify({'externalOffice': offices})
-
 @app.route('/get_acad_years', methods=['POST', 'GET'])
 def get_acad_years():
     years = []
@@ -334,7 +328,7 @@ def showQuestions():
     selected_offices = request.get_json()
     question_data = server.questionnaire_collection.find({"status":{"$exists": True}})
     question_list = [q for q in question_data]
-    questions = [q["questions"] for q in question_list if q["office"] in selected_offices["office"] and q["status"] == "active"]
+    questions = [q["questions"] for q in question_list if q["office"] in selected_offices["office"] and q["status"] == "active" and q["type"] == selected_offices["type"]]
 
     return questions[0]
 
@@ -355,9 +349,9 @@ def showQuestionnaires():
     questionnaire_data_ = request.get_json()
     questionnaire_data = server.questionnaire_collection.find({"status":{"$exists": True}})
     questionnaire_list = [q for q in questionnaire_data]
-    questionnaires = [str(q["name"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office'] and q["status"] != "archive"]
-    questionnaire_id = [str(q["_id"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office'] and q["status"] != "archive"]
-    questionnaire_office = [str(q["office"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office'] and q["status"] != "archive"]
+    questionnaires = [str(q["name"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office'] and q["status"] != "archive" and q["type"] == questionnaire_data_["type"]]
+    questionnaire_id = [str(q["_id"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office'] and q["status"] != "archive" and q["type"] == questionnaire_data_["type"]]
+    questionnaire_office = [str(q["office"]) for q in questionnaire_list if q["office"] == questionnaire_data_['office'] and q["status"] != "archive" and q["type"] == questionnaire_data_["type"]]
     return {"qid":questionnaire_id,"name": questionnaires, "office": questionnaire_office}
 
 @app.route("/add-question", methods=['POST'])
