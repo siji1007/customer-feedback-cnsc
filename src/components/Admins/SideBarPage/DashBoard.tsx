@@ -316,15 +316,29 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const fetchAllData = async () => {
+    try {
+      await Promise.all([
+        fetchDataRight(),
+        fetchChartLeft(),
+        fetchAcadYears(),
+        fetchOffices(),
+        fetchTotalFeedback(),
+        fetchInsights(),
+        fetchTopInsights(),
+      ]);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      
+    }
+  };
+
+  
   useEffect(() => {
-    fetchDataRight();
-    fetchChartLeft();
-    fetchAcadYears();
-    fetchOffices();
-    fetchTotalFeedback();
-    fetchInsights();
-    fetchTopInsights();
-  }, []);
+    fetchAllData();
+  }, []); 
+
+
 
   const getChart1Data = () => chart1Data[chart1Type];
   const getChart2Data = () => chart2Data[chart2Type];
@@ -346,22 +360,20 @@ const Dashboard: React.FC = () => {
   const handlePrintReport = async () => {
     if (dashboardRef.current) {
       try {
-        // Capture the dashboard as a canvas with a high scale for better resolution
         const canvas = await html2canvas(dashboardRef.current, {
-          scale: 2, // Higher scale for better resolution
-          useCORS: true, // This ensures images load cross-origin
-          backgroundColor: null, // Handle transparency if necessary
-          logging: true, // Enable logging to debug any issues
+          scale: 2, 
+          useCORS: true, 
+          backgroundColor: null, 
+          logging: true, 
           ignoreElements: (element) => {
-            // Ignore any unnecessary elements
             return element.classList.contains('ignore-on-print');
           },
         });
   
-        // Convert the canvas to a data URL (image)
+      
         const imgData = canvas.toDataURL("image/png");
   
-        // Create a new window to print the dashboard image
+       
         const printWindow = window.open("", "_blank");
         if (printWindow) {
           printWindow.document.write(`
@@ -425,6 +437,7 @@ const Dashboard: React.FC = () => {
                   type="checkbox"
                   id="selectAll"
                   className="mr-2 h-5 w-5"
+                  defaultChecked={true}
                   onChange={(e) => fetchAllOffice(e.target.checked ? "on" : "off")}
                 />
                 <label
@@ -442,17 +455,25 @@ const Dashboard: React.FC = () => {
                 </label>
                 <select
                   id="officeSelect"
-                  className="bg-white-100 text-black  text-sm border border-gray-600  py-1 px-2"
+                  className="bg-white-100 text-black text-sm border border-gray-600 py-1 px-2"
                   value={event?.target.value}
-                  onChange={(e) => fetchSpecificOffice(e.target.value)}
+                  onChange={(e) => {
+                    const selectedValue = e.target.value;
+                    if (selectedValue === "") {
+                      fetchAllData(); 
+                    } else {
+                      fetchSpecificOffice(selectedValue); 
+                    }
+                  }}
                 >
-                  <option value=""></option>
+                  <option value="">All Offices</option> 
                   {offices.map((office) => (
                     <option key={office.id} value={office.name}>
                       {office.name}
                     </option>
                   ))}
                 </select>
+
               </div>
               <div className="ml-10 flex flex-col ">
                 <div className="flex items-center">
