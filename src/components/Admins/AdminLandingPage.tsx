@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, Outlet, useMatch } from "react-router-dom";
 import { FaFacebook, FaTwitter, FaArrowDown, FaArrowUp  } from "react-icons/fa";
+import cnscLogo from '../../assets/cnsc_logo.png';
 import axios from "axios";
 import { FaArrowDownLong } from "react-icons/fa6";
 
@@ -163,7 +164,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
     <div className="flex flex-col min-h-screen">
       <header className="w-full  bg-red-900 flex justify-between items-center px-4 h-auto">
         <div className="flex items-center">
-        <img  src="src/assets/cnsc_logo.png" alt="Logo" className="h-16 w-16 object-contain p-2" />
+        <img  src={cnscLogo} alt="Logo" className="h-16 w-16 object-contain p-2" />
           <div className="ml-4 flex flex-col justify-center">
           <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold "
           style={{ borderBottom: '2px solid gold' }}>
