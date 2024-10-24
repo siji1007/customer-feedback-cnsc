@@ -329,7 +329,7 @@ def showQuestions():
     question_data = server.questionnaire_collection.find({"status":{"$exists": True}})
     question_list = [q for q in question_data]
     questions = [q["questions"] for q in question_list if q["office"] in selected_offices["office"] and q["status"] == "active" and q["type"] == selected_offices["type"]]
-
+     
     return questions[0]
 
 @app.route('/submit_answer', methods=["POST"])
