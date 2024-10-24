@@ -264,6 +264,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
             >
               User credential not found
             </h4>
+            <button className="text-sm text-right underline w-full">Forget Password?</button>
           </div>
           <button
             type="submit"

@@ -67,7 +67,6 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   ) => {
     event.preventDefault();
     try {
-      onLoginSuccess();
       const response = await axios.post(
         import.meta.env.VITE_APP_SERVERHOST + "student-login",
         formData,
@@ -112,38 +111,25 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
     fetchDepartments();
   }, []);
 
+ 
+  const forgetPass = () => {
+      alert("forgetPass");
+  };
+
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-4 font-bold">
-        {showLoginForm ? "Student Login" : "Sign-Up"}
+        {showLoginForm ? "STUDENT" : "Sign-Up"}
       </h2>
       {showSignUpForm && (
         <form onSubmit={handleStudentSignUp}>
           <div className="bg-gray-200 border-stone-400 border rounded-lg shadow-md p-4 w-full max-w-md">
             <section className="flex justify-between items-center mb-4">
-              <label
-                htmlFor="studentId"
-                className="w-1/3 text-sm sm:text-base md:text-lg"
-              >
-                Student ID
-              </label>
-              <input
-                type="text"
-                name="account_id"
-                id="studentId"
-                className="w-2/3 rounded-lg border"
-                value={signUpData.account_id}
-                onChange={handleSignUpChange}
-                required
-              />
+              <label htmlFor="studentId" className="w-1/3 text-sm sm:text-base md:text-lg"> Student ID </label>
+              <input type="text" name="account_id" id="studentId" className="w-2/3 rounded-lg border" value={signUpData.account_id} onChange={handleSignUpChange} required />
             </section>
             <section className="flex justify-between items-center mb-4">
-              <label
-                htmlFor="department"
-                className="w-1/3 text-sm sm:text-base md:text-lg"
-              >
-                Department
-              </label>
+              <label htmlFor="department" className="w-1/3 text-sm sm:text-base md:text-lg">Department</label>
               <select
                 type="text"
                 name="student_dept"
@@ -264,6 +250,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
             >
               User credentials not found
             </h4>
+            <button className="text-sm text-right underline w-full" onClick={forgetPass}>Forget Password?</button>
           </div>
           <button
             type="submit"
