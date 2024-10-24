@@ -7,6 +7,9 @@ import OtherLogin from './Logins/OthersLogin';
 import SurveyForm from './Logins/SurveyForm';
 import IconCNSC from '../assets/cnsc_logo.png';
 
+
+
+
 const LandingPage: React.FC = () => {
   const [selectedLogin, setSelectedLogin] = useState<string>('');               //show here the selected login form
   const [showSurveyForm, setShowSurveyForm] = useState<boolean>(false);         
@@ -33,6 +36,11 @@ const LandingPage: React.FC = () => {
     setIsFooterVisible(!isFooterVisible);
   };
 
+
+  const handleLogout = () =>{
+    setShowSurveyForm(false);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="w-full h-19 bg-red-900 flex justify-between items-center px-4">
@@ -46,6 +54,15 @@ const LandingPage: React.FC = () => {
             <h1 className="text-white text-sm sm:text-sm md:text-xs lg:text-xm font-bold">Client Feedback System</h1>
           </div>
         </div>
+            {/* Conditionally render logout button */}
+            {showSurveyForm && (
+          <button
+          onClick={handleLogout}
+            className="text-white hover:text-gray-300 font-bold ml-auto"
+          >
+            Logout
+          </button>
+        )}
       </header>
 
       {/* Main class where we store the login Forms and Survey Form*/}
