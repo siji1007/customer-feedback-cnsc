@@ -28,7 +28,6 @@ const Settings: React.FC = () => {
   const [departments, setDepartments] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("Department");
   const [activeClient, setActiveClient] = useState("internal");
-  const [externalOffices, setExternalOffices] = useState<Office[]>([]);
   const [questionnaires, setQuestionnaires] = useState<string[]>([]);
   const [questionnaireIds, setQuestionnaireIds] = useState<string[]>([]);
   const [activeQuestionnaire, setActiveQuestionnaire] = useState<string>("");
@@ -117,7 +116,6 @@ const Settings: React.FC = () => {
 
   const handleClientSwitch = (client: string) => {
     setActiveClient(client);
-    fetchExternalOffices()
     fetchOffices()
     setSelectedOffice(null); // Reset selected office when switching clients
   };
@@ -158,17 +156,6 @@ const Settings: React.FC = () => {
       console.error("Error fetching offices: ", error);
     }
   };
-
-  const fetchExternalOffices = async () => {
-    try{
-      const response = await axios.get<{ externalOffice: Office[]}>(
-        serverUrl + "external_office"
-      );
-      setExternalOffices(response.data.externalOffice)
-    }catch(error){
-      console.error("Error fetching external offices: ", error)
-    }
-  }
 
   const fetchFeedbackState = async () => {
     try {
@@ -213,7 +200,7 @@ const Settings: React.FC = () => {
   const getQuestionnaires = async (office) => {
     try {
       const response = await axios.post(serverUrl + "flash-questionnaire", {
-        office: office,
+        office: office, type: activeClient
       });
       setQuestionnaireIds(response.data.qid);
       setQuestionnaires(response.data.name);
@@ -271,6 +258,7 @@ const Settings: React.FC = () => {
         questions: [],
         office: selectedOffice["name"],
         status: "active",
+        type: activeClient,
       };
       setNewQuestionnaireName(""); // Clear the input field
       try {
@@ -405,7 +393,6 @@ const Settings: React.FC = () => {
 
   useEffect(() => {
     fetchOffices();
-    fetchExternalOffices();
     fetchDepartments();
     fetchFeedbackState();
     fetchReminderState();
@@ -576,9 +563,7 @@ const Settings: React.FC = () => {
                   className="font-bold mb-4 text-center b-border text-black border-b-2 border-white"
                   style={{ color: "maroon" }}
                 >
-                  {activeClient === "internal"
-                    ? "Select Office to Edit Questions"
-                    : "Select the External Client Questions"}
+                  
                 </h2>
 
               <div className="flex justify-between mb-4 m-2">
@@ -608,7 +593,7 @@ const Settings: React.FC = () => {
                     background: "#c3c3c3",
                   }}
                 >
-                  {(activeClient === "internal" ? offices : externalOffices).map(
+                  {offices.map(
                     (office) => (
                       <li
                         key={office.id}

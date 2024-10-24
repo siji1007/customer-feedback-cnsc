@@ -47,7 +47,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   // Function to fetch external client questions depends on what offices user selected
   const fetchExternalQuestions = async () => {
     try {
-      const response = await axios.get(serverUrl + "show_external_questions");
+      const response = await axios.post(serverUrl + "show_questions", {office: selectedOffice[currentOfficeIndex], type: "external"});
       setQuestions(response.data);
     } catch (error) {
       console.error("Error fetching external questions:", error);
@@ -59,6 +59,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
     try {
       const response = await axios.post(serverUrl + "show_questions", {
         office: selectedOffice[currentOfficeIndex], // Use currentOfficeIndex
+        type: "internal"
       });
       setQuestions(response.data);
     } catch (error) {
@@ -77,6 +78,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
       setInitialTotalDots(selectedOffice.length);
       fetchInternalQuestions(); // Fetch internal client questions
     }
+    localStorage.removeItem("ShowSurvey");
 
     fetchValidity();
   }, [selectedOffice, currentOfficeIndex]);
