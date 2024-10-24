@@ -85,7 +85,9 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
             name="client_type"
             value={clientData.client_type}
             onChange={handleOtherChange}
+            required
           >
+            <option value="">Select Client Type</option>
             <option value="agency">Agency</option>
             <option value="participant">Participant</option>
             <option value="research">Client (Research)</option>

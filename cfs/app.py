@@ -249,10 +249,12 @@ def login_client():
     client_data = request.get_json()
     client_name = client_data['client_name']
     client_addr = client_data['client_addr']
-    user_category = "client"
     client_type = client_data['client_type']
-    client = server.user_collection.insert_one({'name': client_name, 'address': client_addr, 'type': user_category,'subType': client_type})
-    return "Access Granted", 200
+    if(client_name == "" or client_addr == "" or client_type == ""):
+        return "Access Denied", 401
+    else:
+        client = server.client_collection.insert_one({'name': client_name, 'address': client_addr, 'type': client_type})
+        return "Access Granted", 200
 
 @app.route('/all_department')
 def get_all_dept():
@@ -329,7 +331,7 @@ def showQuestions():
     question_data = server.questionnaire_collection.find({"status":{"$exists": True}})
     question_list = [q for q in question_data]
     questions = [q["questions"] for q in question_list if q["office"] in selected_offices["office"] and q["status"] == "active" and q["type"] == selected_offices["type"]]
-     
+
     return questions[0]
 
 @app.route('/submit_answer', methods=["POST"])
