@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaChartLine, FaPrint, FaCog, FaArrowLeft, FaBars, FaArchive } from 'react-icons/fa';
+import { FaChartLine, FaPrint, FaCog, FaArrowLeft, FaBars, FaArchive, } from 'react-icons/fa';
 import Dashboard from './SideBarPage/DashBoard';
 import PrintReport from './SideBarPage/PrintReport';
 import Settings from './SideBarPage/Settings';
