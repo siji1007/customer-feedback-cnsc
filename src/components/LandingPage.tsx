@@ -5,29 +5,31 @@ import StudentLogin from './Logins/StudentLogin';
 import EmployeeLogin from './Logins/EmployeeLogin';
 import OtherLogin from './Logins/OthersLogin';
 import SurveyForm from './Logins/SurveyForm';
+import IconCNSC from '../assets/cnsc_logo.png';
 
 const LandingPage: React.FC = () => {
-  const [selectedLogin, setSelectedLogin] = useState<string>('');
-  const [showSurveyForm, setShowSurveyForm] = useState<boolean>(false);
+  const [selectedLogin, setSelectedLogin] = useState<string>('');               //show here the selected login form
+  const [showSurveyForm, setShowSurveyForm] = useState<boolean>(false);         
   const [isFooterVisible, setIsFooterVisible] = useState<boolean>(false);
   const [screenHeight, setScreenHeight] = useState<number>(window.innerHeight);
 
   useEffect(() => {
     const handleResize = () => setScreenHeight(window.innerHeight);
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize);                
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleLoginSelection = (loginType: string) => {
+
+  const handleLoginSelection = (loginType: string) => {         //function for login form selection (Student,Employee and Other)
     setSelectedLogin(loginType);
   };
 
-  const handleShowSurveyForm = () => {
+  const handleShowSurveyForm = () => {                         //Show the survey form if login success
     setShowSurveyForm(true);
   };
 
-  const toggleFooter = () => {
+  const toggleFooter = () => {                                //Footer, this is for toggle to make it visible or not
     setIsFooterVisible(!isFooterVisible);
   };
 
@@ -35,7 +37,7 @@ const LandingPage: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <header className="w-full h-19 bg-red-900 flex justify-between items-center px-4">
         <div className="flex items-center">
-          <img src="src/assets/cnsc_logo.png" alt="Logo" className="h-16 w-16 object-contain" />
+          <img src={IconCNSC} alt="Logo" className="h-16 w-16 object-contain" />
           <div className="ml-4 flex flex-col justify-center">
             <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold"
                 style={{ borderBottom: '2px solid gold' }}>
@@ -46,6 +48,7 @@ const LandingPage: React.FC = () => {
         </div>
       </header>
 
+      {/* Main class where we store the login Forms and Survey Form*/}
       <main className="flex-grow flex flex-col justify-center items-center overflow-auto h-min-screen m-5">
         {!showSurveyForm && selectedLogin === '' && (
           <nav className="flex flex-col space-y-4 p-10 shadow-lg">
@@ -59,7 +62,6 @@ const LandingPage: React.FC = () => {
             <button className="bg-red-900 text-white py-2 px-4 rounded-lg" onClick={() => handleLoginSelection('other')}>
               Others
             </button>
-
             <Link to="/?showTwoButtons=false" className="text-center">
               <button className="text-black text-sm sm:text-base md:text-lg lg:text-xl">
                 Back
@@ -74,14 +76,15 @@ const LandingPage: React.FC = () => {
           throw new Error('Function not implemented.');
         } } />}
         {showSurveyForm && <SurveyForm />}
+
       </main>
 
       {/* Footer */}
       {isFooterVisible && (
         <footer className="w-full h-33 bg-red-900 flex flex-none justify-between p-2">
         <div className="flex-1 ">
-          <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">Contact Information</h1>
-          <p className="text-white text-xs sm:text-xxs md:text-xs lg:text-xm">
+          <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xs font-bold">Contact Information</h1>
+          <p className="text-white text-xs sm:text-xxs md:text-xxs lg:text-xxs">
             Camarines Norte State College Information Technology Services Office<br />
             F. Pimentel Avenue, Daet, 4600 Camarines Norte, Philippines <br />
             Telephone No.(054)721-2672 or 440-1199 <br />
@@ -90,11 +93,10 @@ const LandingPage: React.FC = () => {
             Email: <span className="underline">president@cnsc.edu.ph</span>
           </p>
         </div>
-
         <div className="ml-2">
-          <p className="text-white text-xs font-bold">Help</p>
+          <p className="text-white text-xs font-bold text-center mb-2 ">Help</p>
           <div className="flex">
-            <FaFacebook className="text-white text-xl cursor-pointer hover:text-blue-500 mr-4" />
+            <FaFacebook className="text-white text-xl cursor-pointer hover:text-blue-500 mr-2" />
             <FaTwitter className="text-white text-xl cursor-pointer hover:text-blue-500" />
           </div>
         </div>
@@ -114,7 +116,7 @@ const LandingPage: React.FC = () => {
         {isFooterVisible && (
           <button
             onClick={toggleFooter}
-            className="text-white text-xl p-2 rounded-l-lg shadow-md fixed bottom-5 right-2 m-2"
+            className="text-red-800 text-xl p-2 rounded-l-lg shadow-md fixed bottom-5 right-2 m-2 bg-white"
           >
             <FaArrowDown />
           </button>

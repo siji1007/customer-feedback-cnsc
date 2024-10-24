@@ -6,54 +6,49 @@ const StartingPage: React.FC = () => {
   const [showTwoButtons, setShowTwoButtons] = useState(false);
   const [showSecondSetOfButtons, setShowSecondSetOfButtons] = useState(false);
 
-  // Image slider setup
-  const imageSources = [
-    "src/assets/cnsc_logo.png", // Replace with your actual image paths
+  
+  const imageSources = [              //This is the image slider you can store here the image of latest events. 
+    "src/assets/cnsc_logo.png",                       
     "src/assets/mission.png",
     "src/assets/vision.png",
   ];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Change image every 5 seconds
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imageSources.length);
-    }, 3000); // Change every 5 seconds
+    }, 3000); // Change every 3 seconds
 
     return () => clearInterval(interval); // Cleanup the interval on component unmount
   }, []);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
-    const showSecondSet = queryParams.get('showSecondSetOfButtons') === 'true';
+    const showSecondSet = queryParams.get('showSecondSetOfButtons') === 'true';    //This is to show the buttons to show type of user
     setShowSecondSetOfButtons(showSecondSet);
     setShowTwoButtons(showSecondSet);
   }, [location.search]);
 
-  const handleStartClick = () => {
+
+  const handleStartClick = () => {        //Function to handle the Start Button 
     setShowTwoButtons(true);
   };
 
-  const handleBackClick = () => {
+  const handleBackClick = () => {         //Function for back Buttons
     setShowSecondSetOfButtons(false);
   };
 
   return (
     <div className="flex h-screen justify-center items-center flex-col md:flex-row">
+
       {/* Right Side with Sliding Images */}
       <div className="left-side flex-1 h-1/2 md:h-full bg-red-800 flex justify-center items-center relative overflow-hidden md:order-2">
-        <div
-          className="flex transition-transform duration-700 ease-in-out"
-          style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
-        >
-          {imageSources.map((src, index) => (
+        <div className="flex transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}>
+          {imageSources.map((src, index) => ( 
             <div key={index} className="flex-shrink-0 w-full h-full flex justify-center items-center">
-              <img
-                src={src}
-                alt="CNSC LOGO"
-                className="max-w-full max-h-full object-cover"
-              />
+              <img src={src} alt="CNSC LOGO" className="max-w-full max-h-full object-cover"/>
             </div>
           ))}
         </div>
@@ -71,12 +66,8 @@ const StartingPage: React.FC = () => {
 
       {/* Left Side with Buttons */}
       <div className="right-side flex-1 h-1/2 md:h-full flex justify-start md:justify-center items-center flex-col m-10 md:p-0 md:order-1">
-        <p className="text-center font-bold text-md" style={{ fontFamily: 'Copperplate, serif' }}>
-          Camarines Norte State College
-        </p>
-        <p className="text-center font-bold text-md mb-10" style={{ fontFamily: 'Copperplate, serif' }}>
-          Customer Feedback System
-        </p>
+        <p className="text-center font-bold text-md" style={{ fontFamily: 'Copperplate, serif' }}> Camarines Norte State College </p>
+        <p className="text-center font-bold text-md mb-10" style={{ fontFamily: 'Copperplate, serif' }}>Customer Feedback System</p>
         {!showTwoButtons ? (
           <>
             <button
