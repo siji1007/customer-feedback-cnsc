@@ -78,7 +78,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
       setInitialTotalDots(selectedOffice.length);
       fetchInternalQuestions(); // Fetch internal client questions
     }
-    localStorage.removeItem("ShowSurvey");
+    
 
     fetchValidity();
   }, [selectedOffice, currentOfficeIndex]);

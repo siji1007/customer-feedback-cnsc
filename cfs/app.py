@@ -254,7 +254,7 @@ def login_client():
         return "Access Denied", 401
     else:
         client = server.client_collection.insert_one({'name': client_name, 'address': client_addr, 'type': client_type})
-        return "Access Granted", 200
+        return {"message": "Access Granted", "client_id": str(client.inserted_id)}, 200
 
 @app.route('/all_department')
 def get_all_dept():

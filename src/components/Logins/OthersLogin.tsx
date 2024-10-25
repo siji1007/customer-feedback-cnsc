@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 interface ClientInformation {
@@ -35,7 +35,8 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
         import.meta.env.VITE_APP_SERVERHOST + "client-login", 
         clientData
       );
-      localStorage.setItem("client_type", clientData.client_type)
+      localStorage.setItem("client_type", clientData.client_type);
+      globalThis.activeId = response.data.client_id;
       onLoginSuccess();
     } catch (error) {
       console.error(error);
@@ -45,6 +46,7 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
   const handleBackClick = () => {
     window.location.href = '/customer';
   };
+
 
   return (
     <div className="flex flex-col items-center w-full ">

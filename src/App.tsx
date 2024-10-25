@@ -43,6 +43,11 @@ function SessionChecker({ setShowLoginForm }: { setShowLoginForm: (show: boolean
 function App() {
   const [showLoginForm, setShowLoginForm] = useState(true);
 
+  useEffect(() => {
+    // Clear local storage on component mount
+    localStorage.clear();
+  }, []); 
+
   return (
     <Router>
       <SessionChecker setShowLoginForm={setShowLoginForm} /> {/* Pass setShowLoginForm to handle session */}
