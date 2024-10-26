@@ -68,7 +68,7 @@ const Dashboard: React.FC = () => {
         selectedOffice: selectedOffice,
       });
       setDataChartLeft(response.data);
-      fetchSpecificType(selectedOffice);
+      fetchDataRight(selectedOffice);
       setActiveOffice(selectedOffice);
       fetchSpecificTotal(selectedOffice);
       fetchSpecificInsights(selectedOffice);
@@ -88,22 +88,10 @@ const Dashboard: React.FC = () => {
   const fetchAllOffice = (state) => {
     if (state === "on") {
       fetchChartLeft();
-      fetchDataRight();
+      fetchDataRight(null);
     } else {
       fetchSpecificOffice(activeOffice);
-      fetchSpecificType(activeOffice);
-    }
-  };
-
-  const fetchSpecificType = async (office) => {
-    try {
-      const response = await axios.post(
-        serverUrl + "specific_respondent_data",
-        { office: office },
-      );
-      setChartDataRight(response.data);
-    } catch (error) {
-      console.log(error);
+      fetchDataRight(activeOffice);
     }
   };
 
@@ -231,10 +219,18 @@ const Dashboard: React.FC = () => {
 
   const chartLabelsRight = ["Students","Employee","Others"];
   const [chartDataRight, setChartDataRight] = useState<number[]>([0, 0, 0]);
-  const fetchDataRight = async () => {
+  const fetchDataRight = async (office) => {
     try {
-      const response = await axios.get(serverUrl + "respondent_data");
-      setChartDataRight(response.data);
+      if(office === null){
+        const response = await axios.get(serverUrl + "respondent_data");
+        setChartDataRight(response.data);
+      }else{
+        const response = await axios.post(
+          serverUrl + "respondent_data",
+          { office: office },
+        );
+        setChartDataRight(response.data);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -319,7 +315,7 @@ const Dashboard: React.FC = () => {
   const fetchAllData = async () => {
     try {
       await Promise.all([
-        fetchDataRight(),
+        fetchDataRight(null),
         fetchChartLeft(),
         fetchAcadYears(),
         fetchOffices(),

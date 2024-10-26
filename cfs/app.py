@@ -418,50 +418,35 @@ def fetchSpecificResponseData():
     sorted_counts = [value_count[key] for key in sorted_keys]
     return sorted_counts
 
-@app.route("/respondent_data", methods=['GET'])
+@app.route("/respondent_data", methods=['GET', 'POST'])
 def fetchRespondents():
-    sorted_counts = []
+    type_counter = Counter()
+
     answer_data = server.answer_collection.find()
     answer_list = [al for al in answer_data]
-    account_data = server.user_collection.find({"account_id": {"$exists": True}})
+
+    account_data = server.user_collection.find()
     account_list = [a for a in account_data]
+
+    client_data = server.client_collection.find()
+    client_list = [cl for cl in client_data]
+
     account_dict = {a["account_id"]: a["type"] for a in account_list}
-    all_possible_types = ["student", "employee", "client_research"]
-    type_counter = Counter()
+    all_possible_types = ["student", "employee"]
+
     for al in answer_list:
         account_id = al.get("account_id")
         if account_id:
             account_type = account_dict.get(account_id, "Unknown")
-            type_counter[account_type] += 1
+            if account_type in all_possible_types:
+                type_counter[account_type] += 1
 
     for user_type in all_possible_types:
         if user_type not in type_counter:
             type_counter[user_type] = 0
 
-    sorted_counts = [type_counter[user_type] for user_type in all_possible_types]
-
-    return jsonify(sorted_counts)
-
-@app.route("/specific_respondent_data", methods=['POST'])
-def fetchSpecificRespondents():
-    client_type = request.get_json()
-    answer_data = server.answer_collection.find()
-    answer_list = [al for al in answer_data if al["office"] == client_type["office"]]
-    account_data = server.user_collection.find({"account_id": {"$exists": True}})
-    account_list = [a for a in account_data]
-    account_dict = {a["account_id"]: a["type"] for a in account_list}
-    all_possible_types = {"student", "employee", "client_research"}
-    type_counter = {user_type: 0 for user_type in all_possible_types}
-
-    for al in answer_list:
-        account_id = al.get("account_id")
-        if account_id:
-            account_type = account_dict.get(account_id, "Unknown")
-            if account_type in type_counter:
-                type_counter[account_type] += 1
-    
-    sorted_counts = [type_counter[user_type] for user_type in all_possible_types]
-    
+    client_count = len(client_list)
+    sorted_counts = [type_counter["student"], type_counter["employee"], client_count]
     return jsonify(sorted_counts)
 
 @app.route("/get_feedback_count", methods=["GET"])
