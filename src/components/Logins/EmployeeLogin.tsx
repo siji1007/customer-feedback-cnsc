@@ -17,6 +17,11 @@ interface EmployeeLoginProps {
   onLoginSuccess: () => void;
 }
 
+interface DeptData {
+  id: string;
+  name: string;
+}
+
 const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
   const [showLoginForm, setShowLoginForm] = useState(true);
   const [showSignUpForm, setShowSignUpForm] = useState(false);
@@ -33,7 +38,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
     employee_pass: "",
     employee_cpass: "",
   });
-  const [departments, setDepartments] = useState<string[]>([]);
+  const [departments, setDepartments] = useState<DeptData[]>([]);
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -86,27 +91,30 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        import.meta.env.REACT_APP_SERVERHOST + "add-employee",
+        import.meta.env.VITE_APP_SERVERHOST + "add-employee",
         signUpData,
       );
+      setHasError(false);
+      globalThis.activeId = signUpData["account_id"];
       onLoginSuccess();
     } catch (error) {
       console.error(error);
     }
   };
 
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        const response = await axios.get(
-          import.meta.env.REACT_APP_SERVERHOST + "office",
-        );
-        setDepartments(response.data.departments || []);
-      } catch (error) {
-        console.error("Error fetching departments: ", error);
-      }
-    };
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(
+        import.meta.env.VITE_APP_SERVERHOST + "office",
+      );
+      console.log(response.data.offices)
+      setDepartments(response.data.offices || []);
+    } catch (error) {
+      console.error("Error fetching departments: ", error);
+    }
+  };
 
+  useEffect(() => {
     fetchDepartments();
   }, []);
 
@@ -153,8 +161,8 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
                 <option value="">Select Department</option>
                 {departments.length > 0 &&
                   departments.map((department) => (
-                    <option key={department} value={department}>
-                      {department}
+                    <option key={department.id} value={department.name}>
+                      {department.name}
                     </option>
                   ))}
               </select>

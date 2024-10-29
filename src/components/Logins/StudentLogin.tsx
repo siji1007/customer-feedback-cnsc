@@ -90,6 +90,8 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
         signUpData,
       );
       //setShowLoginForm(true);
+      setHasError(false);
+      globalThis.activeId = signUpData["account_id"]
       onLoginSuccess();
     } catch (error) {
       console.error(error);
@@ -99,7 +101,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   const fetchDepartments = async () => {
     try {
       const response = await axios.get(
-        import.meta.env.VITE_APP_SERVERHOST + "offices",
+        import.meta.env.VITE_APP_SERVERHOST + "department",
       );
       setDepartments(response.data.departments);
     } catch (error) {

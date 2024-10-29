@@ -256,13 +256,6 @@ def login_client():
         client = server.client_collection.insert_one({'name': client_name, 'address': client_addr, 'type': client_type})
         return {"message": "Access Granted", "client_id": str(client.inserted_id)}, 200
 
-@app.route('/all_department')
-def get_all_dept():
-    data = server.dept_collection.find()
-    data_list = [dept for dept in data]
-    departments = [dept["department"] for dept in data_list]
-    return jsonify({'departments': departments})
-
 @app.route('/department')
 def get_acad_dept():
     data = server.dept_collection.find()
@@ -421,16 +414,20 @@ def fetchSpecificResponseData():
 @app.route("/respondent_data", methods=['GET', 'POST'])
 def fetchRespondents():
     type_counter = Counter()
-
+    client_answer_counts = 0
+    
     answer_data = server.answer_collection.find()
     answer_list = [al for al in answer_data]
-
-    account_data = server.user_collection.find()
+    
+    account_data = server.user_collection.find({"account_id": {"$exists": True}})
     account_list = [a for a in account_data]
-
+    
     client_data = server.client_collection.find()
     client_list = [cl for cl in client_data]
-
+    
+    # Create a set of account IDs for clients
+    client_ids = {str(cl["_id"]) for cl in client_list}
+    
     account_dict = {a["account_id"]: a["type"] for a in account_list}
     all_possible_types = ["student", "employee"]
 
@@ -440,14 +437,18 @@ def fetchRespondents():
             account_type = account_dict.get(account_id, "Unknown")
             if account_type in all_possible_types:
                 type_counter[account_type] += 1
+            
+            # Count answers from clients that are in the client_list
+            if account_id in client_ids:
+                client_answer_counts += 1
 
-    for user_type in all_possible_types:
-        if user_type not in type_counter:
-            type_counter[user_type] = 0
+    response_array = [
+        type_counter["student"], 
+        type_counter["employee"],
+        client_answer_counts 
+    ]
 
-    client_count = len(client_list)
-    sorted_counts = [type_counter["student"], type_counter["employee"], client_count]
-    return jsonify(sorted_counts)
+    return jsonify(response_array)
 
 @app.route("/get_feedback_count", methods=["GET"])
 def fetchFeedbackCount():
