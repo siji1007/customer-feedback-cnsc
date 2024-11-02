@@ -6,29 +6,50 @@ import axios from 'axios';
 const OthersDetails: React.FC = () => {
   const [acadYears, setAcadYears] = useState<string[]>([]);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const [pieLabels,setPieLabels] = useState<string[]>([]);
+  const [pieData, setPieData] = useState<string[]>([]);
+  const [othersData, setOthersData] = useState<string[]>([]);
+
+  const fetchAcadYears = async () => {
+    try {
+      const response = await axios.get(serverUrl + "get_acad_years");
+      setAcadYears(response.data);
+    } catch (error) {
+      console.error("Error fetching academic years: ", error);
+    }
+  };
+
+  const fetchPie = async() => {
+    try{
+      const response = await axios.get(serverUrl + "fetch_clients");
+      setPieLabels(response.data.labels);
+      setPieData(response.data.client_counts);
+    }catch(error){
+      console.error("Error fetching graph data: ", error);
+    }
+  }
+
+  const fetchBar = async() => {
+    try{
+      const response = await axios.get(serverUrl + "fetch_client_details");
+      setOthersData(response.data);
+    }catch(error){
+      console.error("Error fetching graph data: ", error)
+    }
+  }
 
   useEffect(() => {
-    const fetchAcadYears = async () => {
-      try {
-        const response = await axios.get(serverUrl + "get_acad_years");
-        setAcadYears(response.data);
-      } catch (error) {
-        console.error("Error fetching academic years: ", error);
-      }
-    };
-
     fetchAcadYears();
+    fetchPie();
+    fetchBar();
   }, []);
 
   const getOthersBarChartData = () => {
     const labels = ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'];
     const backgroundColors = ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'];
   
-    // Example data, replace with actual data
-    const studentData = [20, 30, 15, 10, 25];
-  
     // Pair each data point with its label and color
-    const dataWithLabels = studentData.map((value, index) => ({
+    const dataWithLabels = othersData.map((value, index) => ({
       value,
       label: labels[index],
       color: backgroundColors[index],
@@ -58,8 +79,6 @@ const OthersDetails: React.FC = () => {
   
 
   const getOthersPieChartData = () => {
-    const pieLabels = ['Agency', 'Participant', 'Cient (Research)'];
-    const pieData = [35, 45, 20]; // Dummy data for pie chart, replace with actual values
     const pieColors = ['#4A90E2', '#50E3C2', '#F5A623'];
   
 

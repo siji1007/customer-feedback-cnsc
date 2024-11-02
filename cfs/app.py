@@ -411,6 +411,43 @@ def fetchSpecificResponseData():
     sorted_counts = [value_count[key] for key in sorted_keys]
     return sorted_counts
 
+@app.route("/fetch_specific_type", methods=["POST"])
+def fetchSpecificType():
+    res_data = request.get_json()
+    account_data = server.user_collection.find({"account_id": {"$exists": True}, "type": res_data["type"]})
+    account_list = [a for a in account_data]
+    accounts = [ac["account_id"] for ac in account_list]
+    response_data = server.answer_collection.find()
+    response_list = [r for r in response_data]
+    responses = [r["answer"] for r in response_list if r["account_id"] in accounts]
+    values = [value for r in responses for value in r.values()]
+    all_possible_values = set(range(1, 6))
+    value_count = Counter(values)
+    for value in all_possible_values:
+        if value not in value_count:
+            value_count[value] = 0
+    sorted_keys = sorted(value_count.keys())
+    sorted_counts = [value_count[key] for key in sorted_keys]
+    return sorted_counts
+
+@app.route("/fetch_client_details", methods=["GET", "POST"])
+def fetchClientDetails():
+    account_data = server.client_collection.find()
+    account_list = [a for a in account_data]
+    accounts = [str(ac["_id"]) for ac in account_list]
+    response_data = server.answer_collection.find()
+    response_list = [r for r in response_data]
+    responses = [r["answer"] for r in response_list if r["account_id"] in accounts]
+    values = [value for r in responses for value in r.values()]
+    all_possible_values = set(range(1, 6))
+    value_count = Counter(values)
+    for value in all_possible_values:
+        if value not in value_count:
+            value_count[value] = 0
+    sorted_keys = sorted(value_count.keys())
+    sorted_counts = [value_count[key] for key in sorted_keys]
+    return sorted_counts
+
 @app.route("/respondent_data", methods=['GET', 'POST'])
 def fetchRespondents():
     type_counter = Counter()
@@ -571,34 +608,50 @@ def deleteDept():
     server.dept_collection.delete_one({'department': request_data["department"]})
     return "Department had been deleted successfully", 200
 
-@app.route("/fetch_student", methods=["GET", "POST"])
-def fetchStudent():
+@app.route("/fetch_users", methods=["POST"])
+def fetchUsers():
+    request_data = request.get_json()
     labels = []
-    student_count = []
-    student_data = server.user_collection.find({"account_id": {"$exists": True}, "department": {"$exists": True}})
-    student_list = [sd for sd in student_data]
-    student_count_by_department = {}
-    for student in student_list:
-        if student["type"] == "student":
-            dept = student["department"]
-            if dept not in student_count_by_department:
-                student_count_by_department[dept] = 0
-            student_count_by_department[dept] += 1
+    user_count = []
+    user_data = server.user_collection.find({"account_id": {"$exists": True}, "department": {"$exists": True}})
+    user_list = [sd for sd in user_data]
+    user_count_by_department = {}
+    for user in user_list:
+        if user["type"] == request_data["type"]:
+            dept = user["department"]
+            if dept not in user_count_by_department:
+                user_count_by_department[dept] = 0
+            user_count_by_department[dept] += 1
 
-    if request.method == "POST":
-        request_data = request.get_json()
-        department_filter = request_data.get("department")
-        student_result = {
-            department_filter: student_count_by_department.get(department_filter, 0)
-        }
-    else:
-        student_result = student_count_by_department
+    user_result = user_count_by_department
 
-    for keys, values in student_result.items():
+    for keys, values in user_result.items():
         labels.append(keys)
-        student_count.append(values)
+        user_count.append(values)
 
-    return jsonify({"labels": labels, "student_counts": student_count})
+    return jsonify({"labels": labels, "user_counts": user_count})
+
+
+@app.route("/fetch_clients", methods=["GET","POST"])
+def fetchClients():
+    labels = []
+    client_count = []
+    client_data = server.client_collection.find()
+    client_list = [sd for sd in client_data]
+    client_count_by_department = {}
+    for client in client_list:
+        ctype = client["type"]
+        if ctype not in client_count_by_department:
+            client_count_by_department[ctype] = 0
+        client_count_by_department[ctype] += 1
+
+    client_result = client_count_by_department
+
+    for keys, values in client_result.items():
+        labels.append(keys)
+        client_count.append(values)
+
+    return jsonify({"labels": labels, "client_counts": client_count})
 
 @app.route("/get_event", methods=["POST"])
 def getEvent():

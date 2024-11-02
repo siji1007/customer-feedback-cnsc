@@ -9,6 +9,7 @@ const StudentDetails: React.FC = () => {
   //const [studentData, setStudentData] = useState<[]>([]);
   const [pieLabels, setPieLabels] = useState<string[]>([]);
   const [pieData, setPieData] = useState<[]>([]);
+  const [studentData, setStudentData] = useState<string[]>([]);
   
 
   const fetchAcadYears = async () => {
@@ -22,24 +23,32 @@ const StudentDetails: React.FC = () => {
 
   const fetchPie = async() => {
     try{
-      const response = await axios.get(serverUrl + "fetch_student");
-      console.log(response.data)
+      const response = await axios.post(serverUrl + "fetch_users", {type: "student"});
       setPieLabels(response.data.labels);
-      setPieData(response.data.student_counts);
+      setPieData(response.data.user_counts);
     }catch(error){
       console.error("Error fetching graph data: ", error)
+    }
+  }
+
+  const fetchBar = async() => {
+    try{
+      const response = await axios.post(serverUrl + "fetch_specific_type", {type: "student"});
+      setStudentData(response.data);
+    }catch(error){
+      console.error("Error fetching graph data: ", error);
     }
   }
 
   useEffect(() => {
     fetchAcadYears();
     fetchPie();
+    fetchBar();
   }, []);
 
   const getStudentBarChartData = () => {
     const labels = ["Needs Improvement", "Failed to Meet Expectations", "Meet Expectations", "Exceeds Expectations", "Outstanding"];
     const backgroundColors = ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'];
-    const studentData = [20, 30, 15, 10, 25];
     // Pair each data point with its label and color
     const dataWithLabels = studentData.map((value, index) => ({
       value,

@@ -2,33 +2,55 @@ import React, { useState, useEffect } from 'react';
 import BarChart from '../BarChart';
 import PieChart from '../PieChart';
 import axios from 'axios';
+import { TbWashDryP } from 'react-icons/tb';
 
 const EmployeeDetails: React.FC = () => {
   const [acadYears, setAcadYears] = useState<string[]>([]);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const [employeeData, setEmployeeData] = useState<string[]>([]);
+  const [pieLabels, setPieLabels] = useState<string[]>([]);
+  const [pieData, setPieData] = useState<string[]>([]);
+
+  const fetchAcadYears = async () => {
+    try {
+      const response = await axios.get(serverUrl + "get_acad_years");
+      setAcadYears(response.data);
+    } catch (error) {
+      console.error("Error fetching academic years: ", error);
+    }
+  };
+
+  const fetchPie = async() =>{
+    try{
+      const response = await axios.post(serverUrl + "fetch_users", {type: "employee"});
+      setPieLabels(response.data.labels);
+      setPieData(response.data.user_counts);
+    }catch(error){
+      console.error("Error fetching graph data: ", error);
+    }
+  }
+
+  const fetchBar = async() => {
+    try{
+      const response = await axios.post(serverUrl + "fetch_specific_type", {type: "employee"});
+      setEmployeeData(response.data);
+    }catch(error){
+      console.error("Error fetching graph data: ", error);
+    }
+  }
 
   useEffect(() => {
-    const fetchAcadYears = async () => {
-      try {
-        const response = await axios.get(serverUrl + "get_acad_years");
-        setAcadYears(response.data);
-      } catch (error) {
-        console.error("Error fetching academic years: ", error);
-      }
-    };
-
     fetchAcadYears();
+    fetchPie();
+    fetchBar();
   }, []);
 
   const getEmployeeBarChartData = () => {
     const labels = ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'];
     const backgroundColors = ['#7F0000', '#ff0000', '#ffff00', '#00ff00', '#004C00'];
   
-    // Example data, replace with actual data
-    const studentData = [20, 30, 15, 10, 25];
-  
     // Pair each data point with its label and color
-    const dataWithLabels = studentData.map((value, index) => ({
+    const dataWithLabels = employeeData.map((value, index) => ({
       value,
       label: labels[index],
       color: backgroundColors[index],
@@ -58,8 +80,6 @@ const EmployeeDetails: React.FC = () => {
   
 
   const getEmployeePieChartData = () => {
-    const pieLabels = ['Teaching Staff', 'Non-Teaching Staff'];
-    const pieData = [35, 45]; // Dummy data for pie chart, replace with actual values
     const pieColors = ['#4A90E2', '#50E3C2'];
   
 
