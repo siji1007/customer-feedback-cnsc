@@ -1,20 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaChartLine, FaArchive } from 'react-icons/fa';
+import axios from "axios";
 
-
-const allOffices = [
-    'Admission Office', 'Registrar Office', 'Guidance Office', 
-    'Health Service Office', 'Library', 'Canteen (Food Service)', 
-    'Student Publication', 'Scholarship Programs', 'Student Organization Sport and Cultural Services'
-];
-
-const scaleCategories = [
-    'Needs Improvement', 'Failed to Meet Expectations', 
-    'Meet Expectations', 'Exceeds Expectations', 'Outstanding'
-];
+interface Office {
+    id: number;
+    name: string;
+  }  
 
 const ClientDashboard: React.FC = () => {
     const [activeView, setActiveView] = useState<'offices' | 'responses'>('offices');
+    const [allOffices, setAllOffices] = useState<Office[]>([]);
+
+    const scaleCategories = [
+        'Needs Improvement', 'Failed to Meet Expectations', 
+        'Meet Expectations', 'Exceeds Expectations', 'Outstanding'
+    ];
+
+    const fetchOffices = async() => {
+        try{
+            const response = await axios.get(import.meta.env.VITE_APP_SERVERHOST + "office");
+            setAllOffices(response.data.offices);
+        }catch(error){
+            console.error(error);
+        }
+    }
+
+    useEffect(() => {
+        fetchOffices();
+    }, []);
 
     const handleMainMenuClick = () => {
         // Use window.location.href for a full page reload
@@ -55,7 +68,8 @@ const ClientDashboard: React.FC = () => {
                             <ul className="list-none">
                                 {allOffices.map((office, index) => (
                                     <li key={index} className="py-2 border-b border-gray-200 last:border-b-0">
-                                        {office}
+                                        {office.name}
+                                        <input type="checkbox" readOnly/>
                                     </li>
                                 ))}
                             </ul>

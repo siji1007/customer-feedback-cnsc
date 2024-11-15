@@ -253,7 +253,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
             >
               User credentials not found
             </h4>
-            <button className="text-sm text-right underline w-full" onClick={forgetPass}>Forget Password?</button>
+            <button className="text-sm text-right underline w-full"y>Forget Password?</button>
           </div>
           <button
             type="submit"
