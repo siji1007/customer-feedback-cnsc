@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, Outlet, useMatch } from "react-router-dom";
-import { FaFacebook, FaTwitter, FaArrowDown, FaArrowUp  } from "react-icons/fa";
 import cnscLogo from '../../assets/cnsc_logo.png';
 import axios from "axios";
-import { FaArrowDownLong } from "react-icons/fa6";
 
 interface AdminCredentials {
   admin_username: string;
@@ -30,7 +28,6 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
   const queryParams = new URLSearchParams(location.search);
   const formType = queryParams.get("form") || localStorage.getItem('formType');
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
-  const [isFooterVisible, setIsFooterVisible] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const toggleFooter = () => {
@@ -347,59 +344,6 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
        } {/* Render nested routes here */}
       </main>
 
-      <footer
-  className={`fixed bottom-0 w-full bg-red-900 p-2 transition-transform ${isFooterVisible ? "transform-none" : "transform translate-y-full"}`}
->
-  {/* Arrow Buttons */}
-  <div className="fixed bottom-0 w-full flex justify-between px-4">
-    {!isFooterVisible && (
-      <button 
-        onClick={toggleFooter} 
-        className="text-black text-xl bg-white p-2 rounded-l-lg shadow-md fixed bottom-5 right-2 m-2"
-      >
-        <FaArrowUp/>
-      </button>
-    )}
-    {isFooterVisible && (
-      <button 
-        onClick={toggleFooter} 
-        className="text-white text-xl fixed bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-900 p-2 rounded-lg shadow-md"
-      >
-        <FaArrowDown />
-      </button>
-    )}
-  </div>
-
-  {/* Footer Content */}
-  {isFooterVisible && (
-    <div className="flex flex-col items-center">
-      <div className="flex-1 flex justify-between w-full">
-        <div className="flex-1">
-          <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl font-bold">
-            Contact Information
-          </h1>
-          <p className="text-white text-xs sm:text-xxs md:text-xs lg:text-xm">
-            Camarines Norte State College Information Technology Services Office
-            <br />
-            F. Pimentel Avenue, Daet, 4600 Camarines Norte, Philippines <br />
-            Telephone No.(054)721-2672 or 440-1199 <br />
-            PICRO Mobile No. 09688983078 | 09171439973 <br />
-            Mobile No. 09990042147 <br />
-            Email: <span className="underline">president@cnsc.edu.ph</span>
-          </p>
-        </div>
-
-        <div className="ml-2">
-          <p className="text-white font-bold">Help</p>
-          <div className="flex">
-            <FaFacebook className="text-white text-xl cursor-pointer hover:text-blue-500 mr-4" />
-            <FaTwitter className="text-white text-xl cursor-pointer hover:text-blue-500" />
-          </div>
-        </div>
-      </div>
-    </div>
-  )}
-</footer>
 
     </div>
   );

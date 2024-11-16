@@ -191,7 +191,7 @@ const Dashboard: React.FC = () => {
       labels: chartLabelsLeft,
       datasets: [
         {
-          label: "Feedback",
+          label: "RESPONSE RESULT",
           data: dataChartLeft,
           backgroundColor: [
             "#7F0000",
@@ -226,7 +226,7 @@ const Dashboard: React.FC = () => {
       labels: chartLabelsLeft,
       datasets: [
         {
-          label: "Feedback",
+          label: "RESPONSE RESULT",
           data: dataChartLeft,
           backgroundColor: "rgba(75,192,192,0.4)",
           borderColor: "rgba(75,192,192,1)",
@@ -260,7 +260,7 @@ const Dashboard: React.FC = () => {
       labels: chartLabelsRight,
       datasets: [
         {
-          label: "Feedback",
+          label: "RESPONSE RESULT",
           data: chartDataRight,
           backgroundColor: ["#4A90E2", "#50E3C2", "#F5A623"],
           borderColor: ["#4A90E2", "#50E3C2", "#F5A623"],
@@ -283,7 +283,7 @@ const Dashboard: React.FC = () => {
       labels: chartLabelsRight,
       datasets: [
         {
-          label: "Feedback",
+          label: "RESPONSE RESULT",
           data: chartDataRight,
           backgroundColor: "rgba(75,192,192,0.4)",
           borderColor: "rgba(75,192,192,1)",
@@ -537,31 +537,40 @@ const Dashboard: React.FC = () => {
               </div>
             </header>
 
-            <div className="flex justify-between items-center mb-1">
-              <h1 className="text-lg font-bold m-2">Overview Of Result</h1>
+            <div className="relative w-full  mb-5">
+              
+                <h1 className="absolute top-0 left-0 m-4 text-lg font-bold">
+                  Overview Of Result
+                </h1>
 
-              <div className="p-1 grid grid-cols-2 items-center ">
-                <div className="flex justify-center items-center">
-                  <FaThumbsUp className="text-3xl text-black-500" />
+                <div className="absolute top-0 right-0 m-4 p-1 grid grid-cols-2 items-center">
+                  {/* Feedback */}
+                  <div className="flex justify-center items-center">
+                    <FaThumbsUp className="text-3xl text-black-500" />
+                  </div>
+                  <div className="flex flex-col justify-center">
+                    <p className="text-xs sm:text-xs md:text-xs lg:text-xm font-bold">
+                      Total Feedback
+                    </p>
+                    <p className="text-xl sm:text-xl md:text-xl lg:text-xl text-center">
+                      {totalFeedback}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col justify-center">
-                  <p className="text-xs sm:text-xs md:text-xs lg:text-xm font-bold">
-                    Total Feedback
-                  </p>
-                  <p className="text-xl sm:text-xl md:text-xl lg:text-xl text-center">
-                    {totalFeedback}
-                  </p>
+
+                {/* Center Section */}
+                <div className="flex flex-col items-center justify-center">
+                  <section
+                    className="mt-5 flex flex-col items-center text-sm justify-center text-black text-center bg-gradient-to-b from-white to-gray-300 h-[10vh] w-[100vh] rounded-[30%] shadow-lg relative overflow-hidden font-bold cursor-pointer"
+                    onClick={handleSectionClick}
+                  >
+                    <WordCloud words={words} options={options} />
+                  </section>
                 </div>
               </div>
-            </div>
 
-            <section
-              className="flex flex-col items-center text-sm justify-center text-black text-center bg-gradient-to-b from-white to-gray-300 h-[10vh] w-[100vh] mb-2 mx-auto rounded-[30%] shadow-lg relative overflow-hidden font-bold cursor-pointer"
-              onClick={handleSectionClick} 
-            >
-              {/* {insights} */}
-              <WordCloud words={words} options={options} />
-             </section>
+
+           
 
 
             {/* Display here the top 10 bert Topic list */}
@@ -622,6 +631,8 @@ const Dashboard: React.FC = () => {
                     <option value="LineChart">Line Chart</option>
                   </select>
                 </div>
+                <h1 className="text-sm font-bold mr-2">Response Data Visualization for Survey</h1>
+                
                 <div className="w-full flex justify-center">
                   {chart1Type === "PieChart" && (
                     <div className="w-1/2">
@@ -663,6 +674,7 @@ const Dashboard: React.FC = () => {
                     <option value="LineChart">Line Chart</option>
                   </select>
                 </div>
+                <h1 className="text-sm font-bold mr-2">STAKEHOLDERS</h1>
                 <div className="w-full flex justify-center">
                   {chart2Type === "PieChart" && (
                     <div className="w-1/2">
@@ -678,7 +690,9 @@ const Dashboard: React.FC = () => {
                   {chart2Type === "LineChart" && (
                     <LineChart data={getChart2Data()} />
                   )}
+               
                 </div>
+           
               </div>
             </div>
             <div className="flex justify-end mt-4 justify-between">
