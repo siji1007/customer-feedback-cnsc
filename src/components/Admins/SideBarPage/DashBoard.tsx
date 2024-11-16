@@ -181,17 +181,26 @@ const Dashboard: React.FC = () => {
     "Exceeds Expectations",
     "Outstanding",
   ]; //add here the data scale connection for leftside chart
+
+
+
   const [dataChartLeft, setDataChartLeft] = useState<number[]>([0, 0, 0, 0, 0]); // add here the data number leftside chart
   const fetchChartLeft = async () => {
     const response = await axios.get(serverUrl + "response_data");
     setDataChartLeft(response.data);
   };
+  const highestValueIndex = dataChartLeft.indexOf(Math.max(...dataChartLeft));
+  const dynamicLabel = chartLabelsLeft[highestValueIndex] + " Result";
+
+
+
+
   const chart1Data = {
     BarChart: {
       labels: chartLabelsLeft,
       datasets: [
         {
-          label: "RESPONSE RESULT",
+          label: dynamicLabel,
           data: dataChartLeft,
           backgroundColor: [
             "#7F0000",
@@ -205,6 +214,8 @@ const Dashboard: React.FC = () => {
         },
       ],
     },
+    
+
     PieChart: {
       labels: chartLabelsLeft,
       datasets: [
@@ -226,7 +237,7 @@ const Dashboard: React.FC = () => {
       labels: chartLabelsLeft,
       datasets: [
         {
-          label: "RESPONSE RESULT",
+          label: dynamicLabel,
           data: dataChartLeft,
           backgroundColor: "rgba(75,192,192,0.4)",
           borderColor: "rgba(75,192,192,1)",
