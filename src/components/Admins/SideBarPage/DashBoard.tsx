@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FaThumbsUp } from "react-icons/fa";
+import WordCloud from "react-wordcloud";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,6 +23,7 @@ import EmployeeDetails from "./ViewDetails/EmployeeDetails";
 import OthersDetails from "./ViewDetails/OthersDetails";
 import ResearchDetails from "./ViewDetails/ResearchDetails";
 import html2canvas from "html2canvas";
+import { MdInsights } from "react-icons/md";
 
 ChartJS.register(
   CategoryScale,
@@ -45,11 +47,29 @@ const Dashboard: React.FC = () => {
   const [offices, setOffices] = useState<Office[]>([]);
   const [totalFeedback, setTotalFeedback] = useState(0);
   const [acadYears, setAcadYears] = useState<string[]>([]);
+  const [selectedYear, setSelectedYear] = useState(acadYears[0] || "");
   const [showDetailedView, setShowDetailedView] = useState(false);
   const [content, setContent] = useState("");
   const [insights, setInsights] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [top10, setTop10] = useState<string[][]>([]);
+
+  const words = [
+    { text: "insight", value: 30 },
+    { text: "response", value: 20 },
+    { text: "data", value: 15 },       //ito pre layout ng word cloud dictionary type lagay mo lng yung text and reponse 
+    { text: "feedback", value: 25 },
+    { text: "cloud", value: 10 },
+  ];
+
+  const options = { 
+    rotations: 2,
+    rotationAngles: [-90, 0],    //wala kana dito gagalawin
+    fontSizes: [2, 20],
+  };
+
+  
+
 
 
   const [chart1Type, setChart1Type] = useState<
@@ -334,6 +354,12 @@ const Dashboard: React.FC = () => {
     fetchAllData();
   }, []); 
 
+  useEffect(() => {
+    if (!selectedYear && acadYears.length > 0) {
+      setSelectedYear(acadYears[0]); // Ensure the first item is selected if not already set
+    }
+  }, [acadYears]);
+
 
 
   const getChart1Data = () => chart1Data[chart1Type];
@@ -498,8 +524,9 @@ const Dashboard: React.FC = () => {
                   <select
                     id="academicYearSelect"
                     className="bg-white-100 text-black border border-gray-600 flex-grow w-full"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)} // Handle changes
                   >
-                    <option value=""></option>
                     {acadYears.map((acadYear) => (
                       <option key={acadYear} value={acadYear}>
                         {acadYear}
@@ -529,11 +556,13 @@ const Dashboard: React.FC = () => {
             </div>
 
             <section
-              className="flex flex-col items-center justify-center text-black text-center bg-gray-300 h-fit w-[70vh] p-1 mb-2 mx-auto rounded-lg font-bold cursor-pointer"
-              onClick={handleSectionClick}
+              className="flex flex-col items-center text-sm justify-center text-black text-center bg-gradient-to-b from-white to-gray-300 h-[10vh] w-[100vh] mb-2 mx-auto rounded-[30%] shadow-lg relative overflow-hidden font-bold cursor-pointer"
+              onClick={handleSectionClick} 
             >
-              {insights}
-            </section>
+              {/* {insights} */}
+              <WordCloud words={words} options={options} />
+             </section>
+
 
             {/* Display here the top 10 bert Topic list */}
             {isModalOpen && (
@@ -541,14 +570,25 @@ const Dashboard: React.FC = () => {
                 <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm w-full">
                   <h2 className="text-xl font-bold mb-4">Top 10 List Insight</h2>
                   <div>
-                    {top10.map((top10Items, index) =>(
-                      <div key={index}>
-                        {top10Items.map((item, subIndex)=>(
-                          <p key={subIndex}>{item}</p>
-                        ))}
-                      </div>
-                    ))}
+                  {top10.map((top10Items, index) => (
+                  <div key={index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    {top10Items.map((item, subIndex) => {
+                      console.log(item);  // Logs item to the console instead of using alert
+                      return (
+                        <React.Fragment key={subIndex}>
+                          {subIndex % 2 === 0 ? (
+                            <span style={{ flex: 1, textAlign: 'left' }}>{item}</span>
+                          ) : (
+                            <span style={{ flex: 1, textAlign: 'right' }}>{item}</span>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
                   </div>
+                ))}
+
+                  </div>
+
                   <button
                     className="mt-4 px-4 py-2 bg-red-800 text-white rounded"
                     onClick={handleCloseModal}
