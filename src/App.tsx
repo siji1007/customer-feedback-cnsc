@@ -17,20 +17,17 @@ axios.defaults.withCredentials = true; // Make sure this is set
 // Define a component for handling session check
 function SessionChecker({ setShowLoginForm }: { setShowLoginForm: (show: boolean) => void }) {
   const navigate = useNavigate();
-  
-
   useEffect(() => {
     const checkSession = async () => {
       try {
-        
         const response = await axios.get(serverUrl + "check-session", { withCredentials: true });
         if (response.status === 200) {
-          setShowLoginForm(false);  // Set showLoginForm to false (skip login)
-          navigate("/admin/vpre");  // Direct user to admin dashboard
+          setShowLoginForm(false); 
+          navigate("/admin/vpre");  
+        
         }
       } catch (error) {
-        // Session is invalid, remain on login page
-        setShowLoginForm(true);  // Show login form
+        setShowLoginForm(true);  
       }
     };
 
@@ -44,7 +41,6 @@ function App() {
   const [showLoginForm, setShowLoginForm] = useState(true);
 
   useEffect(() => {
-    // Clear local storage on component mount
     localStorage.clear();
   }, []); 
 
