@@ -498,32 +498,6 @@ def fetchSpecificFeedbackCount():
     count = server.answer_collection.count_documents({"office": specific_office["office"]})
     return jsonify(count)
 
-@app.route("/fetchCommentSummary", methods=["GET", "POST"])
-def summarizeComments():
-    result = []
-    comment_data = server.answer_collection.find()
-    comment_list = [cl for cl in comment_data]
-    if request.method == "POST":
-        request_data = request.get_json()
-        comments = [c["comment"] for c in comment_list if c["office"] == request_data["office"]]
-    else:
-        comments = [c["comment"] for c in comment_list]
-    vectorizer = CountVectorizer(stop_words='english', max_features=1000)
-    X = vectorizer.fit_transform(comments)
-    lda_model = LatentDirichletAllocation(n_components=min(len(comments), 5), random_state=42)
-    lda_model.fit(X)
-    feature_names = vectorizer.get_feature_names_out()
-    for topic_idx, topic in enumerate(lda_model.components_):
-        result = [feature_names[i] for i in topic.argsort()[:-11:-1]]
-
-    filtered_result = [remove_stopwords(doc, combined_stopwords) for doc in list(set(result))]
-
-    final_result = ""
-    for fs in filtered_result:
-        final_result += fs + " "
-
-    return jsonify(final_result)
-
 @app.route("/fetchQuestionnaireStatus", methods=["POST"])
 def fetchQStats():
     request_data = request.get_json()
@@ -578,6 +552,7 @@ def fetchTopInsights():
     top10 = []
     insight_data = server.answer_collection.find()
     insight_list = [insights for insights in insight_data]
+    
     if request.method == "POST":
         request_data = request.get_json()
         insights = [ins["comment"] for ins in insight_list if ins["office"] == request_data["office"]]
@@ -586,15 +561,63 @@ def fetchTopInsights():
 
     embeddings = model.encode(insights, convert_to_tensor=True)
     repetition_count = defaultdict(int)
+    
     for i in range(len(insights)):
         for j in range(i + 1, len(insights)):
             similarity = util.pytorch_cos_sim(embeddings[i], embeddings[j])
             if similarity > 0.5:
                 repetition_count[insights[i]] += 1
                 repetition_count[insights[j]] += 1
-        
+
+    repetition_count = {comment: count for comment, count in repetition_count.items() if comment.strip() != ""}
     sorted_comments = sorted(repetition_count.items(), key=lambda x: x[1], reverse=True)
     return jsonify({"sc": sorted_comments})
+
+@app.route("/fetchWordCloud", methods=["GET", "POST"])
+def fetchWordCloud():
+    insight_data = server.answer_collection.find()
+    insight_list = [insight for insight in insight_data]
+  
+    if request.method == "POST":
+        request_data = request.get_json()
+        office_filter = request_data["office"]
+        insights = [ins["comment"] for ins in insight_list if ins["office"] == office_filter]
+    else:
+        insights = [ins["comment"] for ins in insight_list]
+    
+    if not insights:
+        return jsonify({"message": "No insights found for the given office."}), 404
+    
+    # Step 1: Create a CountVectorizer to process the text data (filtering stopwords)
+    vectorizer = CountVectorizer(stop_words='english', max_features=1000)
+    X = vectorizer.fit_transform(insights)
+    
+    # Step 2: Fit an LDA model to the document-term matrix
+    lda_model = LatentDirichletAllocation(n_components=min(len(insights), 5), random_state=42)
+    lda_model.fit(X)
+    
+    # Step 3: Extract words for each topic (the top words in each topic)
+    feature_names = vectorizer.get_feature_names_out()
+    topics = []
+    for topic_idx, topic in enumerate(lda_model.components_):
+        topic_words = [feature_names[i] for i in topic.argsort()[:-11:-1]]  # Top 10 words for the topic
+        topics.append(topic_words)
+
+    # Step 4: Flatten the list of topics into a single list of words and count their occurrences
+    all_words = [word for topic in topics for word in topic]
+    repetition_count = defaultdict(int)
+
+    for word in all_words:
+        repetition_count[word] += 1
+    
+    # Step 5: Prepare the word cloud data in the format {text: "word", value: frequency}
+    word_cloud_data = [{"text": word, "value": count} for word, count in repetition_count.items()]
+    
+    # Step 6: Sort the word cloud data by frequency (value) in descending order
+    sorted_word_cloud_data = sorted(word_cloud_data, key=lambda x: x['value'], reverse=True)
+    
+    return jsonify(sorted_word_cloud_data)
+
 
 @app.route("/deleteOffice", methods=["POST"])
 def deleteOffice():

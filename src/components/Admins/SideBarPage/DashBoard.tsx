@@ -54,22 +54,13 @@ const Dashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [top10, setTop10] = useState<string[][]>([]);
 
-  const words = [
-    { text: "insight", value: 30 },
-    { text: "response", value: 20 },
-    { text: "data", value: 15 },       //ito pre layout ng word cloud dictionary type lagay mo lng yung text and reponse 
-    { text: "feedback", value: 25 },
-    { text: "cloud", value: 10 },
-  ];
+  const [words, setWords] = useState<[]>([]);
 
   const options = { 
     rotations: 2,
     rotationAngles: [-90, 0],    //wala kana dito gagalawin
-    fontSizes: [2, 20],
+    fontSizes: [11, 20],
   };
-
-  
-
 
 
   const [chart1Type, setChart1Type] = useState<
@@ -92,6 +83,7 @@ const Dashboard: React.FC = () => {
       setActiveOffice(selectedOffice);
       fetchSpecificTotal(selectedOffice);
       fetchSpecificInsights(selectedOffice);
+      fetchTopInsights(selectedOffice);
     } catch (error) {
       console.log(error);
     }
@@ -319,8 +311,6 @@ const Dashboard: React.FC = () => {
       console.error("Error fetching departments: ", error);
     }
   };
-
-
   
 
   const fetchAcadYears = async () => {
@@ -340,7 +330,6 @@ const Dashboard: React.FC = () => {
         fetchAcadYears(),
         fetchOffices(),
         fetchTotalFeedback(),
-        fetchInsights(),
         fetchTopInsights(),
       ]);
     } catch (error) {
@@ -349,9 +338,24 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const fetchWords = async(office = null) =>{
+    try{
+      if(office === null){
+        const response = await axios.get(serverUrl + "fetchWordCloud");
+        setWords(response.data);
+      }else{
+        const response = await axios.post(serverUrl + "fetchWordCloud", {office: office});
+        setWords(response.data);
+      }
+    }catch(error){
+      console.error(error);
+    }
+  };
+
   
   useEffect(() => {
     fetchAllData();
+    fetchWords();
   }, []); 
 
   useEffect(() => {
