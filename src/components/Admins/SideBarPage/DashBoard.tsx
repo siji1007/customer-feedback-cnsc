@@ -53,7 +53,6 @@ const Dashboard: React.FC = () => {
   const [insights, setInsights] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [top10, setTop10] = useState<string[][]>([]);
-
   const [words, setWords] = useState<[]>([]);
 
   const options = { 
@@ -82,8 +81,9 @@ const Dashboard: React.FC = () => {
       fetchDataRight(selectedOffice);
       setActiveOffice(selectedOffice);
       fetchSpecificTotal(selectedOffice);
-      fetchSpecificInsights(selectedOffice);
       fetchTopInsights(selectedOffice);
+      fetchChartLeft(selectedOffice);
+      fetchTotalFeedback(selectedOffice);
     } catch (error) {
       console.log(error);
     }
@@ -99,7 +99,7 @@ const Dashboard: React.FC = () => {
 
   const fetchAllOffice = (state) => {
     if (state === "on") {
-      fetchChartLeft();
+      fetchChartLeft(null);
       fetchDataRight(null);
     } else {
       fetchSpecificOffice(activeOffice);
@@ -107,10 +107,15 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const fetchTotalFeedback = async () => {
+  const fetchTotalFeedback = async (office) => {
     try {
-      const response = await axios.get(serverUrl + "get_feedback_count");
-      setTotalFeedback(response.data);
+      if(office === null){
+        const response = await axios.get(serverUrl + "get_feedback_count");
+        setTotalFeedback(response.data);
+      }else{
+        const response = await axios.post(serverUrl + "get_feedback_count", {office: office});
+        setTotalFeedback(response.data);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -129,25 +134,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const fetchInsights = async () => {
-    try {
-      const response = await axios.get(serverUrl + "fetchCommentSummary");
-      setInsights(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchSpecificInsights = async (office) => {
-    try {
-      const response = await axios.post(serverUrl + "fetchCommentSummary", {
-        office: office,
-      });
-      setInsights(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+ 
 
   const fetchTopInsights = async (office = null) => {
     try{
@@ -177,9 +164,18 @@ const Dashboard: React.FC = () => {
 
 
   const [dataChartLeft, setDataChartLeft] = useState<number[]>([0, 0, 0, 0, 0]); // add here the data number leftside chart
-  const fetchChartLeft = async () => {
-    const response = await axios.get(serverUrl + "response_data");
-    setDataChartLeft(response.data);
+  const fetchChartLeft = async (office) => {
+    try{
+      if(office === null){
+        const response = await axios.get(serverUrl + "response_data");
+        setDataChartLeft(response.data);
+      }else{
+        const response = await axios.post(serverUrl + "response_data", {office: office});
+        setDataChartLeft(response.data);
+      }
+    }catch(error){
+      console.error(error);
+    }
   };
   const highestValueIndex = dataChartLeft.indexOf(Math.max(...dataChartLeft));
   const dynamicLabel = chartLabelsLeft[highestValueIndex] + " Result";
@@ -337,10 +333,10 @@ const Dashboard: React.FC = () => {
     try {
       await Promise.all([
         fetchDataRight(null),
-        fetchChartLeft(),
+        fetchChartLeft(null),
         fetchAcadYears(),
         fetchOffices(),
-        fetchTotalFeedback(),
+        fetchTotalFeedback(null),
         fetchTopInsights(),
       ]);
     } catch (error) {

@@ -55,7 +55,7 @@ const Settings: React.FC = () => {
   const [acadYears, setAcadYears] = useState([]);
   const [currentAY, setCurrentAY] = useState("");
   const [currentSem, setCurrentSem] = useState("");
-  const semesterList = ["First Semester", "Second Semester", "Mid Year"]
+  const semesterList = ["First Semester", "Second Semester", "Mid Year"];
 
   const handleOpenModal = async (index: number) => {
     //console.log("Opening modal for questionnaire index:", index); // Debugging line
@@ -251,6 +251,8 @@ const Settings: React.FC = () => {
     setEditIndex(null);
   };
 
+
+
   const handleAddQuestionnaire = async () => {
     if (selectedOffice) {
       const newQuestionnaire = {
@@ -259,6 +261,8 @@ const Settings: React.FC = () => {
         office: selectedOffice["name"],
         status: "active",
         type: activeClient,
+        semester: currentSem,
+        academic_year: currentAY
       };
       setNewQuestionnaireName(""); // Clear the input field
       try {
