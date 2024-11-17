@@ -138,47 +138,42 @@ def select_department():
 # JSON-based
 
 
-from flask_session import Session
+app.config['SECRET_KEY'] = os.urandom(24).hex()  # Replace with your secret key
+app.config['SESSION_TYPE'] = 'mongodb'  # Use MongoDB for session storage
+app.config['SESSION_MONGODB_COLLECTION'] = server.session_collection  # Reference the imported session_collection
+app.config['SESSION_PERMANENT'] = True  # Permanent session
+app.config['SESSION_USE_SIGNER'] = True  # Use signed cookies for security
 
-app.config['SECRET_KEY'] = os.urandom(24).hex()  # Replace with your generated secret key
-app.config['SESSION_TYPE'] = 'filesystem'  # Or 'redis', 'memcached', etc.
-app.config['SESSION_PERMANENT'] = True # or 'redis' or any other type you prefer
+# Enable Cross-Origin Resource Sharing (CORS)
 CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
 
-@app.route('/verify-admin', methods=['POST'])
+@app.route('/verify-admin', methods=['POST'])   
 def login():
     admin_data = request.get_json()
     userName = admin_data['admin_username']
     passWord = admin_data['admin_password']
+
+    # Authenticate admin user using the predefined `user_collection`
     user = server.user_collection.find_one({'Username': userName, 'Password': passWord, 'type': 'admin'})
-    Session(app)
-    
     if user:
-        # Create a session cookie
-        session['admin'] = user['Username']  # You can store any user data you need in the session
-        print(f"Session created: {session}") 
+        # Store session in MongoDB
+        session['admin'] = user['Username']  # Store username in session
         return jsonify(message="Access Granted"), 200
     else:
         return jsonify(message="Invalid Credentials"), 401
-    
+
 @app.route('/check-session', methods=['GET'])
 def check_session():
-    print(f"Current session: {session}")  # Print the current session state
     if 'admin' in session:
         return jsonify(message="Session is active", username=session['admin']), 200
     else:
-        return jsonify(message="No active session", status=401), 401
+        return jsonify(message="No active session"), 401
 
-    
-    
 @app.route('/logout', methods=['POST'])
 def logout():
     session.clear()  # Clear the session
     return jsonify(message="Logged out successfully"), 200
-
-
-
 
 
 
@@ -686,3 +681,4 @@ def getEvent():
 
 if __name__ == '__main__':
     app.run(port="8082")
+    
