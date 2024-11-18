@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, Outlet, useMatch } from "react-router-dom";
 import cnscLogo from '../../assets/cnsc_logo.png';
+import ForgetPass from '../../accounts/forgetpass';
+import Modal from 'react-modal';
 import axios from "axios";
 
 interface AdminCredentials {
@@ -29,10 +31,12 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
   const formType = queryParams.get("form") || localStorage.getItem('formType');
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
   const [showPassword, setShowPassword] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const toggleFooter = () => {
-    setIsFooterVisible(prev => !prev);
-  };
+  
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const [adminCredentials, setAdminCredentials] = useState<AdminCredentials>({
     admin_username: "",
@@ -152,8 +156,6 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
     }
   }, [formType]);
 
-  const isAdminLogin = useMatch("/admin");
-  const isOfficeHeadLogin = useMatch("/admin/officehead");
 
   
 
@@ -241,6 +243,14 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
               >
                 Admin credentials not found
               </h4>
+              <button
+                type="button"
+                className="text-sm text-right underline w-full"
+                onClick={openModal}
+              >
+                Forget Password?
+              </button>
+
             </div>
             <button
               type="submit"
@@ -321,6 +331,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
               >
                 Office Head credentials not found
               </h4>
+              <button className="text-sm text-right underline w-full">Forget Password?</button>
             </div>
             <button
               type="submit"
@@ -342,8 +353,20 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
           <Outlet />
             </div>
        } {/* Render nested routes here */}
+        {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-white w-96 max-w-full rounded-lg shadow-lg p-6 relative">
+                    <button
+                      onClick={closeModal}
+                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 transition"
+                    >
+                      ×
+                    </button>
+                    <ForgetPass />
+                  </div>
+                </div>
+              )}
       </main>
-
 
     </div>
   );
