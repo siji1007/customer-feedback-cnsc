@@ -385,7 +385,7 @@ def fetchResponseData():
 
     if request.method == "POST":
         request_data = request.get_json()
-        response_list = [r for r in response_data if r["office"] == request_data["office"]]
+        response_list = [r for r in response_data if r["office"] == request_data["office"] and r["semester"] == request_data["semester"] and r["academic_year"] == request_data["ay"]]
     else:
         response_list = [r for r in response_data]
 
@@ -464,7 +464,7 @@ def fetchRespondents():
     
     if request.method == "POST":
         request_data = request.get_json()
-        answer_list = [al for al in answer_data if al["office"] == request_data["office"]]
+        answer_list = [al for al in answer_data if al["office"] == request_data["office"] and al["semester"] == request_data["semester"] and al["academic_year"] == request_data["ay"]]
     else:
         answer_list = [al for al in answer_data]
    
@@ -512,8 +512,11 @@ def fetchFeedbackCount():
 
 @app.route("/fetchSpecificOffice", methods=["POST"])
 def fetchSpecificFeedbackCount():
-    specific_office = request.get_json()
-    count = server.answer_collection.count_documents({"office": specific_office["office"]})
+    if request.method == "POST":
+        specific_office = request.get_json()
+        count = server.answer_collection.count_documents({"office": specific_office["office"], "semester": specific_office["semester"], "academic_year": specific_office["ay"]})
+    else:
+        count = server.answer_collection.count_documents()
     return jsonify(count)
 
 @app.route("/fetchQuestionnaireStatus", methods=["POST"])
@@ -573,7 +576,7 @@ def fetchTopInsights():
     
     if request.method == "POST":
         request_data = request.get_json()
-        insights = [ins["comment"] for ins in insight_list if ins["office"] == request_data["office"]]
+        insights = [ins["comment"] for ins in insight_list if ins["office"] == request_data["office"] and ins["semester"] == request_data["semester"] and ins["academic_year"] == request_data["ay"]]
     else:
         insights = [ins["comment"] for ins in insight_list]
 

@@ -47,10 +47,10 @@ const Dashboard: React.FC = () => {
   const [offices, setOffices] = useState<Office[]>([]);
   const [totalFeedback, setTotalFeedback] = useState(0);
   const [acadYears, setAcadYears] = useState<string[]>([]);
+  const [semester, setSemester] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState(acadYears[0] || "");
   const [showDetailedView, setShowDetailedView] = useState(false);
   const [content, setContent] = useState("");
-  const [insights, setInsights] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [top10, setTop10] = useState<string[][]>([]);
   const [words, setWords] = useState<[]>([]);
@@ -72,18 +72,18 @@ const Dashboard: React.FC = () => {
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
 
   const [activeOffice, setActiveOffice] = useState("");
-  const fetchSpecificOffice = async (selectedOffice) => {
+  const fetchSpecificOffice = async (selectedOffice, selectedSem, selectedAY) => {
     try {
       const response = await axios.post(serverUrl + "fetch_specific_dept", {
         selectedOffice: selectedOffice,
       });
       setDataChartLeft(response.data);
-      fetchDataRight(selectedOffice);
+      fetchDataRight(selectedOffice, selectedSem, selectedAY);
       setActiveOffice(selectedOffice);
-      fetchSpecificTotal(selectedOffice);
-      fetchTopInsights(selectedOffice);
-      fetchChartLeft(selectedOffice);
-      fetchTotalFeedback(selectedOffice);
+      fetchSpecificTotal(selectedOffice, selectedSem, selectedAY);
+      fetchTopInsights(selectedOffice, selectedSem, selectedAY);
+      fetchChartLeft(selectedOffice, selectedSem, selectedAY);
+      fetchTotalFeedback(selectedOffice, selectedSem, selectedAY);
     } catch (error) {
       console.log(error);
     }
@@ -99,21 +99,21 @@ const Dashboard: React.FC = () => {
 
   const fetchAllOffice = (state) => {
     if (state === "on") {
-      fetchChartLeft(null);
-      fetchDataRight(null);
+      fetchChartLeft(null, null, null);
+      fetchDataRight(null,null,null);
     } else {
-      fetchSpecificOffice(activeOffice);
-      fetchDataRight(activeOffice);
+      fetchSpecificOffice(activeOffice, semester, selectedYear);
+      fetchDataRight(activeOffice, semester, selectedYear);
     }
   };
 
-  const fetchTotalFeedback = async (office) => {
+  const fetchTotalFeedback = async (office, semester, ay) => {
     try {
-      if(office === null){
+      if(office === null && semester === null && ay === null){
         const response = await axios.get(serverUrl + "get_feedback_count");
         setTotalFeedback(response.data);
       }else{
-        const response = await axios.post(serverUrl + "get_feedback_count", {office: office});
+        const response = await axios.post(serverUrl + "get_feedback_count", {office: office, semester: semester, ay: ay});
         setTotalFeedback(response.data);
       }
     } catch (error) {
@@ -123,12 +123,17 @@ const Dashboard: React.FC = () => {
 
 
 
-  const fetchSpecificTotal = async (office) => {
+  const fetchSpecificTotal = async (office, semester, ay) => {
     try {
-      const response = await axios.post(serverUrl + "fetchSpecificOffice", {
-        office: office,
-      });
-      setTotalFeedback(response.data);
+      if(office === "" && semester ==="" && ay===""){
+        const response = await axios.get(serverUrl + "fetchSpecificOffice");
+        setTotalFeedback(response.data);
+      }else{
+        const response = await axios.post(serverUrl + "fetchSpecificOffice", {
+          office: office, semester: semester, ay: ay
+        });
+        setTotalFeedback(response.data);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -136,11 +141,11 @@ const Dashboard: React.FC = () => {
 
  
 
-  const fetchTopInsights = async (office = null) => {
+  const fetchTopInsights = async (office = null, semester = null, ay = null) => {
     try{
-      if(office != null){
+      if(office != null && semester != null && ay != null){
         const response = await axios.post(serverUrl + "fetchTopInsights", {
-          office: office,
+          office: office, semester: semester, ay: ay
         });
         setTop10(response.data.sc)
       }else{
@@ -164,13 +169,13 @@ const Dashboard: React.FC = () => {
 
 
   const [dataChartLeft, setDataChartLeft] = useState<number[]>([0, 0, 0, 0, 0]); // add here the data number leftside chart
-  const fetchChartLeft = async (office) => {
+  const fetchChartLeft = async (office, semester, ay) => {
     try{
-      if(office === null){
+      if(office === null && semester === null && ay === null){
         const response = await axios.get(serverUrl + "response_data");
         setDataChartLeft(response.data);
       }else{
-        const response = await axios.post(serverUrl + "response_data", {office: office});
+        const response = await axios.post(serverUrl + "response_data", {office: office, semester: semester, ay:ay});
         setDataChartLeft(response.data);
       }
     }catch(error){
@@ -238,7 +243,7 @@ const Dashboard: React.FC = () => {
 
   const chartLabelsRight = ["Students","Employee","Others"];
   const [chartDataRight, setChartDataRight] = useState<number[]>([0, 0, 0]);
-  const fetchDataRight = async (office) => {
+  const fetchDataRight = async (office, semester, ay) => {
     try {
       if(office === null){
         const response = await axios.get(serverUrl + "respondent_data");
@@ -246,7 +251,7 @@ const Dashboard: React.FC = () => {
       }else{
         const response = await axios.post(
           serverUrl + "respondent_data",
-          { office: office },
+          { office: office, semester: semester, ay: ay },
         );
         setChartDataRight(response.data);
       }
@@ -332,11 +337,11 @@ const Dashboard: React.FC = () => {
   const fetchAllData = async () => {
     try {
       await Promise.all([
-        fetchDataRight(null),
-        fetchChartLeft(null),
+        fetchDataRight(null, null, null),
+        fetchChartLeft(null, null, null),
         fetchAcadYears(),
         fetchOffices(),
-        fetchTotalFeedback(null),
+        fetchTotalFeedback(null,null,null),
         fetchTopInsights(),
       ]);
     } catch (error) {
@@ -495,7 +500,7 @@ const Dashboard: React.FC = () => {
                     if (selectedValue === "") {
                       fetchAllData(); 
                     } else {
-                      fetchSpecificOffice(selectedValue); 
+                      fetchSpecificOffice(selectedValue, semester, selectedYear); 
                     }
                   }}
                 >
@@ -519,10 +524,22 @@ const Dashboard: React.FC = () => {
                   <select
                     id="semesterSelect"
                     className="bg-white-100 text-black border border-gray-600 flex-grow w-full"
+                    value={event?.target.value}
+                    onChange={
+                      (e) => {
+                        const selectedValue = e.target.value;
+                        setSemester(selectedValue);
+                        if (selectedValue === "") {
+                          fetchAllData(); 
+                        } else {
+                          fetchSpecificOffice(activeOffice, selectedValue, selectedYear); 
+                        }
+                      }
+                    }
                   >
                     <option value=""></option>
-                    <option value="first">First Semester</option>
-                    <option value="second">Second Semester</option>
+                    <option value="First Semester">First Semester</option>
+                    <option value="Second Semester">Second Semester</option>
                   </select>
                 </div>
                 <div className="flex items-center">
@@ -535,8 +552,18 @@ const Dashboard: React.FC = () => {
                   <select
                     id="academicYearSelect"
                     className="bg-white-100 text-black border border-gray-600 flex-grow w-full"
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)} // Handle changes
+                    value={event?.target.value}
+                    onChange={
+                      (e) => {
+                        const selectedValue = e.target.value;
+                        setSelectedYear(selectedValue);
+                        if (selectedValue === "") {
+                          fetchAllData(); 
+                        } else {
+                          fetchSpecificOffice(activeOffice, semester, selectedValue); 
+                        }
+                      }
+                    } // Handle changes
                   >
                     {acadYears.map((acadYear) => (
                       <option key={acadYear} value={acadYear}>
