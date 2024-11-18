@@ -1,69 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 const ForgetPass: React.FC = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [step, setStep] = useState<'email' | 'otp' | 'newPassword'>('email'); // Step state to toggle views
-  const [otp, setOtp] = useState(['', '', '', '']); // Array to store OTP digits
+  const [step, setStep] = useState<'email' | 'otp' | 'newPassword'>('email');
+  const [otp, setOtp] = useState(['', '', '', '']);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   const handleSubmitEmail = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!email) {
       setMessage('Please enter your email address.');
       return;
     }
-
-    // Simulate API call
     setMessage('');
-    setStep('otp'); // Move to OTP step
+    setStep('otp');
   };
 
   const handleOtpChange = (index: number, value: string) => {
     const updatedOtp = [...otp];
-    updatedOtp[index] = value.slice(0, 1); // Ensure only a single digit
+    updatedOtp[index] = value.slice(0, 1); 
     setOtp(updatedOtp);
+
+
+    if (value && otpRefs.current[index + 1]) {
+      otpRefs.current[index + 1]?.focus();
+    }
   };
 
   const handleSubmitOtp = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (otp.some((digit) => !digit)) {
       setMessage('Please enter all OTP digits.');
       return;
     }
-
-    // Simulate OTP verification
     setMessage('');
-    setStep('newPassword'); // Move to new password step
+    setStep('newPassword');
   };
 
   const handleSubmitNewPassword = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!newPassword || !confirmPassword) {
       setMessage('Please enter both password fields.');
       return;
     }
-
     if (newPassword !== confirmPassword) {
       setMessage('Passwords do not match.');
       return;
     }
-
-    // Simulate password reset API call
     setMessage('Password successfully reset!');
-    
-    // You can now handle the password reset, e.g., navigate or reset fields.
   };
 
   return (
-    <div className="forget-pass-container w-full max-w-md mx-auto p-6 bg-white rounded-lg">
+    <div className="forget-pass-container w-full max-w-md mx-auto p-2 bg-white rounded-lg">
       {step === 'email' ? (
         <>
-          <h2 className="text-2xl font-bold text-center mb-6">Forgot Password</h2>
+          <h2 className="text-2xl font-bold text-center mb-2">Forgot Password</h2>
+          <p className="text-gray-500 mb-3">
+            To reset your password, submit your email address below. If we can
+            find you in the database, an OTP will be sent to your email address,
+            with instructions how to get access again.
+          </p>
           <form onSubmit={handleSubmitEmail}>
             <div className="mb-4">
               <label
@@ -109,6 +110,7 @@ const ForgetPass: React.FC = () => {
                   value={digit}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   maxLength={1}
+                  ref={(el) => (otpRefs.current[index] = el)}
                   className="w-12 h-12 text-center border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
               ))}

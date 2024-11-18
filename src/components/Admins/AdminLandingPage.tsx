@@ -353,19 +353,20 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
           <Outlet />
             </div>
        } {/* Render nested routes here */}
-        {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <div className="bg-white w-96 max-w-full rounded-lg shadow-lg p-6 relative">
-                    <button
-                      onClick={closeModal}
-                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 transition"
-                    >
-                      ×
-                    </button>
-                    <ForgetPass />
-                  </div>
-                </div>
-              )}
+       {isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white w-1/2 max-w-full rounded-lg shadow-lg p-6 relative">
+              <button
+                onClick={closeModal}
+                className="absolute top-0 right-2 text-gray-500 hover:text-gray-800 transition text-xl"
+              >
+                ×
+              </button>
+              <ForgetPass />
+            </div>
+          </div>
+        )}
+
       </main>
 
     </div>
