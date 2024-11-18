@@ -331,7 +331,13 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
               >
                 Office Head credentials not found
               </h4>
-              <button className="text-sm text-right underline w-full">Forget Password?</button>
+              <button
+                type="button"
+                className="text-sm text-right underline w-full"
+                onClick={openModal}
+              >
+                Forget Password?
+              </button>
             </div>
             <button
               type="submit"
