@@ -221,7 +221,6 @@ def generate_otp():
     return otp
 
 
-
 @app.route('/fetch_email', methods=['POST'])
 def fetch_email():
     data = request.json
@@ -258,8 +257,6 @@ def fetch_email():
             return jsonify({"success": False, "message": "Failed to send OTP", "error": str(e)}), 500
     else:
         return jsonify({"success": False, "message": "Email not found"}), 404
-
-
 
 
 @app.route('/reset_password', methods=['POST'])
