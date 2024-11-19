@@ -10,24 +10,23 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const serverUrl = import.meta.env.VITE_APP_SERVERHOST; // Your backend URL
-axios.defaults.withCredentials = true; // Make sure this is set
+const serverUrl = import.meta.env.VITE_APP_SERVERHOST; 
+axios.defaults.withCredentials = true; 
 
 
-// Define a component for handling session check
 function SessionChecker({ setShowLoginForm }: { setShowLoginForm: (show: boolean) => void }) {
   const navigate = useNavigate();
+
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await axios.get(serverUrl + "check-session", { withCredentials: true });
+        const response = await axios.get(serverUrl + "/check-session", { withCredentials: true });
         if (response.status === 200) {
-          setShowLoginForm(false); 
-          navigate("/admin/vpre");  
-        
+          setShowLoginForm(false);
+          navigate("/admin/vpre");
         }
       } catch (error) {
-        setShowLoginForm(true);  
+        setShowLoginForm(true);
       }
     };
 

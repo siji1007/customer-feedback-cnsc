@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import axios from "axios";
 
 const ForgetPass: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -7,30 +8,59 @@ const ForgetPass: React.FC = () => {
   const [otp, setOtp] = useState(['', '', '', '']);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-
+  const [sentOtp, setSentOtp] = useState<string>('');
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const handleSubmitEmail = (e: React.FormEvent) => {
+  const handleSubmitEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       setMessage('Please enter your email address.');
       return;
     }
     setMessage('');
-    setStep('otp');
+  
+    try {
+      const response = await axios.post(
+        import.meta.env.VITE_APP_SERVERHOST + '/fetch_email',
+        { email }
+      );
+  
+      if (response.data.success) {
+
+        const otp = response.data.otp;
+        if (otp) {
+          setSentOtp(otp); 
+          setMessage('Email found! Please proceed to OTP.');
+          setStep('otp');
+        } else {
+          setMessage('Failed to retrieve OTP from the response.');
+        }
+      } else {
+        setMessage(response.data.message); 
+      }
+    } catch (error) {
+      console.error('Error fetching email:', error);
+      setMessage('An error occurred while checking the email.');
+    }
   };
 
   const handleOtpChange = (index: number, value: string) => {
     const updatedOtp = [...otp];
-    updatedOtp[index] = value.slice(0, 1); 
+    updatedOtp[index] = value.slice(0, 1);
     setOtp(updatedOtp);
 
-
+    // Auto-focus to the next input
     if (value && otpRefs.current[index + 1]) {
       otpRefs.current[index + 1]?.focus();
     }
   };
+
+
+  useEffect(() => {
+    if (otp.every(digit => digit !== '')) {
+      handleSubmitOtp(new Event('submit'));
+    }
+  }, [otp]);
 
   const handleSubmitOtp = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,8 +68,15 @@ const ForgetPass: React.FC = () => {
       setMessage('Please enter all OTP digits.');
       return;
     }
-    setMessage('');
-    setStep('newPassword');
+
+
+    const enteredOtp = otp.join('');
+    if (enteredOtp === sentOtp) {
+      setMessage('');
+      setStep('newPassword');
+    } else {
+      setMessage('Incorrect OTP. Please try again.');
+    }
   };
 
   const handleSubmitNewPassword = (e: React.FormEvent) => {
