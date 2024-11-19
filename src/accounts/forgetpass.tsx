@@ -79,18 +79,52 @@ const ForgetPass: React.FC = () => {
     }
   };
 
-  const handleSubmitNewPassword = (e: React.FormEvent) => {
+  const handleSubmitNewPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // Check if both password fields are filled in
     if (!newPassword || !confirmPassword) {
       setMessage('Please enter both password fields.');
       return;
     }
+  
+    // Check if both passwords match
     if (newPassword !== confirmPassword) {
       setMessage('Passwords do not match.');
       return;
     }
-    setMessage('Password successfully reset!');
+  
+    // Log the values to confirm they're correct before sending the request
+    console.log('Email:', email);
+    console.log('OTP:', sentOtp);
+    console.log('New Password:', newPassword);
+  
+    try {
+      // Send the request to the backend with email, OTP, and new password
+      const response = await axios.post(
+        import.meta.env.VITE_APP_SERVERHOST + '/reset_password',
+        { 
+          email, 
+          otp: sentOtp, 
+          new_password: newPassword // Ensure the key matches what the backend expects
+        }
+      );
+  
+      // Check the response from the server
+      if (response.data.success) {
+        setMessage('Password successfully reset! You can now log in with your new password.');
+        // Optionally reset to the email step or redirect to login page
+        setStep('email'); // Reset to the first step or redirect
+      } else {
+        setMessage(response.data.message || 'Failed to reset password.');
+      }
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      setMessage('An error occurred while resetting the password.');
+    }
   };
+  
+
 
   return (
     <div className="forget-pass-container w-full max-w-md mx-auto p-2 bg-white rounded-lg">
@@ -138,6 +172,9 @@ const ForgetPass: React.FC = () => {
           <h2 className="text-2xl font-bold text-center mb-6">
             Enter the OTP sent to your email
           </h2>
+          <p className="text-gray-500 mb-3">
+          Please check your email for the OTP we sent and keep it confidential.
+          </p>
           <form onSubmit={handleSubmitOtp}>
             <div className="flex justify-center gap-2 mb-6">
               {otp.map((digit, index) => (

@@ -21,7 +21,7 @@ import numpy as np
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sentence_transformers import SentenceTransformer, util
-
+from datetime import datetime, timezone, timedelta
 from flask_mail import Mail, Message
 
 app = Flask(__name__)
@@ -207,29 +207,22 @@ def logout():
     return jsonify(message="Logged out successfully"), 200
 
 
-
-# Flask-Mail Configuration (fill in actual details)
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Replace with your SMTP server
-app.config['MAIL_PORT'] = 587  # or 465 for SSL
+# This is temporary account 
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  
+app.config['MAIL_PORT'] = 587 
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = 'smartcook23@gmail.com'  # Your email
-app.config['MAIL_PASSWORD'] = 'asflajdmsabuomwh'  # Your email password
+app.config['MAIL_USERNAME'] = 'smartcook23@gmail.com'  
+app.config['MAIL_PASSWORD'] = 'asflajdmsabuomwh'  
 app.config['MAIL_DEFAULT_SENDER'] = 'smartcook23@gmail.com'
 
 mail = Mail(app)
 
-# Your database setup (e.g., MongoDB or any other database)
-# For MongoDB, you would use something like:
-# server = MongoClient('mongodb://localhost:27017/')
-# db = server.your_database
-# user_collection = db.users
-
-# Function to generate a 4-digit OTP
 import string
 def generate_otp():
-    otp = ''.join(random.choices(string.digits, k=4))  # Generates a 4-digit OTP
+    otp = ''.join(random.choices(string.digits, k=4)) 
     return otp
+
 
 
 @app.route('/fetch_email', methods=['POST'])
@@ -245,21 +238,80 @@ def fetch_email():
     
     if user:
         otp = generate_otp()
+        expiry_time = datetime.now(timezone.utc) + timedelta(minutes=10)  
+
+        server.user_collection.update_one(
+            {"email": email},
+            {"$set": {"otp": otp, "otp_expiry": expiry_time}}
+        )
+
+        print(f"Generated OTP: {otp}, Expiry Time: {expiry_time}")  
+
         try:
-            # Send OTP email
-            msg = Message(subject="Your OTP Code",
-                        recipients=[email],
-                        body=f"Your OTP code is: {otp}")
+            msg = Message(
+                subject=f"Your OTP Code {otp}",
+                recipients=[email],
+                body=f"Your OTP code is: {otp}. It will expire in 10 minutes. If you did not request this OTP, please disregard it. "
+            )
             mail.send(msg)
 
-            # Return OTP in the response
+ 
             return jsonify({"success": True, "message": "OTP sent successfully", "otp": otp}), 200
         except Exception as e:
             return jsonify({"success": False, "message": "Failed to send OTP", "error": str(e)}), 500
-
     else:
-        # If the email is not found in the database
         return jsonify({"success": False, "message": "Email not found"}), 404
+
+
+
+
+@app.route('/reset_password', methods=['POST'])
+def reset_password():
+    data = request.json
+    email = data.get('email')
+    otp = data.get('otp')
+    new_password = data.get('new_password')
+
+    if not email or not otp or not new_password:
+        return jsonify({"success": False, "message": "Email, OTP, and new password are required"}), 400
+
+
+    user = server.user_collection.find_one({"email": email})
+
+    if not user:
+        return jsonify({"success": False, "message": "Invalid email"}), 404
+
+    print(f"Stored OTP: {user.get('otp')}, Provided OTP: {otp}")  
+
+    if user.get('otp') != otp:
+        return jsonify({"success": False, "message": "Invalid OTP"}), 401
+
+    # Ensure the otp_expiry is timezone-aware
+    otp_expiry = user.get('otp_expiry')
+    
+    if otp_expiry is not None:
+        if otp_expiry.tzinfo is None:
+            otp_expiry = otp_expiry.replace(tzinfo=timezone.utc)
+
+
+    current_time = datetime.now(timezone.utc)
+
+
+    if current_time > otp_expiry:
+        return jsonify({"success": False, "message": "OTP has expired"}), 401
+
+
+    result = server.user_collection.update_one(
+        {"email": email},
+        {"$set": {"Password": new_password}, "$unset": {"otp": "", "otp_expiry": ""}}
+    )
+
+    if result.modified_count > 0:
+        return jsonify({"success": True, "message": "Password reset successfully"}), 200
+    else:
+        return jsonify({"success": False, "message": "Failed to reset password"}), 500
+
+
 
 @app.route('/verify_oh', methods=['POST'])
 def verify_oh():
