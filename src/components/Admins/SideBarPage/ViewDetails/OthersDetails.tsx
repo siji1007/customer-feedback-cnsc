@@ -101,8 +101,8 @@ const OthersDetails: React.FC = () => {
         <div className="flex flex-col">
           <label htmlFor="semesterSelect" className="font-bold">Semester</label>
           <select id="semesterSelect" className="bg-white text-black border border-gray-600 text-xs  p-2">
-            <option value="first">First Semester</option>
-            <option value="second">Second Semester</option>
+            <option value="First Semester">First Semester</option>
+            <option value="Second Semester">Second Semester</option>
           </select>
         </div>
         <div className="flex flex-col">

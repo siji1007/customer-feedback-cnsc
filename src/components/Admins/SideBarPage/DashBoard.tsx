@@ -47,7 +47,7 @@ const Dashboard: React.FC = () => {
   const [offices, setOffices] = useState<Office[]>([]);
   const [totalFeedback, setTotalFeedback] = useState(0);
   const [acadYears, setAcadYears] = useState<string[]>([]);
-  const [semester, setSemester] = useState<string>("");
+  const [semester, setSemester] = useState<string>("First Semester");
   const [selectedYear, setSelectedYear] = useState(acadYears[0] || "");
   const [showDetailedView, setShowDetailedView] = useState(false);
   const [content, setContent] = useState("");
@@ -84,6 +84,7 @@ const Dashboard: React.FC = () => {
       fetchTopInsights(selectedOffice, selectedSem, selectedAY);
       fetchChartLeft(selectedOffice, selectedSem, selectedAY);
       fetchTotalFeedback(selectedOffice, selectedSem, selectedAY);
+      fetchWords(selectedOffice, selectedSem, selectedAY);
     } catch (error) {
       console.log(error);
     }
@@ -101,9 +102,11 @@ const Dashboard: React.FC = () => {
     if (state === "on") {
       fetchChartLeft(null, null, null);
       fetchDataRight(null,null,null);
+      fetchTotalFeedback(null, null, null);
     } else {
       fetchSpecificOffice(activeOffice, semester, selectedYear);
       fetchDataRight(activeOffice, semester, selectedYear);
+      fetchTotalFeedback(activeOffice, semester, selectedYear);
     }
   };
 
@@ -350,13 +353,13 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const fetchWords = async(office = null) =>{
+  const fetchWords = async(office = null, semester = null, ay = null) =>{
     try{
       if(office === null){
         const response = await axios.get(serverUrl + "fetchWordCloud");
         setWords(response.data);
       }else{
-        const response = await axios.post(serverUrl + "fetchWordCloud", {office: office});
+        const response = await axios.post(serverUrl + "fetchWordCloud", {office: office, semester: semester, ay: ay});
         setWords(response.data);
       }
     }catch(error){
@@ -537,8 +540,7 @@ const Dashboard: React.FC = () => {
                       }
                     }
                   >
-                    <option value=""></option>
-                    <option value="First Semester">First Semester</option>
+                    <option value="First Semester" selected>First Semester</option>
                     <option value="Second Semester">Second Semester</option>
                   </select>
                 </div>

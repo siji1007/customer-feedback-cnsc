@@ -598,16 +598,17 @@ def fetchTopInsights():
 def fetchWordCloud():
     insight_data = server.answer_collection.find()
     insight_list = [insight for insight in insight_data]
-  
+    
     if request.method == "POST":
         request_data = request.get_json()
+        print(request_data)
         office_filter = request_data["office"]
-        insights = [ins["comment"] for ins in insight_list if ins["office"] == office_filter]
+        insights = [ins["comment"] for ins in insight_list if ins["office"] == office_filter and ins["semester"] == request_data["semester"] and ins["academic_year"] == request_data["ay"]]
     else:
         insights = [ins["comment"] for ins in insight_list]
     
     if not insights:
-        return jsonify({"message": "No insights found for the given office."}), 404
+        return jsonify([])
     
     # Step 1: Create a CountVectorizer to process the text data (filtering stopwords)
     vectorizer = CountVectorizer(stop_words='english', max_features=1000)
