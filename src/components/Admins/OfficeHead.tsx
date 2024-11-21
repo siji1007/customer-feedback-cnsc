@@ -252,6 +252,7 @@ const OfficeHead: React.FC = () => {
     fetchOffices();
     fetchTotalFeedback();
     fetchInsights();
+    fetchSpecificOffice(localStorage.getItem("department"));
   }, []);
 
   const getChart1Data = () => chart1Data[chart1Type];
@@ -273,40 +274,6 @@ const OfficeHead: React.FC = () => {
   return (
     <main className="w-full m-4">
       <header className="w-full border-b flex items-center justify-between bg-red-900 p-2 rounded-lg">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="selectAll"
-                  className="mr-2 h-5 w-5"
-                  onChange={(e) => fetchAllOffice(e.target.checked ? "on" : "off")}
-                />
-                <label
-                  htmlFor="selectAll"
-                  className="text-sm text-white font-bold mr-4"
-                >
-                  All
-                </label>
-
-                <label
-                  htmlFor="officeSelect"
-                  className="text-sm text-white font-bold mr-2"
-                >
-                  Select Office
-                </label>
-                <select
-                  id="officeSelect"
-                  className="bg-white-100 text-black  text-sm border border-gray-600  py-1 px-2"
-                  value={event?.target.value}
-                  onChange={(e) => fetchSpecificOffice(e.target.value)}
-                >
-                  <option value=""></option>
-                  {offices.map((office) => (
-                    <option key={office.id} value={office.name}>
-                      {office.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <div className="ml-10 flex flex-col ">
                 <div className="flex items-center">
                   <label

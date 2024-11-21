@@ -96,8 +96,8 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
             { withCredentials: true }  
         );
 
-        console.log("Response:", response);  
-        console.log("Response status:", response.status);  
+        //console.log("Response:", response);  
+        //console.log("Response status:", response.status);  
 
         if (response.status === 200) {
             setShowLoginForm(false);
@@ -129,6 +129,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
         serverUrl + "verify_oh",
         officeHeadCredentials
       );
+      localStorage.setItem('department', response.data.Department);
       setHasError(false);
       setShowLoginForm(false);
       navigate("/admin/officehead"); // Navigate to the OfficeHead page
