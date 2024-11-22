@@ -43,15 +43,15 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="w-full h-19 bg-red-900 flex justify-between items-center px-4">
+      <header className="w-full h-19 bg-red-900 flex justify-between items-center px-4 fixed top-0 left-0 z-10">
         <div className="flex items-center">
-          <img src={IconCNSC} alt="Logo" className="h-16 w-16 object-contain" />
-          <div className="ml-4 flex flex-col justify-center">
+          <img src={IconCNSC} alt="Logo"   className="h-14 w-14 object-contain sm:h-16 sm:w-16"  />
+          <div className="ml-2 flex flex-col justify-center">
             <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold"
                 style={{ borderBottom: '2px solid gold' }}>
               Camarines Norte State College
             </h1>
-            <h1 className="text-white text-sm sm:text-sm md:text-xs lg:text-xm font-bold">Client Feedback System</h1>
+            <h1 className="text-white text-sm sm:text-sm md:text-xs lg:text-xm">Client Feedback System</h1>
           </div>
         </div>
             {/* Conditionally render logout button */}
@@ -66,9 +66,9 @@ const LandingPage: React.FC = () => {
       </header>
 
       {/* Main class where we store the login Forms and Survey Form*/}
-      <main className="flex-grow flex flex-col justify-center items-center overflow-auto h-min-screen m-5">
+      <main className="flex-grow flex justify-center flex-col overflow-auto mt-19 items-center ">
         {!showSurveyForm && selectedLogin === '' && (
-          <nav className="flex flex-col space-y-4 p-10 shadow-lg">
+        <nav className="flex flex-col space-y-4 p-20 shadow-lg w-full md:w-1/2  ">   
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center m-3">CLIENTS</h1>
             <button className="bg-red-900 text-white py-2 px-4 rounded-lg" onClick={() => handleLoginSelection('student')}>
               Student

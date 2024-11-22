@@ -4,6 +4,7 @@ import cnscLogo from '../../assets/cnsc_logo.png';
 import ForgetPass from '../../accounts/forgetpass';
 import Modal from 'react-modal';
 import axios from "axios";
+import hosting from "../../hostingport.txt?raw";
 
 interface AdminCredentials {
   admin_username: string;
@@ -29,7 +30,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const formType = queryParams.get("form") || localStorage.getItem('formType');
-  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const serverUrl = hosting.trim();
   const [showPassword, setShowPassword] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -60,11 +61,11 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
   const handleLogout = async () => {
     try {
         // Call the logout endpoint on the server
-        await axios.post(serverUrl + "logout", {}, { withCredentials: true });
-        
+        await axios.post(serverUrl + "/logout", {}, { withCredentials: true });
+        const formType = localStorage.getItem('formType');
+        navigate(`/admin?form=${formType}`);
         // Clear local storage and navigate to the login page
-        localStorage.removeItem('formType');
-        navigate(`/admin?form=administrator`);  // Adjust if you have other forms
+        localStorage.removeItem('formType'); 
         setShowLoginForm(true);
     } catch (error) {
         console.error("Logout error:", error);
@@ -91,7 +92,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
         localStorage.setItem('formType', 'administrator');
         
         const response = await axios.post(
-            serverUrl + "verify-admin",
+            serverUrl + "/verify_admin",
             adminCredentials,
             { withCredentials: true }  
         );
@@ -126,7 +127,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
       localStorage.setItem('formType', 'officehead');
       navigate("/admin/officehead"); 
       const response = await axios.post(
-        serverUrl + "verify_oh",
+        serverUrl + "/verify_oh",
         officeHeadCredentials
       );
       localStorage.setItem('department', response.data.Department);
@@ -141,7 +142,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get(serverUrl + "office");
+        const response = await axios.get(serverUrl + "/office");
         setOffices(response.data.offices);
       } catch (error) {
         console.error("Error fetching departments: ", error);
@@ -355,6 +356,96 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
             </button>
           </form>
         )}
+        {showLoginForm && formType === "ResearchCoordinator" && (
+          <form
+               className="flex flex-col items-center justify-center"
+               onSubmit={handleOfficeHeadSignIn}
+             >
+               <h1 className="text-2xl font-bold mb-4">RESEARCH COORDINATOR</h1>
+               <div className="bg-gray-200 border-stone-400 border rounded-lg shadow-md p-4 w-full max-w-md">
+                 <section className="flex justify-between items-center mb-4">
+                   <label
+                     htmlFor="department"
+                     className="w-1/3 text-sm sm:text-base md:text-lg m-2"
+                   >
+                     Department
+                   </label>
+                   <select
+                     id="department"
+                     className="w-2/3 rounded-lg border"
+                     name="officeHead_department"
+                     value={officeHeadCredentials.officeHead_department}        
+                     onChange={handleOHSignInChange}
+                     required
+                   >
+                     <option value="">Select Department</option>
+   
+                     {offices.map((office) => (
+                        <option key={office.id} value={office.name}>                
+                        {/* store here the list of department not the offices */}
+                          {office.name}
+                      </option>
+                      
+       
+                     ))} 
+                      
+                   </select>
+                 </section>
+                 <section className="flex justify-between items-center mb-4">
+                   <label
+                     htmlFor="password"
+                     className="w-1/3 text-sm sm:text-base md:text-lg m-2"
+                   >
+                     Password
+                   </label>
+                   <div className="w-2/3 relative">
+                     <input
+                       type={showPassword ? "text":"password"}
+                       id="password"
+                       className={`${"w-full rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
+                       name="officeHead_password"
+                       value={officeHeadCredentials.officeHead_password}
+                       onChange={handleOHSignInChange}
+                       required
+                     />
+                     <button className="absolute  inset-y-0 right-0 px-3 py-1 text-sm font-bold text-red-800 "
+                       type="button"
+                       onClick={handleTogglePassword}
+                     >
+                       {showPassword ? "Hide" : "Show"}
+                     </button>
+                   </div>
+                 </section>
+                 <h4
+                   className={`${"text-sm text-center text-red-500"} ${hasError ? "" : "hidden"}`}
+                 >
+                   Office Head credentials not found
+                 </h4>
+                 <button
+                   type="button"
+                   className="text-sm text-right underline w-full"
+                   onClick={openModal}
+                 >
+                   Forget Password?
+                 </button>
+               </div>
+               <button
+                 type="submit"
+                 className="mt-4 px-4 py-2 bg-red-900 text-white rounded-lg w-full"
+               >
+                 PROCEED
+               </button>
+               <button
+                 type="button"
+                 className="mt-4 px-4 py-2 text-black w-full"
+                 onClick={handleBackClick}
+               >
+                 Back
+               </button>
+             </form>
+
+        )}
+
       {!showLoginForm &&
           <div className="flex-grow w-full flex main-content">
           <Outlet />
