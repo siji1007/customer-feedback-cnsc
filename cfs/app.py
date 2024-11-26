@@ -320,9 +320,9 @@ def verify_oh():
     officeHead_data = request.get_json()
     dept = officeHead_data['officeHead_department']
     pWord = officeHead_data['officeHead_password']
-    user = server.user_collection.find_one({'Department': dept, 'Password': pWord, 'Type': "office head"})
+    user = server.user_collection.find_one({'department': dept, 'password': pWord, 'type': "office head"})
     if user:
-        return "Access Granted"
+        return jsonify({"department": user["department"]});
     else:
         return "Invalid Credentials", 401
 
