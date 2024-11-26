@@ -9,7 +9,7 @@
 from flask import Flask, render_template, request, flash, redirect, jsonify, session
 from bson.objectid import ObjectId
 from flask_cors import CORS
-import server, json, uuid
+import server, json
 import os, time, random, re, nltk
 from hashlib import sha256
 from collections import Counter
@@ -23,10 +23,10 @@ from nltk.tokenize import word_tokenize
 from sentence_transformers import SentenceTransformer, util
 from datetime import datetime, timezone, timedelta
 from flask_mail import Mail, Message
-from flask_session import Session
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:5173/", "http://192.168.1.2:5173/"]) #http://192.168.1.2:5173/
+
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -138,18 +138,21 @@ def select_department():
         return render_template('admin.html')
 
 
-# JSON-based
+
+
 app.config['SECRET_KEY'] = os.urandom(24).hex()  
-from flask_session import Session
 app.config['SESSION_TYPE'] = 'mongodb'  
 app.config['SESSION_MONGODB_COLLECTION'] = server.session_collection  
 app.config['SESSION_PERMANENT'] = True  
 app.config['SESSION_USE_SIGNER'] = True  
 
-CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+
+CORS(app, supports_credentials=True, origins=["*"])
 
 
-@app.route('/verify-admin', methods=['POST'])
+import uuid
+
+@app.route('/verify_admin', methods=['POST'])
 def login():
     admin_data = request.get_json()
     userName = admin_data['admin_username']
@@ -175,10 +178,9 @@ def login():
         return jsonify(message="Access Granted"), 200
     else:
         return jsonify(message="Invalid Credentials"), 401
-    
-    
-    
-@app.route('/check-session', methods=['GET'])
+
+
+@app.route('/check_session', methods=['GET'])
 def check_session():
     if 'admin' in session:
        
@@ -192,9 +194,11 @@ def check_session():
                 return jsonify(message="Session is active", username=session['admin']), 200
     return jsonify(message="No active session"), 401
 
+
 @app.route('/logout', methods=['POST'])
 def logout():
-    session_id = session.get('session_id')
+    session_id = session.get('session_id') 
+
     if session_id:
       
         server.session_collection.delete_one({'_id': session_id})
@@ -202,8 +206,8 @@ def logout():
     session.clear()  
     
     return jsonify(message="Logged out successfully"), 200
-    
-    
+
+
 # This is temporary account 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'  
 app.config['MAIL_PORT'] = 587 
@@ -219,6 +223,7 @@ import string
 def generate_otp():
     otp = ''.join(random.choices(string.digits, k=4)) 
     return otp
+
 
 
 @app.route('/fetch_email', methods=['POST'])
@@ -257,6 +262,8 @@ def fetch_email():
             return jsonify({"success": False, "message": "Failed to send OTP", "error": str(e)}), 500
     else:
         return jsonify({"success": False, "message": "Email not found"}), 404
+
+
 
 
 @app.route('/reset_password', methods=['POST'])
@@ -304,6 +311,8 @@ def reset_password():
         return jsonify({"success": True, "message": "Password reset successfully"}), 200
     else:
         return jsonify({"success": False, "message": "Failed to reset password"}), 500
+
+
 
 
 @app.route('/verify_oh', methods=['POST'])
@@ -503,16 +512,10 @@ def edit_questions():
            )
     return "Questionnaire Edited Successfully.", 200
 
-@app.route("/response_data", methods=['GET', 'POST'])
+@app.route("/response_data", methods=['GET'])
 def fetchResponseData():
     response_data = server.answer_collection.find()
-
-    if request.method == "POST":
-        request_data = request.get_json()
-        response_list = [r for r in response_data if r["office"] == request_data["office"] and r["semester"] == request_data["semester"] and r["academic_year"] == request_data["ay"]]
-    else:
-        response_list = [r for r in response_data]
-
+    response_list = [r for r in response_data]
     responses = [r["answer"] for r in response_list]
     values = [value for r in responses for value in r.values()]
     all_possible_values = set(range(1, 6))
@@ -582,16 +585,9 @@ def fetchClientDetails():
 def fetchRespondents():
     type_counter = Counter()
     client_answer_counts = 0
-
+    
     answer_data = server.answer_collection.find()
-    
-    
-    if request.method == "POST":
-        request_data = request.get_json()
-        answer_list = [al for al in answer_data if al["office"] == request_data["office"] and al["semester"] == request_data["semester"] and al["academic_year"] == request_data["ay"]]
-    else:
-        answer_list = [al for al in answer_data]
-   
+    answer_list = [al for al in answer_data]
     
     account_data = server.user_collection.find({"account_id": {"$exists": True}})
     account_list = [a for a in account_data]
@@ -624,24 +620,42 @@ def fetchRespondents():
 
     return jsonify(response_array)
 
-@app.route("/get_feedback_count", methods=["GET", "POST"])
+@app.route("/get_feedback_count", methods=["GET"])
 def fetchFeedbackCount():
-    if request.method == "POST":
-        request_data = request.get_json()
-        count = server.answer_collection.count_documents({"account_id": {"$exists": True}, "office": request_data["office"], "semester": request_data["semester"], "academic_year": request_data["ay"]})
-    else:
-        count = server.answer_collection.count_documents({"account_id": {"$exists": True}})
-
+    count = server.answer_collection.count_documents({})
     return jsonify(count)
 
 @app.route("/fetchSpecificOffice", methods=["POST"])
 def fetchSpecificFeedbackCount():
-    if request.method == "POST":
-        specific_office = request.get_json()
-        count = server.answer_collection.count_documents({"office": specific_office["office"], "semester": specific_office["semester"], "academic_year": specific_office["ay"]})
-    else:
-        count = server.answer_collection.count_documents()
+    specific_office = request.get_json()
+    count = server.answer_collection.count_documents({"office": specific_office["office"]})
     return jsonify(count)
+
+@app.route("/fetchCommentSummary", methods=["GET", "POST"])
+def summarizeComments():
+    result = []
+    comment_data = server.answer_collection.find()
+    comment_list = [cl for cl in comment_data]
+    if request.method == "POST":
+        request_data = request.get_json()
+        comments = [c["comment"] for c in comment_list if c["office"] == request_data["office"]]
+    else:
+        comments = [c["comment"] for c in comment_list]
+    vectorizer = CountVectorizer(stop_words='english', max_features=1000)
+    X = vectorizer.fit_transform(comments)
+    lda_model = LatentDirichletAllocation(n_components=min(len(comments), 5), random_state=42)
+    lda_model.fit(X)
+    feature_names = vectorizer.get_feature_names_out()
+    for topic_idx, topic in enumerate(lda_model.components_):
+        result = [feature_names[i] for i in topic.argsort()[:-11:-1]]
+
+    filtered_result = [remove_stopwords(doc, combined_stopwords) for doc in list(set(result))]
+
+    final_result = ""
+    for fs in filtered_result:
+        final_result += fs + " "
+
+    return jsonify(final_result)
 
 @app.route("/fetchQuestionnaireStatus", methods=["POST"])
 def fetchQStats():
@@ -697,24 +711,21 @@ def fetchTopInsights():
     top10 = []
     insight_data = server.answer_collection.find()
     insight_list = [insights for insights in insight_data]
-    
     if request.method == "POST":
         request_data = request.get_json()
-        insights = [ins["comment"] for ins in insight_list if ins["office"] == request_data["office"] and ins["semester"] == request_data["semester"] and ins["academic_year"] == request_data["ay"]]
+        insights = [ins["comment"] for ins in insight_list if ins["office"] == request_data["office"]]
     else:
         insights = [ins["comment"] for ins in insight_list]
 
     embeddings = model.encode(insights, convert_to_tensor=True)
     repetition_count = defaultdict(int)
-    
     for i in range(len(insights)):
         for j in range(i + 1, len(insights)):
             similarity = util.pytorch_cos_sim(embeddings[i], embeddings[j])
             if similarity > 0.5:
                 repetition_count[insights[i]] += 1
                 repetition_count[insights[j]] += 1
-
-    repetition_count = {comment: count for comment, count in repetition_count.items() if comment.strip() != ""}
+        
     sorted_comments = sorted(repetition_count.items(), key=lambda x: x[1], reverse=True)
     return jsonify({"sc": sorted_comments})
 
@@ -763,7 +774,6 @@ def fetchWordCloud():
     sorted_word_cloud_data = sorted(word_cloud_data, key=lambda x: x['value'], reverse=True)
     
     return jsonify(sorted_word_cloud_data)
-
 
 @app.route("/deleteOffice", methods=["POST"])
 def deleteOffice():
@@ -831,4 +841,6 @@ def getEvent():
 
 
 if __name__ == '__main__':
-    app.run(port="8082")
+    app.run(host="0.0.0.0",port="8082")
+    
+
