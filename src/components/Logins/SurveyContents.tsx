@@ -3,6 +3,7 @@ import { CheckIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import SurveyDashboard from "./ClientDashboard";
 import PageDots from "./PageDots";
+import hosting from "../../hostingport.txt?raw";
 
 interface Question {
   q_id: string;
@@ -26,7 +27,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   const [initialTotalDots, setInitialTotalDots] = useState<number>(0);
   const [completedDots, setCompletedDots] = useState<number>(0);
   const [currentOfficeIndex, setCurrentOfficeIndex] = useState<number>(0); // State for current office index
-  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const serverUrl = hosting.trim();
   const questionRefs = useRef<Array<HTMLFormElement | null>>([]);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const [comment, setComment] = useState("");
@@ -36,7 +37,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
 
   const fetchValidity = async () => {
     try{
-      const response = await axios.get(serverUrl + "get_validity")
+      const response = await axios.get(serverUrl + "/get_validity")
       setAcadYear(response.data.acadYear[0]);
       setSemester(response.data.semester[0]);
     }catch(error){
@@ -47,7 +48,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   // Function to fetch external client questions depends on what offices user selected
   const fetchExternalQuestions = async () => {
     try {
-      const response = await axios.post(serverUrl + "show_questions", {office: selectedOffice[currentOfficeIndex], type: "external"});
+      const response = await axios.post(serverUrl + "/show_questions", {office: selectedOffice[currentOfficeIndex], type: "external"});
       setQuestions(response.data);
     } catch (error) {
       console.error("Error fetching external questions:", error);
@@ -57,7 +58,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   // Function to fetch internal client questions
   const fetchInternalQuestions = async () => {
     try {
-      const response = await axios.post(serverUrl + "show_questions", {
+      const response = await axios.post(serverUrl + "/show_questions", {
         office: selectedOffice[currentOfficeIndex], // Use currentOfficeIndex
         type: "internal"
       });
@@ -147,7 +148,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
 
   const handleSubmit = async () => {
     try {
-      await axios.post(serverUrl + "submit_answer", {
+      await axios.post(serverUrl + "/submit_answer", {
         account_id: globalThis.activeId,
         answer: positions,
         office: selectedOffice[0],
@@ -188,32 +189,38 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
       const isAnswered = positions[questionIndex] > 0; // Check if the question is answered
       return (
         <form
-          key={questionIndex}
-          ref={(el) => (questionRefs.current[questionIndex - 1] = el)}
-          className={`bg-gray-100 p-4 rounded-md border-b-2 border-red-800 mb-4 ${isAnswered ? "bg-green-200" : ""}`}
-        >
-          <p className="text-xs md:text-xs lg:text-lg mb-4 shadow-lg">
-            {question.question}
-          </p>
-          <div className="flex justify-between">
-            {[1, 2, 3, 4, 5].map((value) => (
-              <div
-                key={value}
-                className={getEmojiClass(questionIndex, value)}
-                onClick={() => handleEmojiClick(questionIndex, value)}
-              >
-                {getEmoji(value, positions[questionIndex] === value)}
+              key={questionIndex}
+              ref={(el) => (questionRefs.current[questionIndex - 1] = el)}
+              className={`relative bg-gray-100 p-4 rounded-md border-b-2 border-red-800 mb-4 ${isAnswered ? "bg-green-200" : ""}`}
+            >
+              {/* Top-left badge for numbering */}
+              <div className="absolute top-0 left-0 bg-red-800 text-white text-xs font-bold px-1 py-1 rounded-tl-md rounded-br-md">
+                {questionIndex + 1}
               </div>
-            ))}
-          </div>
-          <div className="text-center mt-2">
-            {positions[questionIndex] > 0 && (
-              <span className="text-xs md:text-sm lg:text-lg font-semibold">
-                {getScaleValue(questionIndex)}
-              </span>
-            )}
-          </div>
-        </form>
+            
+              <p className="text-xs md:text-xs lg:text-lg mb-4 shadow-lg ">
+                {question.question}
+              </p>
+              <div className="flex justify-between">
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <div
+                    key={value}
+                    className={getEmojiClass(questionIndex, value)}
+                    onClick={() => handleEmojiClick(questionIndex, value)}
+                  >
+                    {getEmoji(value, positions[questionIndex] === value)}
+                  </div>
+                ))}
+              </div>
+              <div className="text-center mt-2">
+                {positions[questionIndex] > 0 && (
+                  <span className="text-xs md:text-sm lg:text-lg font-semibold">
+                    {getScaleValue(questionIndex)}
+                  </span>
+                )}
+              </div>
+            </form>
+      
       );
     });
   };
@@ -273,7 +280,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
             </h2>
             <p>Thank you for your feedback.</p>
             <button
-              className="mt-6 bg-blue-500 text-white px-4 py-2 rounded-lg"
+              className="mt-6 bg-red-800 text-white px-4 py-2 rounded-lg"
               onClick={handleModalClose}
             >
               Close

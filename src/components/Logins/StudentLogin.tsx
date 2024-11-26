@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import hosting from "../../hostingport.txt?raw";
 
 interface FormData {
   account_id: string;
@@ -60,16 +61,15 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
     setShowPassword(!showPassword);
   };
 
-
+  const serverUrl =  hosting.trim();
 
   const handleStudentSignIn = async (
     event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
     try {
-      onLoginSuccess();
       const response = await axios.post(
-        import.meta.env.VITE_APP_SERVERHOST + "student-login",
+        serverUrl + "/student-login",
         formData,
       );
       setHasError(false);
@@ -87,7 +87,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
     try {
       //onLoginSuccess();
       const response = await axios.post(
-        import.meta.env.VITE_APP_SERVERHOST + "add-student",
+        serverUrl + "/add-student",
         signUpData,
       );
       //setShowLoginForm(true);
@@ -102,7 +102,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   const fetchDepartments = async () => {
     try {
       const response = await axios.get(
-        import.meta.env.VITE_APP_SERVERHOST + "department",
+        serverUrl + "/department",
       );
       setDepartments(response.data.departments);
     } catch (error) {
@@ -120,7 +120,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center m-3">
       <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-4 font-bold">
         {showLoginForm ? "STUDENT" : "Sign-Up"}
       </h2>

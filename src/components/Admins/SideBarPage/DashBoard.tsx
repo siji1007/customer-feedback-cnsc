@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FaThumbsUp } from "react-icons/fa";
 import WordCloud from "react-wordcloud";
+import hosting from "../../../hostingport.txt?raw";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -69,12 +70,12 @@ const Dashboard: React.FC = () => {
     "BarChart" | "PieChart" | "LineChart"
   >("PieChart");
 
-  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const serverUrl = hosting.trim();
 
   const [activeOffice, setActiveOffice] = useState("");
   const fetchSpecificOffice = async (selectedOffice, selectedSem, selectedAY) => {
     try {
-      const response = await axios.post(serverUrl + "fetch_specific_dept", {
+      const response = await axios.post(serverUrl + "/fetch_specific_dept", {
         selectedOffice: selectedOffice,
       });
       setDataChartLeft(response.data);
@@ -113,10 +114,10 @@ const Dashboard: React.FC = () => {
   const fetchTotalFeedback = async (office, semester, ay) => {
     try {
       if(office === null && semester === null && ay === null){
-        const response = await axios.get(serverUrl + "get_feedback_count");
+        const response = await axios.get(serverUrl + "/get_feedback_count");
         setTotalFeedback(response.data);
       }else{
-        const response = await axios.post(serverUrl + "get_feedback_count", {office: office, semester: semester, ay: ay});
+        const response = await axios.post(serverUrl + "/get_feedback_count", {office: office, semester: semester, ay: ay});
         setTotalFeedback(response.data);
       }
     } catch (error) {
@@ -129,10 +130,10 @@ const Dashboard: React.FC = () => {
   const fetchSpecificTotal = async (office, semester, ay) => {
     try {
       if(office === "" && semester ==="" && ay===""){
-        const response = await axios.get(serverUrl + "fetchSpecificOffice");
+        const response = await axios.get(serverUrl + "/fetchSpecificOffice");
         setTotalFeedback(response.data);
       }else{
-        const response = await axios.post(serverUrl + "fetchSpecificOffice", {
+        const response = await axios.post(serverUrl + "/fetchSpecificOffice", {
           office: office, semester: semester, ay: ay
         });
         setTotalFeedback(response.data);
@@ -147,12 +148,12 @@ const Dashboard: React.FC = () => {
   const fetchTopInsights = async (office = null, semester = null, ay = null) => {
     try{
       if(office != null && semester != null && ay != null){
-        const response = await axios.post(serverUrl + "fetchTopInsights", {
+        const response = await axios.post(serverUrl + "/fetchTopInsights", {
           office: office, semester: semester, ay: ay
         });
         setTop10(response.data.sc)
       }else{
-        const response = await axios.get(serverUrl + "fetchTopInsights");
+        const response = await axios.get(serverUrl + "/fetchTopInsights");
         setTop10(response.data.sc)
       }
     } catch(error){
@@ -175,10 +176,10 @@ const Dashboard: React.FC = () => {
   const fetchChartLeft = async (office, semester, ay) => {
     try{
       if(office === null && semester === null && ay === null){
-        const response = await axios.get(serverUrl + "response_data");
+        const response = await axios.get(serverUrl + "/response_data");
         setDataChartLeft(response.data);
       }else{
-        const response = await axios.post(serverUrl + "response_data", {office: office, semester: semester, ay:ay});
+        const response = await axios.post(serverUrl + "/response_data", {office: office, semester: semester, ay:ay});
         setDataChartLeft(response.data);
       }
     }catch(error){
@@ -249,7 +250,7 @@ const Dashboard: React.FC = () => {
   const fetchDataRight = async (office, semester, ay) => {
     try {
       if(office === null){
-        const response = await axios.get(serverUrl + "respondent_data");
+        const response = await axios.get(serverUrl + "/respondent_data");
         setChartDataRight(response.data);
       }else{
         const response = await axios.post(
@@ -319,7 +320,7 @@ const Dashboard: React.FC = () => {
   const fetchOffices = async () => {
     try {
       const response = await axios.get<{ offices: Office[] }>(
-        serverUrl + "office",
+        serverUrl + "/office",
       );
       setOffices(response.data.offices);
     } catch (error) {
@@ -330,7 +331,7 @@ const Dashboard: React.FC = () => {
 
   const fetchAcadYears = async () => {
     try {
-      const response = await axios.get(serverUrl + "get_acad_years");
+      const response = await axios.get(serverUrl + "/get_acad_years");
       setAcadYears(response.data);
     } catch (error) {
       console.error("Error fetching semesters: ", error);
@@ -356,10 +357,10 @@ const Dashboard: React.FC = () => {
   const fetchWords = async(office = null, semester = null, ay = null) =>{
     try{
       if(office === null){
-        const response = await axios.get(serverUrl + "fetchWordCloud");
+        const response = await axios.get(serverUrl + "/fetchWordCloud");
         setWords(response.data);
       }else{
-        const response = await axios.post(serverUrl + "fetchWordCloud", {office: office, semester: semester, ay: ay});
+        const response = await axios.post(serverUrl + "/fetchWordCloud", {office: office, semester: semester, ay: ay});
         setWords(response.data);
       }
     }catch(error){

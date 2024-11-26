@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import hosting from "../../hostingport.txt?raw";
 
 interface ClientInformation {
   client_name: string;
@@ -18,6 +19,7 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
     client_addr: "",
     client_type: "",
   });
+  const ServerURL =  hosting.trim();
 
   const handleOtherChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setClientData({ ...clientData, [event.target.name]: event.target.value });
@@ -32,7 +34,7 @@ const OtherLogin: React.FC<OthersLoginProps> = ({ onLoginSuccess }) => {
 
       // Send client data to the server
       const response = await axios.post(
-        import.meta.env.VITE_APP_SERVERHOST + "client-login", 
+        ServerURL + "/client-login", 
         clientData
       );
       localStorage.setItem("client_type", clientData.client_type);

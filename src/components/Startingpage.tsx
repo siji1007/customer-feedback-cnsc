@@ -84,9 +84,14 @@ const StartingPage: React.FC = () => {
                 VPRE
               </button>
             </Link>
+            <Link to="/admin?form=ResearchCoordinator">
+              <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-lg m-2">
+                Research Coordinator
+              </button>
+            </Link>
             <Link to="/admin?form=officehead">
               <button className="w-40 text-white bg-red-900 hover:bg-red-800 hover:text-white font-bold py-2 px-4 rounded-lg m-2">
-                Office Head
+                Offices
               </button>
             </Link>
             <button

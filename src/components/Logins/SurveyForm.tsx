@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useState, useEffect } from "react";
 import SurveyContents from "./SurveyContents"; // Import SurveyContents component
 import axios from "axios";
+import hosting from "../../hostingport.txt?raw";
 
 interface Offices {
   office_id: string;
@@ -12,7 +13,7 @@ const SurveyForm: React.FC = () => {
   const [selectedOffice, setSelectedOffice] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [allOffices, setAllOffices] = useState<Offices[]>([]);
-  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const serverUrl =  hosting.trim(); 
   const [isCheckAll, setIsCheckAll] = useState(false);
 
   const handleNextClick = () => {
@@ -50,7 +51,7 @@ const SurveyForm: React.FC = () => {
 
   const getAllOffices = async () => {
     try {
-      const response = await axios.get(serverUrl + "office");
+      const response = await axios.get(serverUrl + "/office");
       setAllOffices(response.data.offices);
     } catch (error) {
       console.log(error);
@@ -62,7 +63,7 @@ const SurveyForm: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex-grow flex justify-center flex-col overflow-auto ">
+    <div className="flex-grow flex justify-center flex-col overflow-auto m-3 ">
       {content === "Instruction" ? (
         <>
           <h1 className="text-lg md:text-xl lg:text-2xl font-bold mb-4">

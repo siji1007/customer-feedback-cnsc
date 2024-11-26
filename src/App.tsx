@@ -9,8 +9,9 @@ import "./App.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import hosting from "./hostingport.txt?raw";
 
-const serverUrl = import.meta.env.VITE_APP_SERVERHOST; 
+const serverUrl = hosting.trim() 
 axios.defaults.withCredentials = true; 
 
 
@@ -20,7 +21,7 @@ function SessionChecker({ setShowLoginForm }: { setShowLoginForm: (show: boolean
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await axios.get(serverUrl + "/check-session", { withCredentials: true });
+        const response = await axios.get(serverUrl + "/check_session", { withCredentials: true });
         if (response.status === 200) {
           setShowLoginForm(false);
           navigate("/admin/vpre");

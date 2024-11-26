@@ -53,15 +53,6 @@ const VPREPage: React.FC = () => {
             </button>
             <button
               className={`w-full flex items-center text-left py-2 px-4 rounded-lg transition duration-300 ease-in-out ${
-                activeComponent === 'PrintReport' ? 'bg-red-700 text-white' : 'bg-red-900 text-white hover:bg-red-700'
-              }`}
-              onClick={() => setActiveComponent('PrintReport')}
-            >
-              <FaPrint className="w-5 h-5 mr-2" />
-              <span className="ml-2">Print Reports</span>
-            </button>
-            <button
-              className={`w-full flex items-center text-left py-2 px-4 rounded-lg transition duration-300 ease-in-out ${
                 activeComponent === 'Settings' ? 'bg-red-700 text-white' : 'bg-red-900 text-white hover:bg-red-700'
               }`}
               onClick={() => setActiveComponent('Settings')}

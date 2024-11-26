@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaEdit, FaSave, FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import Modal from "react-modal";
+import hosting from "../../../hostingport.txt?raw";
 
 interface DepartmentData {
   department: string;
@@ -50,7 +51,7 @@ const Settings: React.FC = () => {
   const [newQuestionnaireName, setNewQuestionnaireName] = useState("");
   const [questionText, setQuestionText] = useState("");
   const questionAreaRef = useRef<HTMLTextAreaElement>(null);
-  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const serverUrl = hosting.trim();
   const [qStatus, setQStatus] = useState([]);
   const [acadYears, setAcadYears] = useState([]);
   const [currentAY, setCurrentAY] = useState("");
@@ -103,7 +104,7 @@ const Settings: React.FC = () => {
   const handleAddClick = async (event: React.FormEvent<HTMLFormElement>) => {
     try {
       event.preventDefault();
-      const response = await axios.post(serverUrl + "add-dept", deptData);
+      const response = await axios.post(serverUrl + "/add-dept", deptData);
       fetchDepartments();
       setDeptData({ ...deptData, department: "" });
     } catch (error) {
@@ -125,7 +126,7 @@ const Settings: React.FC = () => {
   ) => {
     try {
       event.preventDefault();
-      const response = await axios.post(serverUrl + "add-office", officeData);
+      const response = await axios.post(serverUrl + "/add-office", officeData);
       fetchOffices();
       setOfficeData({ ...officeData, office: "", description: "", type:"" });
     } catch (error) {
@@ -136,7 +137,7 @@ const Settings: React.FC = () => {
   const fetchDepartments = async () => {
     try {
       const response = await axios.get<{ departments: string[] }>(
-        serverUrl + "department",
+        serverUrl + "/department",
       );
       setDepartments(response.data.departments);
     } catch (error) {
@@ -149,7 +150,7 @@ const Settings: React.FC = () => {
       // Temporary fallback list
 
       const response = await axios.get<{ offices: Office[] }>(
-        serverUrl + "office",
+        serverUrl + "/office",
       );
       setOffices(response.data.offices);
     } catch (error) {
@@ -159,7 +160,7 @@ const Settings: React.FC = () => {
 
   const fetchFeedbackState = async () => {
     try {
-      const response = await axios.get(serverUrl + "get-config");
+      const response = await axios.get(serverUrl + "/get-config");
       setFeedBackChecked(response.data.feedback_state[0]);
     } catch (error) {
       console.error("Error fetching state: ", error);
@@ -168,7 +169,7 @@ const Settings: React.FC = () => {
 
   const fetchReminderState = async () => {
     try {
-      const response = await axios.get(serverUrl + "get-config");
+      const response = await axios.get(serverUrl + "/get-config");
       setRemindersChecked(response.data.reminder_state[0]);
     } catch (error) {
       console.log("Error fetching state: ", error);
@@ -189,7 +190,7 @@ const Settings: React.FC = () => {
   const toggleReminder = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setRemindersChecked(event.target.checked);
     try {
-      await axios.post(serverUrl + "set-reminder-conf", {
+      await axios.post(serverUrl + "/set-reminder-conf", {
         "reminder-conf": event.target.checked,
       });
     } catch (error) {
@@ -199,7 +200,7 @@ const Settings: React.FC = () => {
 
   const getQuestionnaires = async (office) => {
     try {
-      const response = await axios.post(serverUrl + "flash-questionnaire", {
+      const response = await axios.post(serverUrl + "/flash-questionnaire", {
         office: office, type: activeClient
       });
       setQuestionnaireIds(response.data.qid);
@@ -211,7 +212,7 @@ const Settings: React.FC = () => {
 
   const getQuestions = async (index) => {
     try {
-      const response = await axios.post(serverUrl + "get_questions", {
+      const response = await axios.post(serverUrl + "/get_questions", {
         qid: questionnaireIds[index],
       });
       setQuestions(response.data);
@@ -234,7 +235,7 @@ const Settings: React.FC = () => {
 
   const handleSaveClick = async (questionnaireId, index, question) => {
     try {
-      const response = await axios.post(serverUrl + "edit-question", {
+      const response = await axios.post(serverUrl + "/edit-question", {
         qid: questionnaireId,
         q_id: questions[index]["q_id"],
         question: question,
@@ -267,7 +268,7 @@ const Settings: React.FC = () => {
       setNewQuestionnaireName(""); // Clear the input field
       try {
         const response = await axios.post(
-          serverUrl + "add-questionnaire",
+          serverUrl + "/add-questionnaire",
           newQuestionnaire,
         );
         getQuestionnaires(selectedOffice.name);
@@ -309,7 +310,7 @@ const Settings: React.FC = () => {
 
   const handleAddQuestion = async (question: string) => {
     try {
-      const response = await axios.post(serverUrl + "add-question", {
+      const response = await axios.post(serverUrl + "/add-question", {
         qid: questionnaireIds[selectedQuestionnaire],
         question: question,
       });
@@ -327,7 +328,7 @@ const Settings: React.FC = () => {
   const fetchQuestionnaireStatus = async (office) => {
     try {
       const response = await axios.post(
-        serverUrl + "fetchQuestionnaireStatus",
+        serverUrl + "/fetchQuestionnaireStatus",
         {
           office: office,
         },
@@ -340,7 +341,7 @@ const Settings: React.FC = () => {
 
   const updateQStatus = async (qid, newStatus) => {
     try {
-      const response = await axios.post(serverUrl + "updateQStatus", {
+      const response = await axios.post(serverUrl + "/updateQStatus", {
         qid: qid,
         status: newStatus,
       });
@@ -360,7 +361,7 @@ const Settings: React.FC = () => {
 
   const getAcadYear = async() =>{
     try{
-      const response = await axios.get(serverUrl + "get_acad_years")
+      const response = await axios.get(serverUrl + "/get_acad_years")
       setAcadYears(response.data)
     }catch(error){
       console.log(error)
@@ -370,7 +371,7 @@ const Settings: React.FC = () => {
   const updateAY = async(selectedAY) => {
     try{
       setCurrentAY(selectedAY)
-      const response = await axios.post(serverUrl + "update_acad_year", {uay: selectedAY})
+      const response = await axios.post(serverUrl + "/update_acad_year", {uay: selectedAY})
     }catch(error){
       console.log(error)
     }
@@ -379,7 +380,7 @@ const Settings: React.FC = () => {
   const updateSem = async(selectedSem) => {
     try{
       setCurrentSem(selectedSem)
-      const response = await axios.post(serverUrl + "update_semester", {semester: selectedSem})
+      const response = await axios.post(serverUrl + "/update_semester", {semester: selectedSem})
     }catch(error){
       console.log(error)
     }
@@ -387,7 +388,7 @@ const Settings: React.FC = () => {
 
   const fetchValidity = async() => {
     try{
-      const response = await axios.get(serverUrl + "get_validity")
+      const response = await axios.get(serverUrl + "/get_validity")
       setCurrentAY(response.data.acadYear)
       setCurrentSem(response.data.semester)
     }catch(error){

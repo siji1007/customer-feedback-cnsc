@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import hosting from "../../hostingport.txt?raw";
 
 interface SignInData {
   account_id: string;
@@ -27,6 +28,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
   const [showSignUpForm, setShowSignUpForm] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const ServerURL = hosting.trim();
 
   const [signInData, setSignInData] = useState<SignInData>({
     account_id: "",
@@ -74,7 +76,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        import.meta.env.VITE_APP_SERVERHOST + "employee-login",
+        ServerURL + "/employee-login",
         signInData,
       );
       setHasError(false);
@@ -91,7 +93,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        import.meta.env.VITE_APP_SERVERHOST + "add-employee",
+        ServerURL + "/add-employee",
         signUpData,
       );
       setHasError(false);
@@ -105,7 +107,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
   const fetchDepartments = async () => {
     try {
       const response = await axios.get(
-        import.meta.env.VITE_APP_SERVERHOST + "office",
+        ServerURL + "/office",
       );
       console.log(response.data.offices)
       setDepartments(response.data.offices || []);

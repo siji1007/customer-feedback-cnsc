@@ -4,6 +4,7 @@ import BarChart from './SideBarPage/BarChart';
 import PieChart from './SideBarPage/PieChart';
 import LineChart from './SideBarPage/LineChart';
 import { FaThumbsUp } from 'react-icons/fa';
+import hosting from "../../hostingport.txt?raw";
 
 
 const OfficeHead: React.FC = () => {
@@ -21,12 +22,12 @@ const OfficeHead: React.FC = () => {
     "BarChart" | "PieChart" | "LineChart"
   >("PieChart");
 
-  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const serverUrl = hosting.trim();
 
   const [activeOffice, setActiveOffice] = useState("");
   const fetchSpecificOffice = async (selectedOffice) => {
     try {
-      const response = await axios.post(serverUrl + "fetch_specific_dept", {
+      const response = await axios.post(serverUrl + "/fetch_specific_dept", {
         selectedOffice: selectedOffice,
       });
       setDataChartLeft(response.data);
@@ -60,7 +61,7 @@ const OfficeHead: React.FC = () => {
   const fetchSpecificType = async (office) => {
     try {
       const response = await axios.post(
-        serverUrl + "specific_respondent_data",
+        serverUrl + "/specific_respondent_data",
         { office: office },
       );
       setChartDataRight(response.data);
@@ -71,7 +72,7 @@ const OfficeHead: React.FC = () => {
 
   const fetchTotalFeedback = async () => {
     try {
-      const response = await axios.get(serverUrl + "get_feedback_count");
+      const response = await axios.get(serverUrl + "/get_feedback_count");
       setTotalFeedback(response.data);
     } catch (error) {
       console.log(error);
@@ -80,7 +81,7 @@ const OfficeHead: React.FC = () => {
 
   const fetchSpecificTotal = async (office) => {
     try {
-      const response = await axios.post(serverUrl + "fetchSpecificOffice", {
+      const response = await axios.post(serverUrl + "/fetchSpecificOffice", {
         office: office,
       });
       setTotalFeedback(response.data);
@@ -91,7 +92,7 @@ const OfficeHead: React.FC = () => {
 
   const fetchInsights = async () => {
     try {
-      const response = await axios.get(serverUrl + "fetchCommentSummary");
+      const response = await axios.get(serverUrl + "/fetchCommentSummary");
       setInsights(response.data);
     } catch (error) {
       console.log(error);
@@ -100,7 +101,7 @@ const OfficeHead: React.FC = () => {
 
   const fetchSpecificInsights = async (office) => {
     try {
-      const response = await axios.post(serverUrl + "fetchCommentSummary", {
+      const response = await axios.post(serverUrl + "/fetchCommentSummary", {
         office: office,
       });
       setInsights(response.data);
@@ -119,7 +120,7 @@ const OfficeHead: React.FC = () => {
   ]; //add here the data scale connection for leftside chart
   const [dataChartLeft, setDataChartLeft] = useState<number[]>([0, 0, 0, 0, 0]); // add here the data number leftside chart
   const fetchChartLeft = async () => {
-    const response = await axios.get(serverUrl + "response_data");
+    const response = await axios.get(serverUrl + "/response_data");
     setDataChartLeft(response.data);
   };
   const chart1Data = {
@@ -177,7 +178,7 @@ const OfficeHead: React.FC = () => {
   const [chartDataRight, setChartDataRight] = useState<number[]>([0, 0, 0]);
   const fetchDataRight = async () => {
     try {
-      const response = await axios.get(serverUrl + "respondent_data");
+      const response = await axios.get(serverUrl + "/respondent_data");
       console.log(response.data);
       setChartDataRight(response.data);
     } catch (error) {
@@ -228,7 +229,7 @@ const OfficeHead: React.FC = () => {
   const fetchOffices = async () => {
     try {
       const response = await axios.get<{ offices: Office[] }>(
-        serverUrl + "office",
+        serverUrl + "/office",
       );
       setOffices(response.data.offices);
     } catch (error) {
@@ -238,7 +239,7 @@ const OfficeHead: React.FC = () => {
 
   const fetchAcadYears = async () => {
     try {
-      const response = await axios.get(serverUrl + "get_acad_years");
+      const response = await axios.get(serverUrl + "/get_acad_years");
       setAcadYears(response.data);
     } catch (error) {
       console.error("Error fetching semesters: ", error);
@@ -273,7 +274,7 @@ const OfficeHead: React.FC = () => {
 
   return (
     <main className="w-full m-4">
-      <header className="w-full border-b flex items-center justify-between bg-red-900 p-2 rounded-lg">
+      <header className="w-full border-b flex items-center justify-end bg-red-900 p-2 rounded-lg ">
               <div className="ml-10 flex flex-col ">
                 <div className="flex items-center">
                   <label

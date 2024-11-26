@@ -13,7 +13,7 @@ const PageDots: React.FC<PageDotsProps> = ({ totalDots, completedDots }) => {
         <React.Fragment key={index}>
           <div className="relative">
             <div
-              className={`w-4 h-4 rounded-full flex items-center justify-center ${
+              className={`w-3 h-3 rounded-full flex items-center justify-center ${
                 index < completedDots ? "bg-red-800" : "bg-gray-300"
               }`}
             >
@@ -24,7 +24,7 @@ const PageDots: React.FC<PageDotsProps> = ({ totalDots, completedDots }) => {
             {/* Add the connector line */}
             {index < totalDots - 1 && (
               <div
-                className={`absolute left-full top-1/2 transform -translate-y-1/2 w-8 h-1 ${
+                className={`absolute left-full top-1/2 transform -translate-y-1/2 w-7 h-1 ${
                   index < completedDots - 1 ? "bg-red-800" : "bg-gray-300"
                 }`}
               />

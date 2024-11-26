@@ -4,6 +4,7 @@ import PieChart from '../PieChart';
 import axios from 'axios';
 import { TbWashDryP } from 'react-icons/tb';
 
+
 const EmployeeDetails: React.FC = () => {
   const [acadYears, setAcadYears] = useState<string[]>([]);
   const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
