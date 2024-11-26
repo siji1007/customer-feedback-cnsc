@@ -89,13 +89,9 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
 
     try {
         setHasError(false);
-        localStorage.setItem('formType', 'administrator');
+       
         
-        const response = await axios.post(
-            serverUrl + "/verify_admin",
-            adminCredentials,
-            { withCredentials: true }  
-        );
+        const response = await axios.post( serverUrl + "/verify_admin", adminCredentials, { withCredentials: true } );
 
         //console.log("Response:", response);  
         //console.log("Response status:", response.status);  
@@ -103,6 +99,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
         if (response.status === 200) {
             setShowLoginForm(false);
             navigate("/admin/vpre"); 
+            localStorage.setItem('formType', 'administrator');
         }
     } catch (error) {
         console.error("Error during sign-in:", error);  

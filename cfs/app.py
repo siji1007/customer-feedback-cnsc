@@ -25,8 +25,6 @@ from datetime import datetime, timezone, timedelta
 from flask_mail import Mail, Message
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=["http://localhost:5173/", "http://192.168.1.2:5173/"]) #http://192.168.1.2:5173/
-
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -320,9 +318,9 @@ def verify_oh():
     officeHead_data = request.get_json()
     dept = officeHead_data['officeHead_department']
     pWord = officeHead_data['officeHead_password']
-    user = server.user_collection.find_one({'department': dept, 'password': pWord, 'type': "office head"})
+    user = server.user_collection.find_one({'Department': dept, 'Password': pWord, 'Type': "office head"})
     if user:
-        return jsonify({"department": user["department"]});
+        return "Access Granted"
     else:
         return "Invalid Credentials", 401
 
