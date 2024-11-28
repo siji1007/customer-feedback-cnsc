@@ -12,11 +12,21 @@ const StudentDetails: React.FC = () => {
   const [pieData, setPieData] = useState<[]>([]);
   const [studentData, setStudentData] = useState<string[]>([]);
 
+  const [filter, setFilter] = useState('');
+
+  // Function to filter students based on the selected program
+
   const students = [
     { id: '12345', name: 'Christian John Ibanez', block: 'A', year: '2nd Year',program:'BSIT', result: 'Passed' },
     { id: '67890', name: 'Gerry Vien Flores', block: 'B', year: '3rd Year',program:'BSIT', result: 'Failed' },   //test lng 
 
   ];
+
+  const filteredStudents = students.filter(student => {
+    if (!filter) return true; // If no filter, show all students
+    return student.program === filter;
+  });
+
   
 
   const fetchAcadYears = async () => {
@@ -141,9 +151,24 @@ const StudentDetails: React.FC = () => {
       </div>
 
 
-      <div className="flex-1 p-2 overflow-y-auto max-h-screen mb-[10%]">
-      Fliter by program
-      <h1 className="text-2xl font-bold mb-4">Student Information</h1>
+      <div className="flex-1 p-2 overflow-y-auto max-h-screen mb-[10%] ">
+  
+      
+      <div className="flex items-center mb-4 w-full  border-t ">
+      <h1 className="text-xl font-bold mb-4">Student Information</h1>
+  <select
+    id="programFilter"
+    className="p-2 border rounded ml-auto"
+    value={filter}
+    onChange={(e) => setFilter(e.target.value)}
+  >
+    <option value="">All Programs</option>
+    <option value="BSIT">BSIT</option>
+    <option value="CAS">CAS</option>
+  </select>
+</div>
+
+
       <table className="min-w-full table-auto border-collapse">
         <thead>
           <tr className="bg-gray-100">
