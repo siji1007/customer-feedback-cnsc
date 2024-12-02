@@ -390,6 +390,18 @@ def login_client():
         client = server.client_collection.insert_one({'name': client_name, 'address': client_addr, 'type': client_type})
         return {"message": "Access Granted", "client_id": str(client.inserted_id)}, 200
 
+@app.route('/coordinator-login', methods=['POST'])
+def login_coords():
+    coor_data = request.get_json()
+    coord_dept = coor_data['coord_dept']
+    coord_pass = coor_data['coord_pass']
+    user = server.user_collection.find_one({'password':verifyPass(coord_pass), 'department':coord_dept})
+    if user:
+        return "Access Granted", 200
+    else:
+        return "Access Denied", 401
+    
+
 @app.route('/department')
 def get_acad_dept():
     data = server.dept_collection.find()

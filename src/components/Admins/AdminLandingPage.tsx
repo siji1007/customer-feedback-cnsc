@@ -16,12 +16,12 @@ interface OfficeHeadCredentials {
   officeHead_password: string;
 }
 
-interface Office {
-  id: string;
-  name: string;
+interface CoordCredentials {
+  coord_dept: string;
+  coord_pass: string;
 }
 
-interface Department {
+interface Office {
   id: string;
   name: string;
 }
@@ -54,10 +54,15 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
       officeHead_department: "",
       officeHead_password: "",
     });
+
+  const [coordCredentials, setCoordCredentials] = useState<CoordCredentials>({
+    coord_dept: "",
+    coord_pass: ""
+  });
   const [hasError, setHasError] = useState(false);
 
   const [offices, setOffices] = useState<Office[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [departments, setDepartments] = useState<[]>([]);
 
   const handleBackClick = () => {
     navigate("/?showSecondSetOfButtons=true");
@@ -122,6 +127,13 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
     });
   };
 
+  const handleCoordSignInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCoordCredentials({
+      ...coordCredentials,
+      [event.target.name]: event.target.value,
+    });
+  };
+
   const handleOfficeHeadSignIn = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -144,6 +156,26 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
     }
   };
 
+  const handleCoordSignIn = async(
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+    try{
+      setHasError(false);
+      setShowLoginForm(false);
+      localStorage.setItem('formType', 'research_coordinator');
+      const response = await axios.post(
+        serverUrl + "/coordinator-login",
+        coordCredentials
+      );
+      localStorage.setItem('department', coordCredentials.coord_dept);
+      setHasError(false);
+      setShowLoginForm(false);
+    }catch(error){
+      setHasError(true);
+    }
+  }
+
   const fetchOffices = async () => {
     try {
       const response = await axios.get(serverUrl + "/office");
@@ -157,6 +189,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
     try {
       const response = await axios.get(serverUrl + "/department");
       setDepartments(response.data.departments);
+      console.log(departments);
     } catch (error) {
       console.error("Error fetching departments: ", error);
     }
@@ -374,7 +407,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
         {showLoginForm && formType === "ResearchCoordinator" && (
           <form
                className="flex flex-col items-center justify-center"
-               onSubmit={handleOfficeHeadSignIn}
+               onSubmit={handleCoordSignIn}
              >
                <h1 className="text-2xl font-bold mb-4">RESEARCH COORDINATOR</h1>
                <div className="bg-gray-200 border-stone-400 border rounded-lg shadow-md p-4 w-full max-w-md">
@@ -388,21 +421,18 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                    <select
                      id="department"
                      className="w-2/3 rounded-lg border"
-                     name="officeHead_department"
-                     value={officeHeadCredentials.officeHead_department}        
-                     onChange={handleOHSignInChange}
+                     name="coord_dept"
+                     value={coordCredentials.coord_dept}        
+                     onChange={handleCoordSignInChange}
                      required
                    >
                      <option value="">Select Department</option>
    
-                     {departments.map((department) => (
-                        <option key={department.id} value={department.name}>                
-                        {/* store here the list of department not the offices */}
-                          {department.name}
-                      </option>
-                      
-       
-                     ))} 
+                     {departments.map((department, index) => (
+                        <option key={index} value={department}>
+                          {department}
+                        </option>
+                      ))} 
                       
                    </select>
                  </section>
@@ -418,9 +448,9 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                        type={showPassword ? "text":"password"}
                        id="password"
                        className={`${"w-full rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
-                       name="officeHead_password"
-                       value={officeHeadCredentials.officeHead_password}
-                       onChange={handleOHSignInChange}
+                       name="coord_pass"
+                       value={coordCredentials.coord_pass}
+                       onChange={handleCoordSignInChange}
                        required
                      />
                      <button className="absolute  inset-y-0 right-0 px-3 py-1 text-sm font-bold text-red-800 "
