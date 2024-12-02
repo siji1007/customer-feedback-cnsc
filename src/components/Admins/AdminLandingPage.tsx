@@ -156,7 +156,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
   const fetchDepartments = async () => {
     try {
       const response = await axios.get(serverUrl + "/department");
-      setDepartments(response.data.offices);
+      setDepartments(response.data.departments);
     } catch (error) {
       console.error("Error fetching departments: ", error);
     }
