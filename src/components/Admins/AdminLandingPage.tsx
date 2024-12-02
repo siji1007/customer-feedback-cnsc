@@ -164,11 +164,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
       <header className="w-full  bg-red-900 flex justify-between items-center px-4 h-auto">
         <div className="flex items-center">
         <img  src={cnscLogo} alt="Logo" className="h-16 w-16 object-contain p-2" />
-<<<<<<< HEAD
           <div className="ml-1 flex flex-col justify-center">
-=======
-          <div className=" flex flex-col justify-center">
->>>>>>> 1552947603ec4889108cc9e0440f221d22b0465d
           <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold "
           style={{ borderBottom: '2px solid gold' }}>
               Camarines Norte State College
