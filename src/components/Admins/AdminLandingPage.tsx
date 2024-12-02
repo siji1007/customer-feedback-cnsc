@@ -20,6 +20,12 @@ interface Office {
   id: string;
   name: string;
 }
+
+interface Department {
+  id: string;
+  name: string;
+}
+
 interface AdminLoginsProps {
   showLoginForm: boolean;
   setShowLoginForm: (show: boolean) => void;
@@ -51,6 +57,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
   const [hasError, setHasError] = useState(false);
 
   const [offices, setOffices] = useState<Office[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
 
   const handleBackClick = () => {
     navigate("/?showSecondSetOfButtons=true");
@@ -137,17 +144,27 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
     }
   };
 
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        const response = await axios.get(serverUrl + "/office");
-        setOffices(response.data.offices);
-      } catch (error) {
-        console.error("Error fetching departments: ", error);
-      }
-    };
+  const fetchOffices = async () => {
+    try {
+      const response = await axios.get(serverUrl + "/office");
+      setOffices(response.data.offices);
+    } catch (error) {
+      console.error("Error fetching departments: ", error);
+    }
+  };
 
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(serverUrl + "/department");
+      setDepartments(response.data.offices);
+    } catch (error) {
+      console.error("Error fetching departments: ", error);
+    }
+  };
+
+  useEffect(() => {
     fetchDepartments();
+    fetchOffices();
   }, []);
 
   useEffect(() => {
@@ -378,10 +395,10 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                    >
                      <option value="">Select Department</option>
    
-                     {offices.map((office) => (
-                        <option key={office.id} value={office.name}>                
+                     {departments.map((department) => (
+                        <option key={department.id} value={department.name}>                
                         {/* store here the list of department not the offices */}
-                          {office.name}
+                          {department.name}
                       </option>
                       
        
