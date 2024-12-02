@@ -755,7 +755,7 @@ const Dashboard: React.FC = () => {
             </div>
           </>
         ) : (
-          <div className="flex sm:h-1/2 border">
+          <div className="flex sm:h-1/2 border ">  
             <div className="w-52 border-r border-gray-300 p-2  flex flex-col">
               <ul className="flex-1">
                 <li className="mb-2">
@@ -793,16 +793,17 @@ const Dashboard: React.FC = () => {
                 <p className="text-xs m-5 text-gray-400">
                   Select the specific data to sort the Result of Clients
                 </p>
-              </ul>
-
-              <button
+                <button
                 onClick={() => setShowDetailedView(false)}
                 className="w-full text-left text-sm sm:text-sm md:text-sm lg:text-xm border p-2 text-center mt-auto"
               >
                 Close
               </button>
+              </ul>
+
+            
             </div>
-            <div className="flex-1 p-2">
+            <div className="flex-1 p-2 overflow-y-auto max-h-screen">
               <div className="border p-4">{renderContent()}</div>
             </div>
           </div>

@@ -60,9 +60,9 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
  
   const handleLogout = async () => {
     try {
-        // Call the logout endpoint on the server
+      const formType = localStorage.getItem('formType');
         await axios.post(serverUrl + "/logout", {}, { withCredentials: true });
-        const formType = localStorage.getItem('formType');
+       
         navigate(`/admin?form=${formType}`);
         // Clear local storage and navigate to the login page
         localStorage.removeItem('formType'); 
@@ -104,6 +104,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
     } catch (error) {
         console.error("Error during sign-in:", error);  
         setHasError(true);
+        alert("Backend is still on process");
     }
 };
 
@@ -163,7 +164,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
       <header className="w-full  bg-red-900 flex justify-between items-center px-4 h-auto">
         <div className="flex items-center">
         <img  src={cnscLogo} alt="Logo" className="h-16 w-16 object-contain p-2" />
-          <div className="ml-4 flex flex-col justify-center">
+          <div className="ml-1 flex flex-col justify-center">
           <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold "
           style={{ borderBottom: '2px solid gold' }}>
               Camarines Norte State College
@@ -247,7 +248,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                 className="text-sm text-right underline w-full"
                 onClick={openModal}
               >
-                Forget Password?
+                Forgot Password?
               </button>
 
             </div>
@@ -335,7 +336,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                 className="text-sm text-right underline w-full"
                 onClick={openModal}
               >
-                Forget Password?
+                Forgot Password?
               </button>
             </div>
             <button
@@ -423,7 +424,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                    className="text-sm text-right underline w-full"
                    onClick={openModal}
                  >
-                   Forget Password?
+                   Forgot Password?
                  </button>
                </div>
                <button

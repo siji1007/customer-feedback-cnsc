@@ -121,9 +121,9 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center m-3">
       <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-4 font-bold">
-        {showLoginForm ? "Employee Login" : "Sign-Up"}
+        {showLoginForm ? "EMPLOYEE LOGIN" : "Sign-Up"}
       </h2>
       {showSignUpForm && (
         <form onSubmit={handleEmployeeSignUp}>
@@ -204,7 +204,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
                 Confirm Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="confirmPassword"
                 className="w-2/3 rounded-full border"
                 name="employee_cpass"
@@ -274,7 +274,7 @@ const EmployeeLogin: React.FC<EmployeeLoginProps> = ({ onLoginSuccess }) => {
             >
               User credential not found
             </h4>
-            <button className="text-sm text-right underline w-full">Forget Password?</button>
+            <button className="text-sm text-right underline w-full">Forgot Password?</button>
           </div>
           <button
             type="submit"

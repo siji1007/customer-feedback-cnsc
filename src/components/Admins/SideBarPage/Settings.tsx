@@ -179,7 +179,7 @@ const Settings: React.FC = () => {
   const toggleFeedback = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setFeedBackChecked(event.target.checked);
     try {
-      await axios.post(serverUrl + "set-feedback-conf", {
+      await axios.post(serverUrl + "/set-feedback-conf", {
         "feedback-conf": event.target.checked,
       });
     } catch (error) {

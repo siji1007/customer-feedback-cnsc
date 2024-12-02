@@ -3,6 +3,9 @@ export default {
   content: [
     './index.html', "./src/**/*.{js,jsx,ts,tsx}",
   ],
+  safelist: [
+    'bg-red-800', // If you're using dynamic classes, ensure they are safelisted
+  ],
   theme: {
     extend: {
       colors: {

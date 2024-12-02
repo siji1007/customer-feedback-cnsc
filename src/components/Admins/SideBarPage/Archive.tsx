@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaRegQuestionCircle, FaUndo } from "react-icons/fa";
 import axios from "axios";
+import hosting from '../../../hostingport.txt?raw';
 
 interface Office {
   id: number;
@@ -8,7 +9,7 @@ interface Office {
 }
 
 const Archive: React.FC = () => {
-  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const serverUrl = hosting.trim();
   //const [questionnaires, setQuestionnaires] = useState<string[]>([]);
   const [archivedQuestionnaires, setArchivedQuestionnaires] = useState<
     string[]
@@ -22,7 +23,7 @@ const Archive: React.FC = () => {
   const fetchOffices = async () => {
     try {
       const response = await axios.get<{ offices: Office[] }>(
-        serverUrl + "office",
+        serverUrl + "/office",
       );
       setOffices(response.data.offices);
     } catch (error) {
@@ -32,7 +33,7 @@ const Archive: React.FC = () => {
 
   const handleRestoreQuestionnaire = async (index: number) => {
     try {
-      const response = await axios.post(serverUrl + "recoverArchive", {
+      const response = await axios.post(serverUrl + "/recoverArchive", {
         selectedId: aqIds[index],
       });
       handleQuestionnaire(selectedOffice);
@@ -48,7 +49,7 @@ const Archive: React.FC = () => {
   const handleQuestionnaire = async (office) => {
     try {
       setSelectedOffice(office);
-      const response = await axios.post(serverUrl + "getArchive", {
+      const response = await axios.post(serverUrl + "/getArchive", {
         office: office,
       });
       setArchivedQuestionnaires(response.data.aname);

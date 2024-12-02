@@ -23,8 +23,12 @@ from nltk.tokenize import word_tokenize
 from sentence_transformers import SentenceTransformer, util
 from datetime import datetime, timezone, timedelta
 from flask_mail import Mail, Message
+from waitress import serve
+
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True, origins="*")
+
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -145,7 +149,6 @@ app.config['SESSION_PERMANENT'] = True
 app.config['SESSION_USE_SIGNER'] = True  
 
 
-CORS(app, supports_credentials=True, origins=["*"])
 
 
 import uuid
@@ -839,6 +842,7 @@ def getEvent():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0",port="8082")
+    serve(app, host='0.0.0.0', port=8082)
+
     
 

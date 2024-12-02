@@ -5,6 +5,8 @@ import AdminLogins from "./components/Admins/AdminLandingPage";
 import VPREPage from "./components/Admins/AdminMainContent";
 import OfficeHead from "./components/Admins/OfficeHead";
 import Error from "./components/Error";
+import PrivacyPolicy from "./components/Terms_Policy/PrivacyPolicy";
+import TermsCondition from "./components/Terms_Policy/Terms_conditions";
 import "./App.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -30,9 +32,10 @@ function SessionChecker({ setShowLoginForm }: { setShowLoginForm: (show: boolean
         setShowLoginForm(true);
       }
     };
-
+  
     checkSession();
   }, [navigate, setShowLoginForm]);
+  
 
   return null;
 }
@@ -49,6 +52,9 @@ function App() {
       <SessionChecker setShowLoginForm={setShowLoginForm} /> {/* Pass setShowLoginForm to handle session */}
       <Routes>
         <Route path="/" element={<StartingPage />} />
+        <Route path="/terms-conditions" element={<TermsCondition />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        
         <Route path="/customer" element={<LandingPage />} />
         {/* Pass showLoginForm state to AdminLogins component */}
         <Route path="/admin/*" element={<AdminLogins showLoginForm={showLoginForm} setShowLoginForm={setShowLoginForm} />}>
