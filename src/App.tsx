@@ -4,6 +4,7 @@ import LandingPage from "./components/LandingPage";
 import AdminLogins from "./components/Admins/AdminLandingPage";
 import VPREPage from "./components/Admins/AdminMainContent";
 import OfficeHead from "./components/Admins/OfficeHead";
+import ResearchCoordinator from "./components/Admins/ResearchCoordinator";
 import Error from "./components/Error";
 import PrivacyPolicy from "./components/Terms_Policy/PrivacyPolicy";
 import TermsCondition from "./components/Terms_Policy/Terms_conditions";
@@ -26,6 +27,7 @@ function SessionChecker({ setShowLoginForm }: { setShowLoginForm: (show: boolean
         const response = await axios.get(serverUrl + "/check_session", { withCredentials: true });
         if (response.status === 200) {
           setShowLoginForm(false);
+          localStorage.setItem('formType', 'administrator');
           navigate("/admin/vpre");
         }
       } catch (error) {
@@ -55,11 +57,12 @@ function App() {
         <Route path="/terms-conditions" element={<TermsCondition />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         
-        <Route path="/customer" element={<LandingPage />} />
+        <Route path="/client" element={<LandingPage />} />
         {/* Pass showLoginForm state to AdminLogins component */}
         <Route path="/admin/*" element={<AdminLogins showLoginForm={showLoginForm} setShowLoginForm={setShowLoginForm} />}>
           <Route path="vpre" element={<VPREPage />} />
           <Route path="officehead" element={<OfficeHead />} />
+          <Route path="ResearchCoordinator" element={<ResearchCoordinator />} />
           <Route path="*" element={<Error />} /> {/* Catch-all for /admin paths */}
         </Route>
         <Route path="*" element={<Error />} /> {/* Catch-all for other paths */}

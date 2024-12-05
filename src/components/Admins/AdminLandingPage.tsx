@@ -116,7 +116,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
     } catch (error) {
         console.error("Error during sign-in:", error);  
         setHasError(true);
-        alert("Backend is still on process");
+        
     }
 };
 
@@ -163,7 +163,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
     try{
       setHasError(false);
       setShowLoginForm(false);
-      localStorage.setItem('formType', 'research_coordinator');
+      localStorage.setItem('formType', 'ResearchCoordinator');
       const response = await axios.post(
         serverUrl + "/coordinator-login",
         coordCredentials
@@ -171,6 +171,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
       localStorage.setItem('department', coordCredentials.coord_dept);
       setHasError(false);
       setShowLoginForm(false);
+      navigate("/admin/ResearchCoordinator");
     }catch(error){
       setHasError(true);
     }
@@ -252,7 +253,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                 <input
                   type="text"
                   id="adminId"
-                  className={`${"w-2/3 rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
+                  className={`${"w-2/3 rounded-lg border"} ${hasError ? "border-red-500" : ""} p-1`}
                   name="admin_username"
                   value={adminCredentials.admin_username}
                   onChange={handleSignInChange}
@@ -271,7 +272,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                     type={showPassword ? "text" : "password"}
                     name="admin_password"
                     id="password"
-                    className={`${"w-full rounded-lg border pr-10"} ${hasError ? "border-red-500" : ""}`}
+                    className={`${"w-full rounded-lg border pr-10"} ${hasError ? "border-red-500" : ""} p-1`}
                     value={adminCredentials.admin_password}
                     onChange={handleSignInChange}
                     required
@@ -333,7 +334,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                 </label>
                 <select
                   id="department"
-                  className="w-2/3 rounded-lg border"
+                  className="w-2/3 rounded-lg border p-1"
                   name="officeHead_department"
                   value={officeHeadCredentials.officeHead_department}
                   onChange={handleOHSignInChange}
@@ -362,7 +363,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                   <input
                     type={showPassword ? "text":"password"}
                     id="password"
-                    className={`${"w-full rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
+                    className={`${"w-full rounded-lg border"} ${hasError ? "border-red-500" : ""} p-1`}
                     name="officeHead_password"
                     value={officeHeadCredentials.officeHead_password}
                     onChange={handleOHSignInChange}
@@ -420,7 +421,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                    </label>
                    <select
                      id="department"
-                     className="w-2/3 rounded-lg border"
+                     className="w-2/3 rounded-lg border p-1"
                      name="coord_dept"
                      value={coordCredentials.coord_dept}        
                      onChange={handleCoordSignInChange}
@@ -447,7 +448,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                      <input
                        type={showPassword ? "text":"password"}
                        id="password"
-                       className={`${"w-full rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
+                       className={`${"w-full rounded-lg border"} ${hasError ? "border-red-500" : ""} p-1`}
                        name="coord_pass"
                        value={coordCredentials.coord_pass}
                        onChange={handleCoordSignInChange}
