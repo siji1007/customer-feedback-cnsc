@@ -1,145 +1,188 @@
-import React, { useEffect, useState } from 'react';
-import { FaFacebook, FaTwitter, FaArrowUp, FaArrowDown } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import StudentLogin from './Logins/StudentLogin';
-import EmployeeLogin from './Logins/EmployeeLogin';
-import OtherLogin from './Logins/OthersLogin';
-import SurveyForm from './Logins/SurveyForm';
+import React, { useState } from 'react';
 import IconCNSC from '../assets/cnsc_logo.png';
-
-
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { IoReturnDownBack } from "react-icons/io5";
 
 
 const LandingPage: React.FC = () => {
-  const [selectedLogin, setSelectedLogin] = useState<string>('');               //show here the selected login form
-  const [showSurveyForm, setShowSurveyForm] = useState<boolean>(false);         
-  const [isFooterVisible, setIsFooterVisible] = useState<boolean>(false);
-  const [screenHeight, setScreenHeight] = useState<number>(window.innerHeight);
-
-  useEffect(() => {
-    const handleResize = () => setScreenHeight(window.innerHeight);
-    window.addEventListener('resize', handleResize);                
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
 
 
-  const handleLoginSelection = (loginType: string) => {         //function for login form selection (Student,Employee and Other)
-    setSelectedLogin(loginType);
-  };
+  const handleLogin = () => {
+      alert("The backend is still under development.")
+  }
 
-  const handleShowSurveyForm = () => {                         //Show the survey form if login success
-    setShowSurveyForm(true);
-  };
-
-  const toggleFooter = () => {                                //Footer, this is for toggle to make it visible or not
-    setIsFooterVisible(!isFooterVisible);
-  };
-
-
-  const handleLogout = () =>{
-    setShowSurveyForm(false);
-  };
-
-  return (
-    <div className="flex flex-col min-h-screen">
-      <header className="w-full h-19 bg-red-900 flex justify-between items-center px-4 fixed top-0 left-0 z-10">
-        <div className="flex items-center">
-          <img src={IconCNSC} alt="Logo"   className="h-14 w-14 object-contain sm:h-16 sm:w-16"  />
-          <div className="ml-2 flex flex-col justify-center">
-            <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold"
-                style={{ borderBottom: '2px solid gold' }}>
-              Camarines Norte State College
-            </h1>
-            <h1 className="text-white text-sm sm:text-sm md:text-xs lg:text-xm">Client Feedback System</h1>
-          </div>
-        </div>
-            {/* Conditionally render logout button */}
-            {showSurveyForm && (
-          <button
-          onClick={handleLogout}
-            className="text-white hover:text-gray-300 font-bold ml-auto"
+  return  (
+  <>
+    {/* <header className="w-full fixed top-0 bg-red-900 flex justify-between items-center px-4 h-auto z-20 shadow-lg">
+      <div className="flex items-center">
+        <img src={IconCNSC} alt="Logo" className="h-16 w-16 object-contain p-2" />
+        <div className="flex flex-col justify-center">
+          <h1
+            className="text-white text-sm sm:text-sm md:text-sm lg:text-base font-bold"
+            style={{ borderBottom: '2px solid gold' }}
           >
-            Logout
-          </button>
-        )}
-      </header>
+            Camarines Norte State College
+          </h1>
+          <h1 className="text-white text-xs sm:text-sm md:text-xs lg:text-base font-bold">
+            Client Feedback System
+          </h1>
+        </div>
+      </div>
+    </header> */}
 
-      {/* Main class where we store the login Forms and Survey Form*/}
-      <main className="flex-grow flex justify-center flex-col overflow-auto mt-19 items-center ">
-        {!showSurveyForm && selectedLogin === '' && (
-        <nav className="flex flex-col space-y-4 p-20 shadow-lg w-full md:w-1/2  ">   
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center m-3">CLIENTS</h1>
-            <button className="bg-red-900 text-white py-2 px-4 rounded-lg" onClick={() => handleLoginSelection('student')}>
-              Student
-            </button>
-            <button className="bg-red-900 text-white py-2 px-4 rounded-lg" onClick={() => handleLoginSelection('employee')}>
-              Employee
-            </button>
-            <button className="bg-red-900 text-white py-2 px-4 rounded-lg" onClick={() => handleLoginSelection('other')}>
-              Others
-            </button>
-            <Link to="/?showTwoButtons=false" className="text-center">
-              <button className="text-black text-sm sm:text-base md:text-lg lg:text-xl">
-                Back
-              </button>
-            </Link>
-          </nav>
-        )}
-
-        {!showSurveyForm && selectedLogin === 'student' && <StudentLogin onLoginSuccess={handleShowSurveyForm} />}
-        {!showSurveyForm && selectedLogin === 'employee' && <EmployeeLogin onLoginSuccess={handleShowSurveyForm} />}
-        {!showSurveyForm && selectedLogin === 'other' && <OtherLogin onLoginSuccess={handleShowSurveyForm} onBack={function (): void {
-          throw new Error('Function not implemented.');
-        } } />}
-        {showSurveyForm && <SurveyForm />}
-
-      </main>
-
-      {/* Footer */}
-      {isFooterVisible && (
-        <footer className="w-full h-33 bg-red-900 flex flex-none justify-between p-2">
-        <div className="flex-1 ">
-          <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xs font-bold">Contact Information</h1>
-          <p className="text-white text-xs sm:text-xxs md:text-xxs lg:text-xxs">
-            Camarines Norte State College Information Technology Services Office<br />
-            F. Pimentel Avenue, Daet, 4600 Camarines Norte, Philippines <br />
-            Telephone No.(054)721-2672 or 440-1199 <br />
-            PICRO Mobile No. 09688983078 | 09171439973 <br />
-            Mobile No. 09990042147 <br />
-            Email: <span className="underline">president@cnsc.edu.ph</span>
+    <div
+      className="relative flex justify-center items-center min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: "url(src/assets/landingbg.jpg)" }}
+    >
+      <div className="absolute inset-0 bg-red-800 bg-opacity-40"></div>
+      <div className=" z-10 flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden w-11/12 max-w-4xl">
+      
+        {/* Left Section */}
+        <div className="flex flex-col justify-center items-center bg-red-800 text-white p-8 md:w-1/2">
+          <h1 className="text-xl md:text-2xl lg:text-2xl font-bold mb-4"> Camarines Norte State College </h1>
+          <p className="text-sm text-white-200 mb-8 text-center font-semibold">
+            Client Satisfaction Feedback System
           </p>
-        </div>
-        <div className="ml-2">
-          <p className="text-white text-xs font-bold text-center mb-2 ">Help</p>
-          <div className="flex">
-            <FaFacebook className="text-white text-xl cursor-pointer hover:text-blue-500 mr-2" />
-            <FaTwitter className="text-white text-xl cursor-pointer hover:text-blue-500" />
+          <div className="relative w-full h-48 flex justify-center items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" className="absolute inset-0 w-full h-full" > <circle cx="250" cy="250" r="200" fill="#fff" /> <circle cx="250" cy="250" r="190" fill="maroon" /> </svg>
+            <img
+              src={IconCNSC}
+              alt="CNSC Logo"
+              className="absolute w-24 h-24 object-contain"
+            />
           </div>
         </div>
-      </footer>
-      )}
 
-      {/* Arrow Buttons */}
-      <div className="fixed bottom-0 w-full flex justify-between px-4">
-        {!isFooterVisible && (
-          <button
-            onClick={toggleFooter}
-            className="text-black text-xl bg-white p-2 rounded-l-lg shadow-md fixed bottom-5 right-2 m-2"
+        {/* Right Section */}
+        <div className="p-8 flex flex-col justify-center md:w-1/2">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+            {isSignUp ? 'CREATE ACCOUNT' : 'LOGIN'}
+          </h2>
+
+          <form className="flex flex-col gap-6">
+            {isSignUp && (
+              <>
+
+              <select className="p-2 border rounded">
+                  <option value="">Select User Type</option>
+                  <option value="course1">Student</option>
+                  <option value="course2">Employee</option>
+                </select>
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  id="fullname"
+                  placeholder=" "
+                  className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  required
+                />
+                <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Full Name </label>
+              </div>
+              <div className="relative w-full flex justify-between items-center ">
+
+                <select className="p-2 border rounded">
+                  <option value="">Select Course</option>
+                  <option value="course1">BSIT</option>
+                  <option value="course2">BSIS</option>
+                  <option value="course3">BSCE</option>
+                </select>
+
+                <select className="p-2 border rounded">
+                  <option value="">Select Year</option>
+                  <option value="year1">First Year</option>
+                  <option value="year2">Second Year</option>
+                  <option value="year3">Third Year</option>
+                  <option value="year3">Fourth Year</option>
+                </select>
+
+                <select className="p-2 border rounded">
+                  <option value="">Select Block</option>
+                  <option value="blockA">Block A</option>
+                  <option value="blockB">Block B</option>
+                  <option value="blockC">Block C</option>
+                </select>
+                </div>
+              </>
+            )}
+        
+
+            <div className="relative w-full">
+              <input
+                type="text"
+                id="username"
+                placeholder=" "
+                className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                required
+              />
+              <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Username </label>
+            </div>
+
+            <div className="relative w-full">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                placeholder=" "
+                className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                required
+              />
+              <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Password </label>
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash className="w-5 h-5 text-red-800" /> : <FaEye className="w-5 h-5 text-red-800" />}
+              </button>
+            </div>
+
+            {isSignUp && (
+              <div className="relative w-full">
+                <input
+                  type="email"
+                  id="email"
+                  placeholder=" "
+                  className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  required
+                />
+                <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Email Address </label>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full py-2 px-4 bg-red-800 text-white rounded-md font-semibold hover:bg-red-700 transition duration-300" onClick={handleLogin}
+            >
+              {isSignUp ? 'Sign Up' : 'Login'}
+            </button>
+          </form>
+
+          <div className="mt-4 flex justify-between text-sm">
+            {!isSignUp && (
+              <a  className="text-red-600 hover:underline">
+                Forgot password?
+              </a>
+            )}
+           <button
+            className="text-red-600 hover:underline focus:outline-none"
+            onClick={() => setIsSignUp(!isSignUp)}
           >
-            <FaArrowUp />
+            {isSignUp ? (
+              <>
+                <IoReturnDownBack className="inline mr-2" />
+                Back to Login
+              </>
+            ) : (
+              'Create Account'
+            )}
           </button>
-        )}
-        {isFooterVisible && (
-          <button
-            onClick={toggleFooter}
-            className="text-red-800 text-xl p-2 rounded-l-lg shadow-md fixed bottom-5 right-2 m-2 bg-white"
-          >
-            <FaArrowDown />
-          </button>
-        )}
+
+          </div>
+        </div>
       </div>
     </div>
+    </>
   );
 };
 

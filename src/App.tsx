@@ -5,6 +5,7 @@ import AdminLogins from "./components/Admins/AdminLandingPage";
 import VPREPage from "./components/Admins/AdminMainContent";
 import OfficeHead from "./components/Admins/OfficeHead";
 import Error from "./components/Error";
+
 import "./App.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -24,15 +25,17 @@ function SessionChecker({ setShowLoginForm }: { setShowLoginForm: (show: boolean
         const response = await axios.get(serverUrl + "/check_session", { withCredentials: true });
         if (response.status === 200) {
           setShowLoginForm(false);
+          // Navigate to admin base route, not specifically to `/admin/vpre`
           navigate("/admin/vpre");
         }
       } catch (error) {
         setShowLoginForm(true);
       }
     };
-
+  
     checkSession();
   }, [navigate, setShowLoginForm]);
+  
 
   return null;
 }
@@ -48,8 +51,9 @@ function App() {
     <Router>
       <SessionChecker setShowLoginForm={setShowLoginForm} /> {/* Pass setShowLoginForm to handle session */}
       <Routes>
-        <Route path="/" element={<StartingPage />} />
-        <Route path="/customer" element={<LandingPage />} />
+        {/* <Route path="/" element={<StartingPage />} /> */}
+
+        <Route path="/" element={<LandingPage />} />
         {/* Pass showLoginForm state to AdminLogins component */}
         <Route path="/admin/*" element={<AdminLogins showLoginForm={showLoginForm} setShowLoginForm={setShowLoginForm} />}>
           <Route path="vpre" element={<VPREPage />} />
