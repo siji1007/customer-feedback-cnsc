@@ -840,6 +840,45 @@ def getEvent():
 
 
 
+@app.route('/login_new', methods=['POST'])
+def login_new():
+    try:
+        # Get request data
+        data = request.json
+        username = data.get('username')
+        password = data.get('password')
+        print(username)
+        print(password)
+
+        # Check if username and password are provided
+        if not username or not password:
+            return jsonify({"status": "error", "message": "Username and password are required"}), 400
+
+        # Query the database for a matching user
+        user = server.user_collection.find_one({"email": username, "password": password})
+
+        if user:
+            # Respond with user details if found
+            return jsonify({
+                "status": "success",
+                "message": "Login successful",
+                "user_type": user.get("user_type"),
+                "details": {
+                    "full_name": user.get("full_name"),
+                    "username": user.get("email"),
+                    "course": user.get("course"),
+                    "year": user.get("year"),
+                    "block": user.get("block")
+                }
+            }), 200
+        else:
+            # Invalid credentials
+            return jsonify({"status": "error", "message": "Invalid username or password"}), 401
+    except Exception as e:
+        # Handle unexpected errors
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 
 
 

@@ -4,10 +4,16 @@ import Dashboard from './SideBarPage/DashBoard';
 import PrintReport from './SideBarPage/PrintReport';
 import Settings from './SideBarPage/Settings';
 import Archive from './SideBarPage/Archive';
+import axios from 'axios';
+import host from '../../hostingport.txt?raw';
+import { useNavigate } from 'react-router-dom';
+import cnscLogo from '../../assets/cnsc_logo.png';
 
 const VPREPage: React.FC = () => {
   const [activeComponent, setActiveComponent] = useState('Dashboard');
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const serverURL = host.trim();
+  const navigate = useNavigate();
 
   const renderComponent = () => {
     switch (activeComponent) {
@@ -24,8 +30,45 @@ const VPREPage: React.FC = () => {
     }
   };
 
+
+  const handleLogout = async () => {
+    try {
+        // Call the logout endpoint on the server
+        await axios.post(serverURL + "/logout", {}, { withCredentials: true });
+        navigate('/');
+        // Clear local storage and navigate to the login page
+    } catch (error) {
+        console.error("Logout error:", error);
+    }
+};
+
   return (
+    <>
+     <header className="w-full  bg-red-900 flex justify-between items-center px-4 h-auto">
+        <div className="flex items-center">
+        <img  src={cnscLogo} alt="Logo" className="h-16 w-16 object-contain p-2" />
+          <div className=" flex flex-col justify-center">
+          <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold "
+          style={{ borderBottom: '2px solid gold' }}>
+              Camarines Norte State College
+          </h1>
+
+            <h1 className="text-white text-sm sm:text-sm md:text-xs lg:text-xm font-bold">Client Feedback System</h1>
+          </div>
+        </div>
+        {/* Conditionally render logout button */}
+    
+          <button
+            onClick={handleLogout}
+            className="text-white hover:text-gray-300 font-bold ml-auto"
+          >
+            Logout
+          </button>
+    
+      </header>
+
     <div className="flex w-full h-screen">
+
       {/* Sidebar */}
       <aside
         className={`bg-gray-200 p-4 space-y-4 border border-gray-500 flex-shrink-0 transition-transform duration-300 ${
@@ -93,6 +136,7 @@ const VPREPage: React.FC = () => {
           </div>
       </main>
     </div>
+    </>
   );
 };
 

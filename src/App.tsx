@@ -6,6 +6,7 @@ import VPREPage from "./components/Admins/AdminMainContent";
 import OfficeHead from "./components/Admins/OfficeHead";
 import ResearchCoordinator from "./components/Admins/ResearchCoordinator";
 import Error from "./components/Error";
+import Form from './components/Logins/SurveyForm';
 
 import PrivacyPolicy from "./components/Terms_Policy/PrivacyPolicy";
 import TermsCondition from "./components/Terms_Policy/Terms_conditions";
@@ -63,20 +64,20 @@ function App() {
         {/* <Route path="/" element={<StartingPage />} /> */}
 
         <Route path="/" element={<LandingPage />} />
-
-        <Route path="/" element={<StartingPage />} />
+{/* 
+        <Route path="/" element={<StartingPage />} /> */}
         <Route path="/terms-conditions" element={<TermsCondition />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         
         <Route path="/client" element={<LandingPage />} />
-
+        <Route path="/student" element={<Form />} />
         {/* Pass showLoginForm state to AdminLogins component */}
-        <Route path="/admin/*" element={<AdminLogins showLoginForm={showLoginForm} setShowLoginForm={setShowLoginForm} />}>
-          <Route path="vpre" element={<VPREPage />} />
+        {/* <Route path="/admin/*" element={<AdminLogins showLoginForm={showLoginForm} setShowLoginForm={setShowLoginForm} />}> */}
+          <Route path="/vpre" element={<VPREPage />} />
           <Route path="officehead" element={<OfficeHead />} />
           <Route path="ResearchCoordinator" element={<ResearchCoordinator />} />
           <Route path="*" element={<Error />} /> {/* Catch-all for /admin paths */}
-        </Route>
+        {/* </Route> */}
         <Route path="*" element={<Error />} /> {/* Catch-all for other paths */}
       </Routes>
     </Router>

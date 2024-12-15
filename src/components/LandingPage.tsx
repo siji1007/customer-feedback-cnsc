@@ -2,16 +2,57 @@ import React, { useState } from 'react';
 import IconCNSC from '../assets/cnsc_logo.png';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { IoReturnDownBack } from "react-icons/io5";
+import { useNavigate } from 'react-router-dom';
+import host from '../hostingport.txt?raw';
+
 
 
 const LandingPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const serverURl = host.trim();
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
 
-  const handleLogin = () => {
-      alert("The backend is still under development.")
-  }
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    try {
+      const response = await fetch(serverURl + '/login_new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        alert(`Login Successful\nUser Type: ${data.user_type}`);
+  
+        // Navigate based on user_type
+        if (data.user_type === 'Student') {
+          localStorage.setItem('ShowSurvey', 'internal');
+          navigate('/student');
+        } else {
+          navigate('/vpre'); // Default navigation for other user types
+        }
+      } else {
+        alert(`Login Failed: ${data.message}`);
+      }
+    } catch (error) {
+      alert(`An error occurred: ${error.message}`);
+    }
+  };
+  
+  
 
   return  (
   <>
@@ -109,24 +150,28 @@ const LandingPage: React.FC = () => {
         
 
             <div className="relative w-full">
-              <input
-                type="text"
-                id="username"
-                placeholder=" "
-                className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                required
-              />
+            <input
+                  type="text"
+                  id="username"
+                  placeholder=" "
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  required
+                />
               <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Username </label>
             </div>
 
             <div className="relative w-full">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                placeholder=" "
-                className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                required
-              />
+            <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  placeholder=" "
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  required
+                />
               <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Password </label>
               <button
                 type="button"
