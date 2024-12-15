@@ -855,7 +855,7 @@ def login_new():
             return jsonify({"status": "error", "message": "Username and password are required"}), 400
 
         # Query the database for a matching user
-        user = server.user_collection.find_one({"email": username, "password": password})
+        user = server.user_collection.find_one({"username": username, "password": password})
 
         if user:
             # Respond with user details if found
@@ -865,7 +865,7 @@ def login_new():
                 "user_type": user.get("user_type"),
                 "details": {
                     "full_name": user.get("full_name"),
-                    "username": user.get("email"),
+                    "username": user.get("username"),
                     "course": user.get("course"),
                     "year": user.get("year"),
                     "block": user.get("block")
@@ -878,6 +878,38 @@ def login_new():
         # Handle unexpected errors
         return jsonify({"status": "error", "message": str(e)}), 500
 
+
+@app.route("/sign-up", methods=["POST"])
+def sign_up():
+    try:
+        data = request.get_json()
+
+        full_name = data.get("fullName")
+        username = data.get('username')
+        password = data.get("password")
+        email = data.get("email")
+        user_type = data.get("userType")
+        course = data.get("course")
+        year = data.get("year")
+        block = data.get("block")
+
+        user_document = {
+            "full_name": full_name,
+            "password": password,  
+            "email": email,
+            "username": username,
+            "user_type": user_type,
+            "course": course,
+            "year": year,
+            "block": block
+        }
+
+        server.user_collection.insert_one(user_document)
+        
+        return jsonify({"message": "Sign-up successful!"}), 200
+
+    except Exception as e:
+        return jsonify({"message": "Error occurred during sign-up.", "error": str(e)}), 500
 
 
 

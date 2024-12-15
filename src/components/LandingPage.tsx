@@ -13,6 +13,14 @@ const LandingPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const serverURl = host.trim();
+
+  const [fullName, setFullName] = useState('');
+
+  const [email, setEmail] = useState('');
+  const [userType, ] = useState('Student');
+  const [course, setCourse] = useState('');
+  const [year, setYear] = useState('');
+  const [block, setBlock] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -51,6 +59,46 @@ const LandingPage: React.FC = () => {
       alert(`An error occurred: ${error.message}`);
     }
   };
+
+  const handleInput = async (): Promise<void> => {
+    if (isSignUp) {
+      // Gather form data
+      const formData = {
+        fullName,
+        password,
+        email,
+        userType,
+        username,
+        course,
+        year,
+        block,
+      };
+      alert(JSON.stringify(formData, null, 2));
+  
+      try {
+        // Send data to the backend
+        const response = await fetch( serverURl +'/sign-up', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+  
+        // Handle response from backend
+        if (response.ok) {
+          const result = await response.json();
+          alert(result.message);  // Display success message
+        } else {
+          alert('Failed to sign up. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during sign up.');
+      }
+    }
+  };
+
   
   
 
@@ -106,44 +154,41 @@ const LandingPage: React.FC = () => {
             {isSignUp && (
               <>
 
-              <select className="p-2 border rounded">
-                  <option value="">Select User Type</option>
-                  <option value="course1">Student</option>
-                  <option value="course2">Employee</option>
-                </select>
               <div className="relative w-full">
-                <input
-                  type="text"
-                  id="fullname"
-                  placeholder=" "
-                  className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                  required
-                />
+              <input
+                      type="text"
+                      id="fullname"
+                      placeholder=" "
+                      className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                    />
                 <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Full Name </label>
               </div>
               <div className="relative w-full flex justify-between items-center ">
 
-                <select className="p-2 border rounded">
-                  <option value="">Select Course</option>
-                  <option value="course1">BSIT</option>
-                  <option value="course2">BSIS</option>
-                  <option value="course3">BSCE</option>
-                </select>
+              <select className="p-2 border rounded" value={course} onChange={(e) => setCourse(e.target.value)}>
+                      <option value="">Select Course</option>
+                      <option value="BSIT">BSIT</option>
+                      <option value="BSIS">BSIS</option>
+                      <option value="BSCE">BSCE</option>
+                    </select>
 
-                <select className="p-2 border rounded">
-                  <option value="">Select Year</option>
-                  <option value="year1">First Year</option>
-                  <option value="year2">Second Year</option>
-                  <option value="year3">Third Year</option>
-                  <option value="year3">Fourth Year</option>
-                </select>
+                    <select className="p-2 border rounded" value={year} onChange={(e) => setYear(e.target.value)}>
+                      <option value="">Select Year</option>
+                      <option value="First Year">1st Year</option>
+                      <option value="Second Year">2ndYear</option>
+                      <option value="Third Year">3rd Year</option>
+                      <option value="Fourth Year">4th Year</option>
+                    </select>
 
-                <select className="p-2 border rounded">
-                  <option value="">Select Block</option>
-                  <option value="blockA">Block A</option>
-                  <option value="blockB">Block B</option>
-                  <option value="blockC">Block C</option>
-                </select>
+                    <select className="p-2 border rounded" value={block} onChange={(e) => setBlock(e.target.value)}>
+                      <option value="">Select Block</option>
+                      <option value="Block A">Block A</option>
+                      <option value="Block B">Block B</option>
+                      <option value="Block C">Block C</option>
+                    </select>
                 </div>
               </>
             )}
@@ -185,20 +230,23 @@ const LandingPage: React.FC = () => {
             {isSignUp && (
               <div className="relative w-full">
                 <input
-                  type="email"
-                  id="email"
-                  placeholder=" "
-                  className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                  required
-                />
+                    type="email"
+                    id="email"
+                    placeholder=" "
+                    className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
                 <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Email Address </label>
               </div>
             )}
 
-            <button
-              type="submit"
-              className="w-full py-2 px-4 bg-red-800 text-white rounded-md font-semibold hover:bg-red-700 transition duration-300" onClick={handleLogin}
-            >
+              <button
+                type="submit"
+                className="w-full py-2 px-4 bg-red-800 text-white rounded-md font-semibold hover:bg-red-700 transition duration-300"
+                onClick={isSignUp ? handleInput : handleLogin}
+              >
               {isSignUp ? 'Sign Up' : 'Login'}
             </button>
           </form>
