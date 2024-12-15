@@ -24,6 +24,7 @@ from sentence_transformers import SentenceTransformer, util
 from datetime import datetime, timezone, timedelta
 from flask_mail import Mail, Message
 
+
 app = Flask(__name__)
 
 nltk.download('punkt')
@@ -839,6 +840,6 @@ def getEvent():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0",port="8082")
+     app.run(host="0.0.0.0",port="8082")
     
 
