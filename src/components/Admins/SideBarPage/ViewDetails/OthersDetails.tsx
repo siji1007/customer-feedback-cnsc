@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react';
 import BarChart from '../BarChart';
 import PieChart from '../PieChart';
 import axios from 'axios';
+import hosting from "../../../../hostingport.txt?raw";
 
 const OthersDetails: React.FC = () => {
   const [acadYears, setAcadYears] = useState<string[]>([]);
-  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const serverUrl = hosting.trim()
   const [pieLabels,setPieLabels] = useState<string[]>([]);
   const [pieData, setPieData] = useState<string[]>([]);
   const [othersData, setOthersData] = useState<string[]>([]);
 
   const fetchAcadYears = async () => {
     try {
-      const response = await axios.get(serverUrl + "get_acad_years");
+      const response = await axios.get(serverUrl + "/get_acad_years");
       setAcadYears(response.data);
     } catch (error) {
       console.error("Error fetching academic years: ", error);
@@ -21,7 +22,7 @@ const OthersDetails: React.FC = () => {
 
   const fetchPie = async() => {
     try{
-      const response = await axios.get(serverUrl + "fetch_clients");
+      const response = await axios.get(serverUrl + "/fetch_clients");
       setPieLabels(response.data.labels);
       setPieData(response.data.client_counts);
     }catch(error){
@@ -31,7 +32,7 @@ const OthersDetails: React.FC = () => {
 
   const fetchBar = async() => {
     try{
-      const response = await axios.get(serverUrl + "fetch_client_details");
+      const response = await axios.get(serverUrl + "/fetch_client_details");
       setOthersData(response.data);
     }catch(error){
       console.error("Error fetching graph data: ", error)

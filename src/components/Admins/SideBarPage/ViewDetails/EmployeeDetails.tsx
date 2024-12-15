@@ -3,18 +3,19 @@ import BarChart from '../BarChart';
 import PieChart from '../PieChart';
 import axios from 'axios';
 import { TbWashDryP } from 'react-icons/tb';
+import hosting from "../../../../hostingport.txt?raw";
 
 
 const EmployeeDetails: React.FC = () => {
   const [acadYears, setAcadYears] = useState<string[]>([]);
-  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const serverUrl = hosting.trim();
   const [employeeData, setEmployeeData] = useState<string[]>([]);
   const [pieLabels, setPieLabels] = useState<string[]>([]);
   const [pieData, setPieData] = useState<string[]>([]);
 
   const fetchAcadYears = async () => {
     try {
-      const response = await axios.get(serverUrl + "get_acad_years");
+      const response = await axios.get(serverUrl + "/get_acad_years");
       setAcadYears(response.data);
     } catch (error) {
       console.error("Error fetching academic years: ", error);
@@ -23,7 +24,7 @@ const EmployeeDetails: React.FC = () => {
 
   const fetchPie = async() =>{
     try{
-      const response = await axios.post(serverUrl + "fetch_users", {type: "employee"});
+      const response = await axios.post(serverUrl + "/fetch_users", {type: "employee"});
       setPieLabels(response.data.labels);
       setPieData(response.data.user_counts);
     }catch(error){
@@ -33,7 +34,7 @@ const EmployeeDetails: React.FC = () => {
 
   const fetchBar = async() => {
     try{
-      const response = await axios.post(serverUrl + "fetch_specific_type", {type: "employee"});
+      const response = await axios.post(serverUrl + "/fetch_specific_type", {type: "employee"});
       setEmployeeData(response.data);
     }catch(error){
       console.error("Error fetching graph data: ", error);

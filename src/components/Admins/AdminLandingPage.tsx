@@ -16,10 +16,16 @@ interface OfficeHeadCredentials {
   officeHead_password: string;
 }
 
+interface CoordCredentials {
+  coord_dept: string;
+  coord_pass: string;
+}
+
 interface Office {
   id: string;
   name: string;
 }
+
 interface AdminLoginsProps {
   showLoginForm: boolean;
   setShowLoginForm: (show: boolean) => void;
@@ -48,9 +54,15 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
       officeHead_department: "",
       officeHead_password: "",
     });
+
+  const [coordCredentials, setCoordCredentials] = useState<CoordCredentials>({
+    coord_dept: "",
+    coord_pass: ""
+  });
   const [hasError, setHasError] = useState(false);
 
   const [offices, setOffices] = useState<Office[]>([]);
+  const [departments, setDepartments] = useState<[]>([]);
 
   const handleBackClick = () => {
     navigate("/?showSecondSetOfButtons=true");
@@ -60,9 +72,9 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
  
   const handleLogout = async () => {
     try {
-        // Call the logout endpoint on the server
+      const formType = localStorage.getItem('formType');
         await axios.post(serverUrl + "/logout", {}, { withCredentials: true });
-        const formType = localStorage.getItem('formType');
+       
         navigate(`/admin?form=${formType}`);
         // Clear local storage and navigate to the login page
         localStorage.removeItem('formType'); 
@@ -104,12 +116,20 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
     } catch (error) {
         console.error("Error during sign-in:", error);  
         setHasError(true);
+        
     }
 };
 
   const handleOHSignInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setOfficeHeadCredentials({
       ...officeHeadCredentials,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleCoordSignInChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCoordCredentials({
+      ...coordCredentials,
       [event.target.name]: event.target.value,
     });
   };
@@ -136,17 +156,49 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
     }
   };
 
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        const response = await axios.get(serverUrl + "/office");
-        setOffices(response.data.offices);
-      } catch (error) {
-        console.error("Error fetching departments: ", error);
-      }
-    };
+  const handleCoordSignIn = async(
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+    try{
+      setHasError(false);
+      setShowLoginForm(false);
+      localStorage.setItem('formType', 'ResearchCoordinator');
+      const response = await axios.post(
+        serverUrl + "/coordinator-login",
+        coordCredentials
+      );
+      localStorage.setItem('department', coordCredentials.coord_dept);
+      setHasError(false);
+      setShowLoginForm(false);
+      navigate("/admin/ResearchCoordinator");
+    }catch(error){
+      setHasError(true);
+    }
+  }
 
+  const fetchOffices = async () => {
+    try {
+      const response = await axios.get(serverUrl + "/office");
+      setOffices(response.data.offices);
+    } catch (error) {
+      console.error("Error fetching departments: ", error);
+    }
+  };
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(serverUrl + "/department");
+      setDepartments(response.data.departments);
+      console.log(departments);
+    } catch (error) {
+      console.error("Error fetching departments: ", error);
+    }
+  };
+
+  useEffect(() => {
     fetchDepartments();
+    fetchOffices();
   }, []);
 
   useEffect(() => {
@@ -163,7 +215,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
       <header className="w-full  bg-red-900 flex justify-between items-center px-4 h-auto">
         <div className="flex items-center">
         <img  src={cnscLogo} alt="Logo" className="h-16 w-16 object-contain p-2" />
-          <div className=" flex flex-col justify-center">
+          <div className="ml-1 flex flex-col justify-center">
           <h1 className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold "
           style={{ borderBottom: '2px solid gold' }}>
               Camarines Norte State College
@@ -201,7 +253,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                 <input
                   type="text"
                   id="adminId"
-                  className={`${"w-2/3 rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
+                  className={`${"w-2/3 rounded-lg border"} ${hasError ? "border-red-500" : ""} p-1`}
                   name="admin_username"
                   value={adminCredentials.admin_username}
                   onChange={handleSignInChange}
@@ -220,7 +272,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                     type={showPassword ? "text" : "password"}
                     name="admin_password"
                     id="password"
-                    className={`${"w-full rounded-lg border pr-10"} ${hasError ? "border-red-500" : ""}`}
+                    className={`${"w-full rounded-lg border pr-10"} ${hasError ? "border-red-500" : ""} p-1`}
                     value={adminCredentials.admin_password}
                     onChange={handleSignInChange}
                     required
@@ -247,7 +299,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                 className="text-sm text-right underline w-full"
                 onClick={openModal}
               >
-                Forget Password?
+                Forgot Password?
               </button>
 
             </div>
@@ -282,7 +334,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                 </label>
                 <select
                   id="department"
-                  className="w-2/3 rounded-lg border"
+                  className="w-2/3 rounded-lg border p-1"
                   name="officeHead_department"
                   value={officeHeadCredentials.officeHead_department}
                   onChange={handleOHSignInChange}
@@ -311,7 +363,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                   <input
                     type={showPassword ? "text":"password"}
                     id="password"
-                    className={`${"w-full rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
+                    className={`${"w-full rounded-lg border"} ${hasError ? "border-red-500" : ""} p-1`}
                     name="officeHead_password"
                     value={officeHeadCredentials.officeHead_password}
                     onChange={handleOHSignInChange}
@@ -335,7 +387,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                 className="text-sm text-right underline w-full"
                 onClick={openModal}
               >
-                Forget Password?
+                Forgot Password?
               </button>
             </div>
             <button
@@ -356,7 +408,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
         {showLoginForm && formType === "ResearchCoordinator" && (
           <form
                className="flex flex-col items-center justify-center"
-               onSubmit={handleOfficeHeadSignIn}
+               onSubmit={handleCoordSignIn}
              >
                <h1 className="text-2xl font-bold mb-4">RESEARCH COORDINATOR</h1>
                <div className="bg-gray-200 border-stone-400 border rounded-lg shadow-md p-4 w-full max-w-md">
@@ -369,22 +421,19 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                    </label>
                    <select
                      id="department"
-                     className="w-2/3 rounded-lg border"
-                     name="officeHead_department"
-                     value={officeHeadCredentials.officeHead_department}        
-                     onChange={handleOHSignInChange}
+                     className="w-2/3 rounded-lg border p-1"
+                     name="coord_dept"
+                     value={coordCredentials.coord_dept}        
+                     onChange={handleCoordSignInChange}
                      required
                    >
                      <option value="">Select Department</option>
    
-                     {offices.map((office) => (
-                        <option key={office.id} value={office.name}>                
-                        {/* store here the list of department not the offices */}
-                          {office.name}
-                      </option>
-                      
-       
-                     ))} 
+                     {departments.map((department, index) => (
+                        <option key={index} value={department}>
+                          {department}
+                        </option>
+                      ))} 
                       
                    </select>
                  </section>
@@ -399,10 +448,10 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                      <input
                        type={showPassword ? "text":"password"}
                        id="password"
-                       className={`${"w-full rounded-lg border"} ${hasError ? "border-red-500" : ""}`}
-                       name="officeHead_password"
-                       value={officeHeadCredentials.officeHead_password}
-                       onChange={handleOHSignInChange}
+                       className={`${"w-full rounded-lg border"} ${hasError ? "border-red-500" : ""} p-1`}
+                       name="coord_pass"
+                       value={coordCredentials.coord_pass}
+                       onChange={handleCoordSignInChange}
                        required
                      />
                      <button className="absolute  inset-y-0 right-0 px-3 py-1 text-sm font-bold text-red-800 "
@@ -423,7 +472,7 @@ const AdminLogins: React.FC<AdminLoginsProps> = ({ showLoginForm, setShowLoginFo
                    className="text-sm text-right underline w-full"
                    onClick={openModal}
                  >
-                   Forget Password?
+                   Forgot Password?
                  </button>
                </div>
                <button

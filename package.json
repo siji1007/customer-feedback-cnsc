@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
+    "@visx/wordcloud": "^3.12.0",
     "autoprefixer": "^10.4.19",
     "axios": "^1.7.2",
     "chart.js": "^4.4.3",
@@ -21,7 +22,9 @@
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
     "react-modal": "^3.16.1",
-    "react-router-dom": "^6.24.0"
+    "react-router-dom": "^6.24.0",
+    "react-wordcloud": "^1.2.7",
+    "wordcloud": "^1.2.3"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

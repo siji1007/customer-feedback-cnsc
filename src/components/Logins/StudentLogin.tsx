@@ -122,7 +122,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
   return (
     <div className="flex flex-col items-center m-3">
       <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-4 font-bold">
-        {showLoginForm ? "STUDENT" : "Sign-Up"}
+        {showLoginForm ? "STUDENT LOGIN" : "Sign-Up"}
       </h2>
       {showSignUpForm && (
         <form onSubmit={handleStudentSignUp}>
@@ -184,7 +184,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
                 Confirm Password
               </label>
               <input
-                type="password"
+                 type={showPassword ? "text" : "password"}
                 name="student_cpass"
                 id="confirmPassword"
                 className="w-2/3 rounded-lg border"
@@ -253,7 +253,7 @@ const StudentLogin: React.FC<StudentLoginProps> = ({ onLoginSuccess }) => {
             >
               User credentials not found
             </h4>
-            <button className="text-sm text-right underline w-full"y>Forget Password?</button>
+            <button className="text-sm text-right underline w-full">Forgot Password?</button>
           </div>
           <button
             type="submit"

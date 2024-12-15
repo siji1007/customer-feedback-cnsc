@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import BarChart from '../BarChart';
 import PieChart from '../PieChart';
 import axios from 'axios';
+import hosting from "../../../../hostingport.txt?raw";
 
 const ResearchDetails: React.FC = () => {
   const [acadYears, setAcadYears] = useState<string[]>([]);
-  const serverUrl = import.meta.env.VITE_APP_SERVERHOST;
+  const serverUrl = hosting.trim();
 
   useEffect(() => {
     const fetchAcadYears = async () => {
       try {
-        const response = await axios.get(serverUrl + "get_acad_years");
+        const response = await axios.get(serverUrl + "/get_acad_years");
         setAcadYears(response.data);
       } catch (error) {
         console.error("Error fetching academic years: ", error);

@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-
+import cnsc_logo from "../assets/cnsc_logo.png";
+import mission from "../assets/mission.png";
+import vision from "../assets/vision.png";
 const StartingPage: React.FC = () => {
   const location = useLocation();
   const [showTwoButtons, setShowTwoButtons] = useState(false);
   const [showSecondSetOfButtons, setShowSecondSetOfButtons] = useState(false);
+  const [isAgreed, setIsAgreed] = useState(false);
+
+  const handleCheckboxChange = (event: { target: { checked: boolean | ((prevState: boolean) => boolean); }; }) => {
+    setIsAgreed(event.target.checked);
+  };
+
 
   
   const imageSources = [              //This is the image slider you can store here the image of latest events. 
-    "src/assets/cnsc_logo.png",                       
-    "src/assets/mission.png",
-    "src/assets/vision.png",
+    cnsc_logo,                       
+    mission,
+    vision,
   ];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -48,7 +56,7 @@ const StartingPage: React.FC = () => {
         <div className="flex transition-transform duration-700 ease-in-out" style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}>
           {imageSources.map((src, index) => ( 
             <div key={index} className="flex-shrink-0 w-full h-full flex justify-center items-center">
-              <img src={src} alt="CNSC LOGO" className="max-w-full max-h-full object-cover"/>
+              <img src={src} alt="CNSC LOGO" className="max-w-full max-h-full object-cover"  loading="lazy"/>
             </div>
           ))}
         </div>
@@ -66,16 +74,48 @@ const StartingPage: React.FC = () => {
 
       {/* Left Side with Buttons */}
       <div className="right-side flex-1 h-1/2 md:h-full flex justify-start md:justify-center items-center flex-col m-10 md:p-0 md:order-1">
-        <p className="text-center font-bold text-md" style={{ fontFamily: 'Copperplate, serif' }}> Camarines Norte State College </p>
-        <p className="text-center font-bold text-md mb-10" style={{ fontFamily: 'Copperplate, serif' }}>Customer Feedback System</p>
+        <p className="text-center font-bold text-md" > Camarines Norte State College </p>
+        <p className="text-center font-bold text-md mb-10" >Customer Feedback System</p>
         {!showTwoButtons ? (
           <>
             <button
               className="w-40 text-black bg-gray-300 hover:bg-gray-100 hover:text-gray-800 font-bold py-2 px-4 rounded-full shadow-maroon"
-              onClick={handleStartClick}
+              onClick={handleStartClick} disabled={!isAgreed}
             >
               Start
             </button>
+            <div className="text-center mt-5  sm:px-6 lg:px-8">
+              <div className="mb-4 flex justify-center items-center">
+                <label className="flex items-center text-sm sm:text-base">
+                <input
+                    type="checkbox"
+                    className="ml-2"
+                    checked={isAgreed}
+                    onChange={handleCheckboxChange}
+                  />
+                  <span className="ml-2 text-justify">
+                    By starting, you are agreeing to our&nbsp;
+                    <a
+                      href="/terms-of-use"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-red-900 underline hover:text-blue-700"
+                    >
+                      Terms of Use
+                    </a>
+                    &nbsp;and our&nbsp;
+                    <a
+                      href="/privacy-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-red-900 underline hover:text-blue-700"
+                    >
+                      Privacy Policy
+                    </a>.
+                  </span>
+                </label>
+              </div>
+            </div>
           </>
         ) : showSecondSetOfButtons ? (
           <div className="flex flex-col items-center">

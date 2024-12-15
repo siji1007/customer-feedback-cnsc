@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from "axios";
+import host from '../hostingport.txt?raw'
 
 const ForgetPass: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -8,6 +9,7 @@ const ForgetPass: React.FC = () => {
   const [otp, setOtp] = useState(['', '', '', '']);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const serverURL = host.trim()
   const [sentOtp, setSentOtp] = useState<string>('');
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -21,7 +23,7 @@ const ForgetPass: React.FC = () => {
   
     try {
       const response = await axios.post(
-        import.meta.env.VITE_APP_SERVERHOST + '/fetch_email',
+        serverURL + '/fetch_email',
         { email }
       );
   
@@ -102,7 +104,7 @@ const ForgetPass: React.FC = () => {
     try {
       // Send the request to the backend with email, OTP, and new password
       const response = await axios.post(
-        import.meta.env.VITE_APP_SERVERHOST + '/reset_password',
+        serverURL + '/reset_password',
         { 
           email, 
           otp: sentOtp, 
