@@ -4,6 +4,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { IoReturnDownBack } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import host from '../hostingport.txt?raw';
+import { useEffect } from 'react';
 
 
 
@@ -17,50 +18,104 @@ const LandingPage: React.FC = () => {
   const [fullName, setFullName] = useState('');
 
   const [email, setEmail] = useState('');
-  const [userType, ] = useState('Student');
-  const [course, setCourse] = useState('');
+  const [userType] = useState('Student');
+  const [colleges, setColleges] = useState('');
   const [year, setYear] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [block, setBlock] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [departments, setDepartments] = useState([]); // Holds all department data from the server
+  const [courses, setCourses] = useState([]); // Holds courses for the selected department
+  const [selectedDepartment, setSelectedDepartment] = useState(""); // Currently selected department
+  const [selectedCourse, setSelectedCourse] = useState(""); 
 
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-  
-    try {
-      const response = await fetch(serverURl + '/login_new', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        alert(`Login Successful\nUser Type: ${data.user_type}`);
-  
-        // Navigate based on user_type
-        if (data.user_type === 'Student') {
-          localStorage.setItem('ShowSurvey', 'internal');
-          navigate('/student');
-        } else {
-          navigate('/vpre'); // Default navigation for other user types
-        }
-      } else {
-        alert(`Login Failed: ${data.message}`);
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await fetch(serverURl + '/departments'); // Adjust URL as necessary
+        const data = await response.json();
+        setDepartments(data);  // Set departments and courses from the API response
+      } catch (error) {
+        console.error('Error fetching departments:', error);
       }
-    } catch (error) {
-      alert(`An error occurred: ${error.message}`);
-    }
+    };
+
+    fetchDepartments();
+  }, []);
+
+
+  const handleDepartmentChange = (e) => {
+    const selectedDept = e.target.value;
+    setSelectedDepartment(selectedDept);
+
+    // Find the selected department and set its courses
+    const dept = departments.find(department => department.department === selectedDept);
+    setCourses(dept ? dept.courses : []); // Update courses based on the selected department
   };
 
-  const handleInput = async (): Promise<void> => {
+
+
+    const handleLogin = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsLoading(true); // Set loading state to true
+    
+      try {
+        const response = await fetch(serverURl + '/login_new', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username,
+            password,
+          }),
+        });
+    
+        const data = await response.json();
+    
+        if (response.ok) {
+          // alert(`Login Successful\nUser Type: ${data.user_type}`);
+          localStorage.setItem('ShowSurvey', 'internal'); // Default ShowSurvey setup
+    
+          switch (data.user_type) {
+            case 'student':
+              navigate('/student');
+              break;
+            case 'vpre':
+              navigate('/vpre');
+              break;
+            case 'research-coordinator':
+              navigate('/research-coordinator');
+              break;
+            case 'officehead':
+              navigate('/officehead');
+              break;
+            case 'employee':
+              navigate('/employee');
+              break;
+            case 'others':
+              navigate('/others'); // Update this to the appropriate route
+              break;
+            default:
+              alert('Unknown user type. Please contact support.');
+          }
+        } else {
+          alert(`Login Failed: ${data.message}`);
+        }
+      } catch (error) {
+        alert(`An error occurred: ${error.message}`);
+      } finally {
+        setIsLoading(false); // Set loading state back to false
+      }
+    };
+  
+    
+  
+
+  const handleInput = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+  
     if (isSignUp) {
       // Gather form data
       const formData = {
@@ -69,15 +124,19 @@ const LandingPage: React.FC = () => {
         email,
         userType,
         username,
-        course,
+        colleges,
         year,
         block,
+        courses,
+        departments,
       };
+  
+      // For debugging, you can keep this alert temporarily
       alert(JSON.stringify(formData, null, 2));
   
       try {
         // Send data to the backend
-        const response = await fetch( serverURl +'/sign-up', {
+        const response = await fetch(serverURl + '/sign-up', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -86,18 +145,19 @@ const LandingPage: React.FC = () => {
         });
   
         // Handle response from backend
+        const result = await response.json();
         if (response.ok) {
-          const result = await response.json();
           alert(result.message);  // Display success message
         } else {
-          alert('Failed to sign up. Please try again.');
+          alert(result.message);  // Show error message (e.g., email already registered)
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred during sign up.');
+        alert('An error occurred during sign-up.');
       }
     }
   };
+  
 
   
   
@@ -166,30 +226,57 @@ const LandingPage: React.FC = () => {
                     />
                 <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Full Name </label>
               </div>
-              <div className="relative w-full flex justify-between items-center ">
+              <div className="relative w-full flex justify-between items-center gap-2 flex-wrap">
+            <select
+              className="p-2 border rounded flex-grow"
+              value={selectedDepartment}
+              onChange={handleDepartmentChange}
+            >
+              <option value="">Select Department</option>
+              {departments.map((department, index) => (
+                <option key={index} value={department.department}>
+                  {department.department}
+                </option>
+              ))}
+            </select>
 
-              <select className="p-2 border rounded" value={course} onChange={(e) => setCourse(e.target.value)}>
-                      <option value="">Select Course</option>
-                      <option value="BSIT">BSIT</option>
-                      <option value="BSIS">BSIS</option>
-                      <option value="BSCE">BSCE</option>
-                    </select>
+            <select
+              className="p-2 border rounded flex-grow"
+              value={selectedCourse}
+              onChange={(e) => setSelectedCourse(e.target.value)}
+            >
+              <option value="">Select Course</option>
+              {courses.map((course, index) => (
+                <option key={index} value={course}>
+                  {course}
+                </option>
+              ))}
+            </select>
 
-                    <select className="p-2 border rounded" value={year} onChange={(e) => setYear(e.target.value)}>
-                      <option value="">Select Year</option>
-                      <option value="First Year">1st Year</option>
-                      <option value="Second Year">2ndYear</option>
-                      <option value="Third Year">3rd Year</option>
-                      <option value="Fourth Year">4th Year</option>
-                    </select>
+            <select
+              className="p-2 border rounded flex-grow"
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+            >
+              <option value="">Select Year</option>
+              <option value="First Year">1st Year</option>
+              <option value="Second Year">2nd Year</option>
+              <option value="Third Year">3rd Year</option>
+              <option value="Fourth Year">4th Year</option>
+            </select>
 
-                    <select className="p-2 border rounded" value={block} onChange={(e) => setBlock(e.target.value)}>
-                      <option value="">Select Block</option>
-                      <option value="Block A">Block A</option>
-                      <option value="Block B">Block B</option>
-                      <option value="Block C">Block C</option>
-                    </select>
-                </div>
+            <select
+              className="p-2 border rounded flex-grow"
+              value={block}
+              onChange={(e) => setBlock(e.target.value)}
+            >
+              <option value="">Select Block</option>
+              <option value="Block A">Block A</option>
+              <option value="Block B">Block B</option>
+              <option value="Block C">Block C</option>
+            </select>
+          </div>
+
               </>
             )}
         
@@ -230,25 +317,33 @@ const LandingPage: React.FC = () => {
             {isSignUp && (
               <div className="relative w-full">
                 <input
-                    type="email"
-                    id="email"
-                    placeholder=" "
-                    className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
+                  type="email"
+                  id="email"
+                  placeholder=" "
+                  className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                {!email.endsWith("@gmail.com") && email.length > 0 && (
+                  <p className="text-red-500 text-sm">Email must end with @gmail.com</p>
+                )}
+
                 <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Email Address </label>
               </div>
             )}
 
               <button
                 type="submit"
-                className="w-full py-2 px-4 bg-red-800 text-white rounded-md font-semibold hover:bg-red-700 transition duration-300"
+                className={`w-full py-2 px-4 rounded-md font-semibold transition duration-300 ${
+                  isLoading ? 'bg-gray-500 cursor-not-allowed' : 'bg-red-800 hover:bg-red-700 text-white'
+                }`}
                 onClick={isSignUp ? handleInput : handleLogin}
+                disabled={isLoading} // Disable the button when loading
               >
-              {isSignUp ? 'Sign Up' : 'Login'}
-            </button>
+                {isLoading ? 'Logging in...' : isSignUp ? 'Sign Up' : 'Login'}
+              </button>
+
           </form>
 
           <div className="mt-4 flex justify-between text-sm">
