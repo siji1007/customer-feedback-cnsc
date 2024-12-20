@@ -14,16 +14,16 @@ const LandingPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const serverURl = host.trim();
-
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); 
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [fullName, setFullName] = useState('');
 
   const [email, setEmail] = useState('');
-  const [userType] = useState('Student');
+  const [userType] = useState('student');
   const [colleges, setColleges] = useState('');
   const [year, setYear] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [block, setBlock] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
   const [departments, setDepartments] = useState([]); // Holds all department data from the server
   const [courses, setCourses] = useState([]); // Holds courses for the selected department
@@ -33,7 +33,7 @@ const LandingPage: React.FC = () => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await fetch(serverURl + '/departments'); // Adjust URL as necessary
+        const response = await fetch(serverURl + '/departments_course'); // Adjust URL as necessary
         const data = await response.json();
         setDepartments(data);  // Set departments and courses from the API response
       } catch (error) {
@@ -44,6 +44,15 @@ const LandingPage: React.FC = () => {
     fetchDepartments();
   }, []);
 
+
+    useEffect(() => {
+    if (showErrorMessage) {
+      const timer = setTimeout(() => {
+        setShowErrorMessage(false);
+      }, 10000); // 3 seconds
+      return () => clearTimeout(timer); // Clean up the timer
+    }
+  }, [showErrorMessage]);
 
   const handleDepartmentChange = (e) => {
     const selectedDept = e.target.value;
@@ -56,40 +65,40 @@ const LandingPage: React.FC = () => {
 
 
 
-    const handleLogin = async (e: React.FormEvent) => {
-      e.preventDefault();
-      setIsLoading(true); // Set loading state to true
-    
-      try {
-        const response = await fetch(serverURl + '/login_new', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username,
-            password,
-          }),
-        });
-    
-        const data = await response.json();
-    
-        if (response.ok) {
-          // alert(`Login Successful\nUser Type: ${data.user_type}`);
-          localStorage.setItem('ShowSurvey', 'internal'); // Default ShowSurvey setup
-    
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true); // Start loading animation
+
+    try {
+      const response = await fetch(serverURl + '/login_new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Simulate a delay for 3 seconds before navigating
+        setTimeout(() => {
+          localStorage.setItem('ShowSurvey', 'internal');
           switch (data.user_type) {
             case 'student':
               navigate('/student');
               break;
             case 'vpre':
-              navigate('/vpre');
+              navigate('/admin/vpre');
               break;
             case 'research-coordinator':
-              navigate('/research-coordinator');
+              navigate('admin/ResearchCoordinator');
               break;
             case 'officehead':
-              navigate('/officehead');
+              navigate('admin/officehead');
               break;
             case 'employee':
               navigate('/employee');
@@ -98,17 +107,25 @@ const LandingPage: React.FC = () => {
               navigate('/others'); // Update this to the appropriate route
               break;
             default:
-              alert('Unknown user type. Please contact support.');
+              setErrorMessage('Unknown user type. Please contact support.');
           }
-        } else {
-          alert(`Login Failed: ${data.message}`);
-        }
-      } catch (error) {
-        alert(`An error occurred: ${error.message}`);
-      } finally {
-        setIsLoading(false); // Set loading state back to false
+          setIsLoading(false); // Stop loading animation
+        }, 2000);
+      } else {
+        setTimeout(() => {
+          setErrorMessage('Invalid Username or Password');
+          setShowErrorMessage(true);
+          setIsLoading(false); // Stop loading animation
+        }, 2000);
       }
-    };
+    } catch (error) {
+      setTimeout(() => {
+        setErrorMessage('An error occurred. Please try again.');
+        setShowErrorMessage(true);
+        setIsLoading(false); // Stop loading animation
+      }, 2000);
+    }
+  };
   
     
   
@@ -185,7 +202,7 @@ const LandingPage: React.FC = () => {
       className="relative flex justify-center items-center min-h-screen bg-cover bg-center"
       style={{ backgroundImage: "url(src/assets/landingbg.jpg)" }}
     >
-      <div className="absolute inset-0 bg-red-800 bg-opacity-40"></div>
+      <div className="absolute inset-0 bg-red-900 bg-opacity-40"></div>
       <div className=" z-10 flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden w-11/12 max-w-4xl">
       
         {/* Left Section */}
@@ -210,19 +227,20 @@ const LandingPage: React.FC = () => {
             {isSignUp ? 'CREATE ACCOUNT' : 'LOGIN'}
           </h2>
 
-          <form className="flex flex-col gap-6">
+          <form className="flex flex-col gap-6" onSubmit={isSignUp ? handleInput : handleLogin}>
             {isSignUp && (
               <>
 
               <div className="relative w-full">
               <input
                       type="text"
+                      required
                       id="fullname"
                       placeholder=" "
                       className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      required
+                    
                     />
                 <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Full Name </label>
               </div>
@@ -285,11 +303,12 @@ const LandingPage: React.FC = () => {
             <input
                   type="text"
                   id="username"
+                  required
                   placeholder=" "
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                  required
+                 
                 />
               <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Username </label>
             </div>
@@ -341,16 +360,48 @@ const LandingPage: React.FC = () => {
                 onClick={isSignUp ? handleInput : handleLogin}
                 disabled={isLoading} // Disable the button when loading
               >
-                {isLoading ? 'Logging in...' : isSignUp ? 'Sign Up' : 'Login'}
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      ></path>
+                    </svg>
+                    Logging in...
+                  </span>
+                ) : isSignUp ? (
+                  'Sign Up'
+                ) : (
+                  'Login'
+                )}
               </button>
+
+              {!isSignUp && errorMessage && showErrorMessage && (
+                <p className="w-full text-center text-red-700 text-sm">{errorMessage}</p>
+              )}
 
           </form>
 
           <div className="mt-4 flex justify-between text-sm">
             {!isSignUp && (
-              <a  className="text-red-600 hover:underline">
+              <button  className="text-red-600 hover:underline">
                 Forgot password?
-              </a>
+              </button>
             )}
            <button
             className="text-red-600 hover:underline focus:outline-none"

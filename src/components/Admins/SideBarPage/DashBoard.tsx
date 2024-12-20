@@ -172,7 +172,7 @@ const Dashboard: React.FC = () => {
 
 
 
-  const [dataChartLeft, setDataChartLeft] = useState<number[]>([0, 0, 0, 0, 0]); // add here the data number leftside chart
+  const [dataChartLeft, setDataChartLeft] = useState<number[]>([0, 0, 0, 0, 0]); 
   const fetchChartLeft = async (office, semester, ay) => {
     try{
       if(office === null && semester === null && ay === null){
@@ -371,7 +371,7 @@ const Dashboard: React.FC = () => {
   
   useEffect(() => {
     fetchAllData();
-    fetchWords();
+    // fetchWords();
   }, []); 
 
   useEffect(() => {
@@ -470,12 +470,13 @@ const Dashboard: React.FC = () => {
   
   return (
     <div>
+     
       <main ref={dashboardRef} className="px-4">
         {!showDetailedView ? (
           <>
             <header className="w-full border-b flex items-center justify-between bg-red-900 p-2 rounded-lg">
               <div className="flex items-center">
-                <input
+                {/* <input
                   type="checkbox"
                   id="selectAll"
                   className="mr-2 h-5 w-5"
@@ -487,7 +488,7 @@ const Dashboard: React.FC = () => {
                   className="text-sm text-white font-bold mr-4"
                 >
                   All
-                </label>
+                </label> */}
 
                 <label
                   htmlFor="officeSelect"

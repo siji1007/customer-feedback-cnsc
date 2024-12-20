@@ -1,18 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
-import { CheckIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import SurveyDashboard from "./ClientDashboard";
 import PageDots from "./PageDots";
 import hosting from "../../hostingport.txt?raw";
+import { IoReturnDownBack } from "react-icons/io5";
 
 interface Question {
   q_id: string;
   question: string;
 }
 
-const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
-  selectedOffice = [],
-}) => {
+interface SurveyContentsProps {
+  selectedOffice?: string[];
+  setContent: (content: string) => void;
+}
+
+
+const SurveyContents: React.FC<SurveyContentsProps> = ({ selectedOffice, setContent }) =>  {
   const [positions, setPositions] = useState<{ [key: number]: number }>({
     0: 0,
     1: 0,
@@ -20,6 +24,9 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
     3: 0,
     4: 0,
   });
+  const handleBackClick = () => {
+    setContent("Select Offices");
+  };
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [poppingEmoji, setPoppingEmoji] = useState<number | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -34,6 +41,7 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
   const [isExternal, setIsExternal] = useState(false); // State for external questions
   const [acadYear, setAcadYear] = useState("");
   const [semester, setSemester] = useState("");
+
 
   const fetchValidity = async () => {
     try{
@@ -229,7 +237,9 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
     return <SurveyDashboard />;
   }
 
+
   return (
+    <>
     <div className=" md:p-6 lg:p-1 max-w-screen-md relative">
       <div className="flex flex-col items-center ">
         {/* Title showing current office or 'External Client' */}
@@ -262,15 +272,23 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
         </form>
       </div>
       {/* PageDots placed above the submit button */}
-      <div className="flex flex-col items-center mt-2">
-          <button
+      <div className="flex justify-between items-center mt-4 w-full">
+        <button
+          className="px-4 py-2 text-black rounded-lg text-sm md:text-base lg:text-lg mr-4"
+          onClick={handleBackClick}
+        >
+          <IoReturnDownBack className="inline mr-2" />
+          Back
+        </button>
+        <button
           onClick={handleSubmit}
           style={{ backgroundColor: "#800000", color: "white" }}
-          className="p-2 rounded-md text-white text-xs md:text-sm lg:text-base font-bold mt-2"
+          className="px-4 py-2 rounded-md text-white text-xs md:text-sm lg:text-base font-bold"
         >
           Submit
         </button>
       </div>
+
 
       {isSuccessModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
@@ -289,7 +307,9 @@ const SurveyContents: React.FC<{ selectedOffice?: string[] }> = ({
         </div>
       )}
     </div>
+    </>
   );
+  
 };
 
 export default SurveyContents;

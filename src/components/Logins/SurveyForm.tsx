@@ -1,7 +1,11 @@
 import React, { ChangeEvent, useState, useEffect } from "react";
-import SurveyContents from "./SurveyContents"; // Import SurveyContents component
+import SurveyContents from "./SurveyContents";
 import axios from "axios";
 import hosting from "../../hostingport.txt?raw";
+import iconCNSC from '../../assets/cnsc_logo.png';
+import { useNavigate } from "react-router-dom";
+import { IoReturnDownBack } from "react-icons/io5";
+import { IoIosReturnRight } from "react-icons/io";
 
 interface Offices {
   office_id: string;
@@ -13,8 +17,10 @@ const SurveyForm: React.FC = () => {
   const [selectedOffice, setSelectedOffice] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState<boolean>(false);
   const [allOffices, setAllOffices] = useState<Offices[]>([]);
-  const serverUrl =  hosting.trim(); 
+  const serverUrl = hosting.trim();
   const [isCheckAll, setIsCheckAll] = useState(false);
+  const [showSurveyForm, setShowSurveyForm] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   const handleNextClick = () => {
     if (content === "Instruction") {
@@ -62,10 +68,60 @@ const SurveyForm: React.FC = () => {
     getAllOffices();
   }, []);
 
+  const handleLogout = () => {
+    // Clear localStorage (if used for storing credentials)
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+  
+    // Clear sessionStorage (if used for temporary storage)
+    sessionStorage.removeItem('username');
+    sessionStorage.removeItem('password');
+  
+    // If you're storing credentials in cookies, clear them
+    document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
+    document.cookie = 'password=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
+  
+ 
+    // Close or reset the survey form (if applicable)
+    setShowSurveyForm(false);
+  
+    // Navigate to the home page or login page
+    navigate('/');
+  };
+  
   return (
-    <div className="flex-grow flex justify-center flex-col overflow-auto m-3 ">
-      {content === "Instruction" ? (
-        <>
+    <>
+      {/* Header */}
+      <header className="w-full h-19 bg-red-900 flex justify-between items-center px-4">
+        <div className="flex items-center">
+          <img src={iconCNSC} alt="Logo" className="h-16 w-16 object-contain" />
+          <div className="ml-4 flex flex-col justify-center">
+            <h1
+              className="text-white text-sm sm:text-sm md:text-sm lg:text-xm font-bold"
+              style={{ borderBottom: '2px solid gold' }}
+            >
+              Camarines Norte State College
+            </h1>
+            <h1 className="text-white text-sm sm:text-sm md:text-xs lg:text-xm font-bold">
+              Client Feedback System
+            </h1>
+          </div>
+        </div>
+        {showSurveyForm && (
+          <button
+            onClick={handleLogout}
+            className="text-white hover:text-gray-300 font-bold ml-auto"
+          >
+            Logout
+          </button>
+        )}
+      </header>
+
+      {/* Content */}
+      <div className="flex-grow flex justify-center items-center flex-col overflow-auto m-3 ">
+
+        {content === "Instruction" && (
+           <div className="flex-grow flex justify-center flex-col overflow-auto m-3">
           <h1 className="text-lg md:text-xl lg:text-2xl font-bold mb-4">
             {content}
           </h1>
@@ -142,21 +198,29 @@ const SurveyForm: React.FC = () => {
               onClick={handleNextClick}
             >
               Next
+              <IoIosReturnRight  className="inline mr-2" />
             </button>
           </div>
-        </>
-      ) : content === "Select Offices" ? (
-        <>
-          <div className="flex justify-center items-center mb-4">
+          </div>
+        )}
+
+        {content === "Select Offices" && (
+         <div className="flex-grow flex justify-center flex-col overflow-x-hidden w-full">
+          <div className="flex justify-between items-center mb-2 ">
             <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-center">
               {content}
             </h1>
-            <button
-              className="px-4 py-2 text-black rounded-lg text-sm md:text-base lg:text-lg"
-              onClick={handleSelectAll}
-            >
-              {selectAll ? "Deselect All" : "Select All"}
-            </button>
+            <div className="flex items-center ml-4">
+              <span className="text-sm md:text-base lg:text-lg mr-2">
+                {selectAll ? "Deselect All" : "Select All"}
+              </span>
+              <input
+                type="checkbox"
+                checked={selectAll}
+                onChange={handleSelectAll}
+                className="ml-2"
+              />
+            </div>
           </div>
           <div className="flex flex-col space-y-2 m-2">
             {/* List of offices */}
@@ -179,6 +243,8 @@ const SurveyForm: React.FC = () => {
               className="px-4 py-2 text-black rounded-lg text-sm md:text-base lg:text-lg mr-4"
               onClick={handleBackClick}
             >
+              <IoReturnDownBack className="inline mr-2" />
+
               Back
             </button>
             <button
@@ -186,13 +252,21 @@ const SurveyForm: React.FC = () => {
               onClick={handleNextClick}
             >
               Next
+              <IoIosReturnRight  className="inline mr-2" />
             </button>
           </div>
-        </>
-      ) : (
-        <SurveyContents selectedOffice={selectedOffice} />
-      )}
-    </div>
+        </div>
+        )}
+
+        {content === "Survey Contents" && (
+          
+          <SurveyContents
+            selectedOffice={selectedOffice}
+            setContent={setContent}
+          />
+        )}
+      </div>
+    </>
   );
 };
 
