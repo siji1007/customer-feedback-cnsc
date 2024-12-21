@@ -57,11 +57,11 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/terms-conditions" element={<TermsCondition />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/student" element={<Form />} />
+        <Route path="/survey" element={<Form />} />
         <Route path="/admin/*" element={<AdminLandingPage />}>
           {/* Use relative paths for nested routes */}
           <Route path="vpre" element={<VPREPage />} />
-          <Route path="officehead" element={<OfficeHead />} />
+          <Route path="services" element={<OfficeHead />} />
           <Route path="researchcoordinator" element={<ResearchCoordinator />} />
           <Route path="*" element={<Error />} /> {/* Catch-all for /admin paths */}
         </Route>
