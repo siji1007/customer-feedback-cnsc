@@ -392,6 +392,24 @@ def login_client():
         client = server.client_collection.insert_one({'name': client_name, 'address': client_addr, 'type': client_type})
         return {"message": "Access Granted", "client_id": str(client.inserted_id)}, 200
 
+@app.route('/departments_course', methods=['GET'])
+def get_departments_and_courses():
+    try:
+        # Fetch all departments and their courses from MongoDB
+        departments = server.colleges_collection.find({}, {"department": 1, "courses": 1})
+        
+        # Format data
+        result = []
+        for dept in departments:
+            result.append({
+                "department": dept["department"],
+                "courses": dept.get("courses", [])
+            })
+        
+        return jsonify(result), 200  # Return the data as JSON
+    except Exception as e:
+        return jsonify({"message": "Error fetching departments and courses", "error": str(e)}), 500
+    
 @app.route('/department')
 def get_acad_dept():
     data = server.dept_collection.find()
@@ -400,11 +418,24 @@ def get_acad_dept():
     return jsonify({'departments': departments})
 
 
+
+
+
 @app.route('/office')
 def get_office():
+    # Fetch data from the office collection
     data = server.office_collection.find()
-    offices = [{'id': str(office['_id']), 'name': office['office']} for office in data if office["type"] == "internal"]
+
+    # Prepare a list of offices, including the 'id' and 'name' and return them
+    offices = [{
+        'id': str(office['_id']),
+        'name': office['office'],
+        'value': office['office']  # You can add this if you want to return the office value directly
+    } for office in data if office["type"] == "internal"]
+
+    # Return the offices as JSON
     return jsonify({'offices': offices})
+
 
 @app.route('/get_acad_years', methods=['POST', 'GET'])
 def get_acad_years():
@@ -928,41 +959,130 @@ def login_new():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
+
 @app.route("/sign-up", methods=["POST"])
 def sign_up():
     try:
         data = request.get_json()
 
         full_name = data.get("fullName")
-        username = data.get('username')
+        username = data.get("username")
         password = data.get("password")
         email = data.get("email")
         user_type = data.get("userType")
-        course = data.get("course")
+        program = data.get("selectedProgram")
         year = data.get("year")
         block = data.get("block")
 
+        # Email validation
+        if not email.endswith("@gmail.com"):
+            return jsonify({"message": "Invalid email address. Only @gmail.com is allowed."}), 400
+
+        # Check if email already exists in the collection
+        existing_email = server.user_collection.find_one({"email": email})
+        if existing_email:
+            return jsonify({"message": "Email is already registered."}), 400
+        
+        existing_username = server.user_collection.find_one({"username": username})
+        if existing_username:
+            return jsonify({"message": "Username is already registered."}), 400
+        
+
         user_document = {
-            "full_name": full_name,
-            "password": password,  
-            "email": email,
+            "name": full_name,
             "username": username,
+            "password": password,
+            "email": email,
             "user_type": user_type,
-            "course": course,
+            "program": program,
             "year": year,
-            "block": block
+            "block": block,
         }
 
+        # Insert the new user document into the collection
         server.user_collection.insert_one(user_document)
-        
+
         return jsonify({"message": "Sign-up successful!"}), 200
 
     except Exception as e:
         return jsonify({"message": "Error occurred during sign-up.", "error": str(e)}), 500
 
 
+@app.route("/fetchStudents", methods=["GET"])
+def fetch_students():
+    # Query to fetch only students where the 'user_type' field exists and is 'student'
+    students = server.user_collection.find({"user_type": {"$exists": True, "$eq": "student"}}, 
+                                           {"_id": 0, "username": 1, "program": 1, "name": 1, "block": 1, "year": 1, "email": 1, "password":1})
+    
+    student_list = []
+    # Ensure that only documents with 'user_type': 'student' are processed
+    for student in students:
+        student_data = {
+            "username": student.get("username", "N/A"),
+            "program": student.get("program", "N/A"),
+            "name": student.get("name", "No Name Provided"),
+            "block": student.get("block", "No Block Provided"),
+            "year": student.get("year", "No Year Provided"),
+            "email": student.get('email', "No email Provided"),
+            "password": student.get('password', "No password Provided")
+        }
+        student_list.append(student_data)
+    print(f"Number of students: {len(student_list)}")
+    
+    # Return the list of students
+    return jsonify(student_list)
+
+@app.route('/delete_user', methods=['DELETE'])
+def delete_user():
+    # Get the username from the request
+    username = request.json.get('username')
+    
+    if not username:
+        return jsonify({'error': 'Username is required'}), 400
+    
+    # Find the user in the collection and delete
+    result = server.user_collection.delete_one({"username": username})
+    
+    if result.deleted_count == 1:
+        return jsonify({'message': 'User deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'User not found'}), 404
 
 
+
+@app.route('/create-user', methods=['POST'])
+def create_user():
+    data = request.get_json()
+
+    # Start by preparing the base fields
+    user_document = {
+        "user_type": data['user_type'],
+        "username": data['username'],
+        "password": data['password'],
+        "email": data['email']
+    }
+
+    # Conditionally add fields based on the userType
+    if data['user_type'] == 'services':  # Example: only services for 'officehead'
+        user_document['services'] = data.get('services', "")
+
+    elif data['user_type'] == 'researchcoordinator':  # Only colleges for 'researchcoordinator'
+        user_document['colleges'] = data.get('colleges', "")
+
+    elif data['user_type'] == 'employee':  # For 'employee', include department and colleges
+        user_document['colleges'] = data.get('colleges', "")
+        user_document['department'] = data.get('department', "")
+
+    # If it's a 'vpre' user, no additional fields are added.
+    elif data['user_type'] == 'vpre':
+        pass  
+
+    try:
+        # Insert the new user into the database
+        server.user_collection.insert_one(user_document)
+        return jsonify({"message": "User created successfully!"}), 201
+    except Exception as e:
+        return jsonify({"message": f"Error creating user: {str(e)}"}), 500
 
 
 if __name__ == '__main__':

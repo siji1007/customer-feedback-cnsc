@@ -20,15 +20,14 @@ const LandingPage: React.FC = () => {
 
   const [email, setEmail] = useState('');
   const [userType] = useState('student');
-  const [colleges, setColleges] = useState('');
   const [year, setYear] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [block, setBlock] = useState('');
   const navigate = useNavigate();
-  const [departments, setDepartments] = useState([]); // Holds all department data from the server
-  const [courses, setCourses] = useState([]); // Holds courses for the selected department
-  const [selectedDepartment, setSelectedDepartment] = useState(""); // Currently selected department
-  const [selectedCourse, setSelectedCourse] = useState(""); 
+  const [departments, setDepartments] = useState([]); 
+  const [courses, setCourses] = useState([]); 
+  const [selectedDepartment, setSelectedDepartment] = useState(""); 
+  const [selectedProgram, setSelectedProgram] = useState(""); 
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -89,19 +88,19 @@ const LandingPage: React.FC = () => {
           localStorage.setItem('ShowSurvey', 'internal');
           switch (data.user_type) {
             case 'student':
-              navigate('/student');
+              navigate('/survey');
               break;
             case 'vpre':
               navigate('/admin/vpre');
               break;
-            case 'research-coordinator':
+            case 'researchcoordinator':
               navigate('admin/ResearchCoordinator');
               break;
-            case 'officehead':
-              navigate('admin/officehead');
+            case 'services':
+              navigate('admin/services');
               break;
             case 'employee':
-              navigate('/employee');
+              navigate('/survey');
               break;
             case 'others':
               navigate('/others'); // Update this to the appropriate route
@@ -141,11 +140,10 @@ const LandingPage: React.FC = () => {
         email,
         userType,
         username,
-        colleges,
         year,
         block,
-        courses,
-        departments,
+        selectedDepartment,
+        selectedProgram
       };
   
       // For debugging, you can keep this alert temporarily
@@ -164,7 +162,7 @@ const LandingPage: React.FC = () => {
         // Handle response from backend
         const result = await response.json();
         if (response.ok) {
-          alert(result.message);  // Display success message
+          alert(result.message);  
         } else {
           alert(result.message);  // Show error message (e.g., email already registered)
         }
@@ -260,8 +258,12 @@ const LandingPage: React.FC = () => {
 
             <select
               className="p-2 border rounded flex-grow"
-              value={selectedCourse}
-              onChange={(e) => setSelectedCourse(e.target.value)}
+              value={selectedProgram}
+              onChange={(e) => {
+                const selectedCourse = e.target.value;
+                setSelectedProgram(selectedCourse);
+        
+              }}
             >
               <option value="">Select Course</option>
               {courses.map((course, index) => (
@@ -271,16 +273,17 @@ const LandingPage: React.FC = () => {
               ))}
             </select>
 
+
             <select
               className="p-2 border rounded flex-grow"
               value={year}
               onChange={(e) => setYear(e.target.value)}
             >
               <option value="">Select Year</option>
-              <option value="First Year">1st Year</option>
-              <option value="Second Year">2nd Year</option>
-              <option value="Third Year">3rd Year</option>
-              <option value="Fourth Year">4th Year</option>
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="4th Year">4th Year</option>
             </select>
 
             <select
@@ -298,52 +301,20 @@ const LandingPage: React.FC = () => {
               </>
             )}
         
-
             <div className="relative w-full">
-            <input
-                  type="text"
-                  id="username"
-                  required
-                  placeholder=" "
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                 
-                />
+            <input type="text" id="username" required placeholder=" " value={username} onChange={(e) => setUsername(e.target.value)} className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500" />
               <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Username </label>
             </div>
 
             <div className="relative w-full">
-            <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  placeholder=" "
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                  required
-                />
+              <input type={showPassword ? "text" : "password"} id="password" placeholder=" " value={password} onChange={(e) => setPassword(e.target.value)} className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500" required />
               <label className="absolute left-4 -top-2 bg-white px-1 text-sm text-gray-500 transform scale-75 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:scale-100 peer-focus:-top-2 peer-focus:scale-75 peer-focus:text-red-800" > Password </label>
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <FaEyeSlash className="w-5 h-5 text-red-800" /> : <FaEye className="w-5 h-5 text-red-800" />}
-              </button>
+              <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none" onClick={() => setShowPassword(!showPassword)} > {showPassword ? <FaEyeSlash className="w-5 h-5 text-red-800" /> : <FaEye className="w-5 h-5 text-red-800" />} </button>
             </div>
 
             {isSignUp && (
               <div className="relative w-full">
-                <input
-                  type="email"
-                  id="email"
-                  placeholder=" "
-                  className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
+                <input type="email" id="email" placeholder=" " className="peer w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 {!email.endsWith("@gmail.com") && email.length > 0 && (
                   <p className="text-red-500 text-sm">Email must end with @gmail.com</p>
                 )}
@@ -368,19 +339,8 @@ const LandingPage: React.FC = () => {
                       fill="none"
                       viewBox="0 0 24 24"
                     >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8H4z"
-                      ></path>
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" ></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" ></path>
                     </svg>
                     Logging in...
                   </span>
