@@ -93,8 +93,6 @@ with open('21-22.csv', mode='r') as file:
                         print(ccms[l])
                         print(get_year_from_block(blocks[k]))
                         print(blocks[k])
-                        print(email)
-                        print(semester[ayc])
 
                         user = {
                             "username": username,
