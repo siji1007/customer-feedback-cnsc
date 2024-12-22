@@ -36,6 +36,13 @@ tagalog_stopwords = set([
     'ang', 'sa', 'ng', 'at', 'para', 'na', 'ito', 'ay', 'mga', 'kaysa', 'upang', 'na', 'dahil', 'kapag'
 ])
 
+services = [
+    "ADMISSION", "REGISTRAR", "GUIDANCE OFFICE", "HEALTH SERVICES/CLINIC", 
+    "LIBRARY SERVICES", "STUDENT PUBLICATION", "SCHOLARSHIP", 
+    "STUDENT SERVICES OFFICE"
+]
+
+
 combined_stopwords = english_stopwords.union(tagalog_stopwords)
 model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
 
@@ -436,7 +443,7 @@ def get_office():
 @app.route('/get_acad_years', methods=['POST', 'GET'])
 def get_acad_years():
     years = []
-    for year in range(2024, 2031):
+    for year in range(2022, 2031):
         years.append(str(year) + " - " + str(year + 1))
 
     return years
@@ -546,15 +553,28 @@ def edit_questions():
 def fetchResponseData():
     response_data = server.answer_collection.find()
     response_list = [r for r in response_data]
-    responses = [r["answer"] for r in response_list]
-    values = [value for r in responses for value in r.values()]
+    
+    # Flatten the structure of responses
+    responses = [r["answers"]["services"] for r in response_list]
+    values = [
+        int(item)  # Convert all values to integers
+        for r in responses
+        for value in r.values()
+        for item in (value if isinstance(value, list) else [value])
+        if isinstance(item, (int, str)) and str(item).isdigit()  # Filter valid numeric values
+    ]
+    
+    # Count occurrences
     all_possible_values = set(range(1, 6))
     value_count = Counter(values)
     for value in all_possible_values:
         if value not in value_count:
             value_count[value] = 0
+    
+    # Sort counts by key
     sorted_keys = sorted(value_count.keys())
     sorted_counts = [value_count[key] for key in sorted_keys]
+    
     return sorted_counts
 
 @app.route("/fetch_specific_dept", methods=['POST'])
@@ -619,7 +639,7 @@ def fetchRespondents():
     answer_data = server.answer_collection.find()
     answer_list = [al for al in answer_data]
     
-    account_data = server.user_collection.find({"account_id": {"$exists": True}})
+    account_data = server.user_collection.find({"username": {"$exists": True}})
     account_list = [a for a in account_data]
     
     client_data = server.client_collection.find()
@@ -628,11 +648,11 @@ def fetchRespondents():
     # Create a set of account IDs for clients
     client_ids = {str(cl["_id"]) for cl in client_list}
     
-    account_dict = {a["account_id"]: a["type"] for a in account_list}
+    account_dict = {a["username"]: a["user_type"] for a in account_list}
     all_possible_types = ["student", "employee"]
 
     for al in answer_list:
-        account_id = al.get("account_id")
+        account_id = al.get("username")
         if account_id:
             account_type = account_dict.get(account_id, "Unknown")
             if account_type in all_possible_types:
@@ -739,13 +759,30 @@ def fetchValidity():
 @app.route("/fetchTopInsights", methods=["GET", "POST"])
 def fetchTopInsights():
     top10 = []
+    dataset = []
+    insights = []
     insight_data = server.answer_collection.find()
     insight_list = [insights for insights in insight_data]
+    
     if request.method == "POST":
         request_data = request.get_json()
-        insights = [ins["comment"] for ins in insight_list if ins["office"] == request_data["office"]]
+        for i in services:
+            sorted_ins = [
+                ins["answers"]["comment"].get(i)  # Use .get to safely access the key
+                for ins in insight_list 
+                if ins["office"] == request_data.get("office")
+            ]
+            dataset.append([item for item in sorted_ins if item is not None])  # Exclude None values
     else:
-        insights = [ins["comment"] for ins in insight_list]
+        for i in services:
+            sorted_ins = [
+                ins["answers"]["comment"].get(i)  # Use .get to safely access the key
+                for ins in insight_list
+            ]
+            dataset.append([item for item in sorted_ins if item is not None])  # Exclude None values
+    
+    for j in dataset:
+        insights.extend(j)  # Use extend to flatten the list
 
     embeddings = model.encode(insights, convert_to_tensor=True)
     repetition_count = defaultdict(int)
@@ -758,6 +795,7 @@ def fetchTopInsights():
         
     sorted_comments = sorted(repetition_count.items(), key=lambda x: x[1], reverse=True)
     return jsonify({"sc": sorted_comments})
+
 
 @app.route("/fetchWordCloud", methods=["GET", "POST"])
 def fetchWordCloud():
@@ -1037,6 +1075,6 @@ def create_user():
 
 
 if __name__ == '__main__':
-     app.run(host="0.0.0.0",port="8082")
+     app.run(host="127.0.0.1",port="8082")
     
 

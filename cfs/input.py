@@ -1,5 +1,39 @@
 import random
 import csv, server
+import string
+
+def generate_password(length=12, use_uppercase=True, use_numbers=True, use_special=True):
+    # Define character pools
+    lowercase = string.ascii_lowercase
+    uppercase = string.ascii_uppercase if use_uppercase else ""
+    numbers = string.digits if use_numbers else ""
+    special = string.punctuation if use_special else ""
+
+    # Combine all selected pools
+    all_characters = lowercase + uppercase + numbers + special
+
+    if not all_characters:
+        raise ValueError("At least one character type must be selected.")
+
+    # Ensure the password includes at least one character from each selected pool
+    password = []
+    if use_uppercase:
+        password.append(random.choice(uppercase))
+    if use_numbers:
+        password.append(random.choice(numbers))
+    if use_special:
+        password.append(random.choice(special))
+    password.append(random.choice(lowercase))  # Ensure at least one lowercase letter
+
+    # Fill the rest of the password length
+    remaining_length = length - len(password)
+    password += random.choices(all_characters, k=remaining_length)
+
+    # Shuffle the password to randomize the order
+    random.shuffle(password)
+
+    return ''.join(password)
+
 
 # Define colleges and programs
 colleges_and_programs = {
@@ -75,64 +109,65 @@ with open('21-22.csv', mode='r') as file:
 
     it_distribution = get_distribution()[0:8]
     is_distribution = get_distribution()[8:16]
+    count = 0
+    iter = 0
     
-    k = 0
-    l = 0
-    ayc = 0
-    while(ayc < 2):
-        while l < 2:
-            while k < 8:
-                for i in it_distribution:
-                    for j in range(1, i + 1):
-                        username = generate_random_username()
-                        name = generate_random_full_name()
-                        email = username + "@gmail.com"
-                        print(username)
-                        print(name)
-                        print("CCMS")
-                        print(ccms[l])
-                        print(get_year_from_block(blocks[k]))
-                        print(blocks[k])
+    for i in range(2):
+        ay = acad_year[i]
+        for j in range(2):
+            sem = semester[j]
+            for i in it_distribution:
+                for j in range(1, i + 1):
+                    username = generate_random_username()
+                    name = generate_random_full_name()
+                    email = username + "@gmail.com"
 
-                        user = {
-                            "username": username,
-                            "name": name,
-                            "college": "CCMS",
-                            "program": ccms[l],
-                            "year": get_year_from_block(blocks[k]),
-                            "block": blocks[k],
-                            "email": f"{username}@example.com",
-                        }
+                    user = {
+                        "username": username,
+                        "name": name,
+                        "college": "CCMS",
+                        "program": ccms[1],
+                        "year": get_year_from_block(blocks[iter]),
+                        "block": blocks[iter],
+                        "email": f"{username}@example.com",
+                        "password": generate_password(),
+                        "user_type": "student"
+                    }
 
-                        answer = {
-                            "username": username,
-                            "answers": {
-                                "services": {
-                                    f"{services[0]}": csv_reader[j - 1][0:5],
-                                    f"{services[1]}": csv_reader[j - 1][5:10],
-                                    f"{services[2]}": csv_reader[j - 1][10:15],
-                                    f"{services[3]}": csv_reader[j - 1][15:20],
-                                    f"{services[4]}": csv_reader[j - 1][20:25],
-                                    f"{services[5]}": csv_reader[j - 1][25:30],
-                                    f"{services[6]}": csv_reader[j - 1][30:35],
-                                    f"{services[7]}": csv_reader[j - 1][35:40],
-                                },
-                                "comment": {
-                                    f"{services[0]}": csv_reader[j - 1][-2],
-                                    f"{services[1]}": csv_reader[j - 1][-2],
-                                    f"{services[2]}": csv_reader[j - 1][-2],
-                                    f"{services[3]}": csv_reader[j - 1][-2],
-                                    f"{services[5]}": csv_reader[j - 1][-2],
-                                    f"{services[6]}": csv_reader[j - 1][-2],
-                                    f"{services[7]}": csv_reader[j - 1][-2],
-                                },
+                    answer = {
+                        "username": username,
+                        "answers": {
+                            "services": {
+                                f"{services[0]}": csv_reader[j - 1][0:5],
+                                f"{services[1]}": csv_reader[j - 1][5:10],
+                                f"{services[2]}": csv_reader[j - 1][10:15],
+                                f"{services[3]}": csv_reader[j - 1][15:20],
+                                f"{services[4]}": csv_reader[j - 1][20:25],
+                                f"{services[5]}": csv_reader[j - 1][25:30],
+                                f"{services[6]}": csv_reader[j - 1][30:35],
+                                f"{services[7]}": csv_reader[j - 1][35:40],
                             },
-                            "semester": random.choice(semester),
-                            "ay": random.choice(acad_year),
-                        }
-                    k += 1
-            l+=1
-        ayc += 1
+                            "comment": {
+                                f"{services[0]}": csv_reader[j - 1][-2],
+                                f"{services[1]}": csv_reader[(j - 1) + 1][-2],
+                                f"{services[2]}": csv_reader[(j - 1) + 2][-2],
+                                f"{services[3]}": csv_reader[(j - 1) + 3][-2],
+                                f"{services[5]}": csv_reader[(j - 1) + 4][-2],
+                                f"{services[6]}": csv_reader[(j - 1) + 5][-2],
+                                f"{services[7]}": csv_reader[(j - 1) + 6][-2],
+                            },
+                        },
+                        "semester": sem,
+                        "ay": ay,
+                    }
+
+                    server.user_collection.insert_one(user)
+                    server.answer_collection.insert_one(answer)
+                    count += 1
+                    print(count)
+                iter += 1
+
+
 
     """m = 0
     n = 0
