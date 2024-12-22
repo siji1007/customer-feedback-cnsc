@@ -38,10 +38,6 @@ tagalog_stopwords = set([
 
 combined_stopwords = english_stopwords.union(tagalog_stopwords)
 model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
-services = [
-    'Admission', 'Registrar', 'Guidance Office', 'Health Services/Clinic', 
-    'Library Services', 'Student Publication', 'Scholarship Services', 
-    'Student Services Office']
 
 # Non Routing Functions
 def showDepts():
@@ -550,55 +546,32 @@ def edit_questions():
 def fetchResponseData():
     response_data = server.answer_collection.find()
     response_list = [r for r in response_data]
-    
-    # Flatten the structure of responses
-    responses = [r["answers"]["services"] for r in response_list]
-    values = [
-        int(item)  # Convert all values to integers
-        for r in responses
-        for value in r.values()
-        for item in (value if isinstance(value, list) else [value])
-        if isinstance(item, (int, str)) and str(item).isdigit()  # Filter valid numeric values
-    ]
-    
-    # Count occurrences
+    responses = [r["answer"] for r in response_list]
+    values = [value for r in responses for value in r.values()]
     all_possible_values = set(range(1, 6))
     value_count = Counter(values)
     for value in all_possible_values:
         if value not in value_count:
             value_count[value] = 0
-    
-    # Sort counts by key
     sorted_keys = sorted(value_count.keys())
     sorted_counts = [value_count[key] for key in sorted_keys]
-    
     return sorted_counts
-
 
 @app.route("/fetch_specific_dept", methods=['POST'])
 def fetchSpecificResponseData():
     res_data = request.get_json()
     response_data = server.answer_collection.find()
     response_list = [r for r in response_data]
-    responses = [r["answers"]["services"] for r in response_list if r["office"] == res_data["selectedOffice"]]
-    values = [
-        int(item)  # Convert all values to integers
-        for r in responses
-        for value in r.values()
-        for item in (value if isinstance(value, list) else [value])
-        if isinstance(item, (int, str)) and str(item).isdigit()  # Filter valid numeric values
-    ]
-    # Count occurrences
+    responses = [r["answer"] for r in response_list if r["office"] == res_data["selectedOffice"]]
+    values = [value for r in responses for value in r.values()]
     all_possible_values = set(range(1, 6))
     value_count = Counter(values)
     for value in all_possible_values:
         if value not in value_count:
             value_count[value] = 0
-    
-    # Sort counts by key
+
     sorted_keys = sorted(value_count.keys())
     sorted_counts = [value_count[key] for key in sorted_keys]
-    
     return sorted_counts
 
 @app.route("/fetch_specific_type", methods=["POST"])
@@ -766,35 +739,13 @@ def fetchValidity():
 @app.route("/fetchTopInsights", methods=["GET", "POST"])
 def fetchTopInsights():
     top10 = []
-    dataset = []
-    dataset_ = []
-    insights= []
-    
-
     insight_data = server.answer_collection.find()
     insight_list = [insights for insights in insight_data]
     if request.method == "POST":
-        for i in services:
-            request_data = request.get_json()
-            sorted_ins = [ins["answers"]["comment"][i] for ins in insight_list if ins["office"] == request_data["office"]]
-            dataset.append(sorted_ins)
-
-        for j in dataset:
-            dataset_.append(j)
-
-        for k in dataset_:
-            insights.append(k)
+        request_data = request.get_json()
+        insights = [ins["comment"] for ins in insight_list if ins["office"] == request_data["office"]]
     else:
-        for i in services:
-            sorted_ins = [ins["answers"]["comment"][i] for ins in insight_list]
-            dataset.append(sorted_ins)
-    
-        for j in dataset:
-            dataset_.append(j)
-
-        for k in dataset_:
-            insights.append(k)
-   
+        insights = [ins["comment"] for ins in insight_list]
 
     embeddings = model.encode(insights, convert_to_tensor=True)
     repetition_count = defaultdict(int)
@@ -802,8 +753,8 @@ def fetchTopInsights():
         for j in range(i + 1, len(insights)):
             similarity = util.pytorch_cos_sim(embeddings[i], embeddings[j])
             if similarity > 0.5:
-                repetition_count[k[i]] += 1
-                repetition_count[k[j]] += 1
+                repetition_count[insights[i]] += 1
+                repetition_count[insights[j]] += 1
         
     sorted_comments = sorted(repetition_count.items(), key=lambda x: x[1], reverse=True)
     return jsonify({"sc": sorted_comments})
@@ -1086,6 +1037,6 @@ def create_user():
 
 
 if __name__ == '__main__':
-     app.run(host="localhost",port="8082")
+     app.run(host="0.0.0.0",port="8082")
     
 

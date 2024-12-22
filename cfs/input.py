@@ -19,9 +19,9 @@ blocks = ['1A', '1B', '1C', '2A', '2B', '3A', '3B', '4A', '4B']
 semester = ['1st Semester', '2nd Semester']
 acad_year = ["2021-2022", "2022-2023"]
 services = [
-    'Admission', 'Registrar', 'Guidance Office', 'Health Services/Clinic', 
-    'Library Services', 'Student Publication', 'Scholarship Services', 
-    'Student Services Office'
+    'ADMISSION', 'REGISTRAR', 'GUIDANCE OFFICE', 'HEALTH SERVICES/CLINIC', 
+    'LIBRARY SERVICES', 'STUDENT PUBLICATION', 'SCHOLARSHIP', 
+    'STUDENT SERVICES OFFICE'
 ]
 
 # Generate a random name

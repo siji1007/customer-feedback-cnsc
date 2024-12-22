@@ -154,7 +154,6 @@ const Dashboard: React.FC = () => {
         setTop10(response.data.sc)
       }else{
         const response = await axios.get(serverUrl + "/fetchTopInsights");
-        console.log(response.data)
         setTop10(response.data.sc)
       }
     } catch(error){
