@@ -619,7 +619,7 @@ def fetchRespondents():
     answer_data = server.answer_collection.find()
     answer_list = [al for al in answer_data]
     
-    account_data = server.user_collection.find({"username": {"$exists": True}})
+    account_data = server.user_collection.find({"account_id": {"$exists": True}})
     account_list = [a for a in account_data]
     
     client_data = server.client_collection.find()
@@ -628,11 +628,11 @@ def fetchRespondents():
     # Create a set of account IDs for clients
     client_ids = {str(cl["_id"]) for cl in client_list}
     
-    account_dict = {a["username"]: a["user_type"] for a in account_list}
+    account_dict = {a["account_id"]: a["type"] for a in account_list}
     all_possible_types = ["student", "employee"]
 
     for al in answer_list:
-        account_id = al.get("username")
+        account_id = al.get("account_id")
         if account_id:
             account_type = account_dict.get(account_id, "Unknown")
             if account_type in all_possible_types:
