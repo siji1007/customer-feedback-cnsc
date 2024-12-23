@@ -371,7 +371,7 @@ const Dashboard: React.FC = () => {
   
   useEffect(() => {
     fetchAllData();
-    // fetchWords();
+    fetchWords();
   }, []); 
 
   useEffect(() => {

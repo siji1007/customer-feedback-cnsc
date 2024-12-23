@@ -31,10 +31,14 @@ nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('punkt_tab')
 
+def load_stop_words(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        stop_words = [line.strip() for line in file.readlines()]
+    return stop_words
+
 english_stopwords = set(stopwords.words('english'))
-tagalog_stopwords = set([
-    'ang', 'sa', 'ng', 'at', 'para', 'na', 'ito', 'ay', 'mga', 'kaysa', 'upang', 'na', 'dahil', 'kapag'
-])
+tagalog_stopwords = load_stop_words("stopwords-tl.txt")
+english_stopwords.update(tagalog_stopwords)
 
 services = [
     "ADMISSION", "REGISTRAR", "GUIDANCE OFFICE", "HEALTH SERVICES/CLINIC", 
@@ -772,14 +776,14 @@ def fetchTopInsights():
                 for ins in insight_list 
                 if ins["office"] == request_data.get("office")
             ]
-            dataset.append([item for item in sorted_ins if item is not None])  # Exclude None values
+            dataset = [item for item in sorted_ins if item is not None] # Exclude None values
     else:
         for i in services:
             sorted_ins = [
                 ins["answers"]["comment"].get(i)  # Use .get to safely access the key
                 for ins in insight_list
             ]
-            dataset.append([item for item in sorted_ins if item is not None])  # Exclude None values
+            dataset = [item for item in sorted_ins if item is not None]  # Exclude None values
     
     for j in dataset:
         insights.extend(j)  # Use extend to flatten the list
@@ -796,52 +800,60 @@ def fetchTopInsights():
     sorted_comments = sorted(repetition_count.items(), key=lambda x: x[1], reverse=True)
     return jsonify({"sc": sorted_comments})
 
+def preprocess_insights(insights):
+    """Preprocess insights by filtering and cleaning text."""
+    return [str(ins).lower() for ins in insights]  # Example preprocessing
 
-@app.route("/fetchWordCloud", methods=["GET", "POST"])
-def fetchWordCloud():
-    insight_data = server.answer_collection.find()
-    insight_list = [insight for insight in insight_data]
-    
-    if request.method == "POST":
-        request_data = request.get_json()
-        print(request_data)
-        office_filter = request_data["office"]
-        insights = [ins["comment"] for ins in insight_list if ins["office"] == office_filter and ins["semester"] == request_data["semester"] and ins["academic_year"] == request_data["ay"]]
-    else:
-        insights = [ins["comment"] for ins in insight_list]
-    
-    if not insights:
-        return jsonify([])
-    
-    # Step 1: Create a CountVectorizer to process the text data (filtering stopwords)
-    vectorizer = CountVectorizer(stop_words='english', max_features=1000)
+def generate_word_cloud_data(insights, n_topics=5, n_words=10):
+    """Generate word cloud data from insights using LDA."""
+    stopword_list = list(english_stopwords)
+    vectorizer = CountVectorizer(stop_words=stopword_list, max_features=1000)
     X = vectorizer.fit_transform(insights)
     
-    # Step 2: Fit an LDA model to the document-term matrix
-    lda_model = LatentDirichletAllocation(n_components=min(len(insights), 5), random_state=42)
+    lda_model = LatentDirichletAllocation(n_components=min(len(insights), n_topics), random_state=42)
     lda_model.fit(X)
     
-    # Step 3: Extract words for each topic (the top words in each topic)
     feature_names = vectorizer.get_feature_names_out()
-    topics = []
-    for topic_idx, topic in enumerate(lda_model.components_):
-        topic_words = [feature_names[i] for i in topic.argsort()[:-11:-1]]  # Top 10 words for the topic
-        topics.append(topic_words)
-
-    # Step 4: Flatten the list of topics into a single list of words and count their occurrences
+    topics = [
+        [feature_names[i] for i in topic.argsort()[:-n_words - 1:-1]]
+        for topic in lda_model.components_
+    ]
+    
     all_words = [word for topic in topics for word in topic]
     repetition_count = defaultdict(int)
-
     for word in all_words:
         repetition_count[word] += 1
     
-    # Step 5: Prepare the word cloud data in the format {text: "word", value: frequency}
-    word_cloud_data = [{"text": word, "value": count} for word, count in repetition_count.items()]
+    return [{"text": word, "value": count} for word, count in repetition_count.items()]
+
+@app.route("/fetchWordCloud", methods=["GET", "POST"])
+def fetchWordCloud():
+    try:
+        insight_data = server.answer_collection.find()
+        insight_list = [insight for insight in insight_data]
+        
+        if request.method == "POST":
+            request_data = request.get_json()
+            office_filter = request_data.get("office")
+            insights = [
+                ins["answers"]["comment"]
+                for ins in insight_list
+                if ins["office"] == office_filter and 
+                   ins["semester"] == request_data.get("semester") and 
+                   ins["academic_year"] == request_data.get("ay")
+            ]
+        else:
+            insights = [ins["answers"]["comment"] for ins in insight_list]
+        
+        if not insights:
+            return jsonify({"message": "No insights found"})
+        
+        insights = preprocess_insights(insights)
+        word_cloud_data = generate_word_cloud_data(insights)
+        return jsonify(sorted(word_cloud_data, key=lambda x: x['value'], reverse=True))
     
-    # Step 6: Sort the word cloud data by frequency (value) in descending order
-    sorted_word_cloud_data = sorted(word_cloud_data, key=lambda x: x['value'], reverse=True)
-    
-    return jsonify(sorted_word_cloud_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/deleteOffice", methods=["POST"])
 def deleteOffice():
